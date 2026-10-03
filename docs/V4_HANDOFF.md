@@ -147,3 +147,48 @@ Tyto otázky se nemají vyřešit abstraktně, pokud je lze lépe rozhodnout na 
 Nenechat projekt sklouznout zpět k maximalizaci coverage, honbě za „100% správnou mapou“ jako cílem sama o sobě, generickému topic clusteringu, headline summarization, architektuře navržené dříve než redakční produkt ani dojmu, že více automatizace = lepší Brief.
 
 Technologie je prostředek. **Výsledkem musí být četba, která něco otevře v hlavě čtenáře.**
+
+
+## 14. Stabilní dědictví v1–v3
+
+Před dalším produktovým nebo technickým rozhodnutím čti také:
+- `GOALS_AND_VALUES.md`;
+- `SCOPE_AND_AUDIENCE.md`;
+- `PRODUCT_HERITAGE.md`.
+
+V4 **neruší** historické zásady důvěry, provenance, systematického průchodu celými hlavními vydáními, přirozené češtiny, transformační práce, Memory jako evidence, oddělení faktu / perspektivy / syntézy / komentáře ani ručního ověření před automatizací.
+
+Klíčová reinterpretace úplnosti:
+
+> **Úplnost nese Dnešní vydání. Brief nese redakční výběr.**
+
+Proto se starý „colleague test“ nepoužívá jako povinnost nacpat každý významný text do Briefu. Používá se jako coverage test: významný článek nesmí technicky zmizet a musí být dohledatelný v mapě vydání.
+
+Dlouhodobá produktová rodina zůstává:
+- Brief;
+- Detail;
+- Trendy;
+- Analýzy / Business Intelligence;
+- pod nimi Memory.
+
+Aktuální v4 však implementačně prioritizuje Dnešní vydání + Brief + Detail + Memory.
+
+Primární publikum zahrnuje manažery, podnikatele, investory a odborníky, ale v4 **nepředpokládá**, že už dnes pravidelně čtou kvalitní zahraniční tisk. Produkt jim k němu má vytvářet cestu.
+
+B2B potenciál zůstává součástí vize: firemní licence, sektorové Briefy, monitoring, Trendy a custom analýzy. Nemá ale předčasně komplikovat první ranní produkt.
+
+Přesný pricing není rozhodnutý. Stabilní je pouze princip, že placená hodnota vzniká hloubkou, pohodlím, kontinuitou a specializací, nikoli umělým zamlčením základních faktů.
+
+## 15. Provozní hodnoty zděděné z v3
+
+Před nákladným nebo destruktivním krokem:
+1. přesně definuj požadovanou schopnost;
+2. ověř, že navržená cesta ji skutečně poskytuje;
+3. odděl ověřené skutečnosti od předpokladů;
+4. pojmenuj failure modes;
+5. zvaž cenu, kvóty a destruktivní riziko;
+6. nejdříve proveď nejmenší reverzibilní test.
+
+Nevytvářet armádu agentů jen proto, že je to možné. Redakční role jsou odpovědnosti, ne nutně procesy nebo API calls.
+
+Technologie je prostředek. **Architektura má následovat ověřený redakční produkt.**
