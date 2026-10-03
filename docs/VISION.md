@@ -60,3 +60,23 @@ Největším úspěchem není, že čtenář díky nám přečetl méně.
 Úspěch je, když narazí na myšlenku, ke které by se jinak nedostal; pochopí argument, který by jinak minul; položí si lepší otázku; otevře Detail, protože chce jít hlouběji; a postupně začne kvalitní ekonomické texty rozpoznávat a vyhledávat.
 
 Business Brief dává čtenáři **víc toho, s čím může přemýšlet, a nechává mu chuť přemýšlet dál**.
+
+## 8. Co si v4 zachovává z předchozích verzí
+
+Nová filozofie neruší stabilní hodnoty v1–v3.
+
+V4 nadále stojí na tom, že:
+- čtenářův čas a pozornost jsou vzácné;
+- FT, WSJ a Handelsblatt se mají procházet systematicky jako celá vydání;
+- provenance a dohledatelnost jsou součást produktu;
+- rozdíly mezi zdroji se nemají vyhlazovat;
+- nejistota se nemá skrývat;
+- veřejný produkt je transformační redakční práce;
+- čeština má být přirozený redakční jazyk, ne mechanický překlad;
+- Memory je dlouhodobá evidence;
+- automatizace následuje po ručním ověření workflow;
+- technologie je prostředek, nikoli definice produktu.
+
+Zásadní změnou v4 není opuštění úplnosti, ale její **přesunutí do správné vrstvy**. Úplnost nese Dnešní vydání. Brief může být skutečně redakční.
+
+Podrobná kontinuita je v [GOALS_AND_VALUES.md](GOALS_AND_VALUES.md), [SCOPE_AND_AUDIENCE.md](SCOPE_AND_AUDIENCE.md) a [PRODUCT_HERITAGE.md](PRODUCT_HERITAGE.md).
