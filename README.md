@@ -37,12 +37,14 @@ Doporučené pořadí:
 
 1. [VISION.md](docs/VISION.md) — proč projekt existuje.
 2. [PRODUCT_MODEL.md](docs/PRODUCT_MODEL.md) — kanonický produktový model v4.
-3. [EDITORIAL_PHILOSOPHY.md](docs/EDITORIAL_PHILOSOPHY.md) — redakční DNA a kritéria výběru.
-4. [BRIEF.md](docs/BRIEF.md) — dramaturgie ranního vydání.
-5. [DETAIL.md](docs/DETAIL.md) — definice prémiového Detailu.
-6. [TODAYS_EDITIONS.md](docs/TODAYS_EDITIONS.md) — úplná mapa FT / WSJ / HB.
-7. [MEMORY.md](docs/MEMORY.md) — role dlouhodobé paměti.
-8. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
+3. [GOALS_AND_VALUES.md](docs/GOALS_AND_VALUES.md) — stabilní cíle, hodnoty a zásady zděděné i z v1–v3.
+4. [SCOPE_AND_AUDIENCE.md](docs/SCOPE_AND_AUDIENCE.md) — cílový čtenář, tematický a zdrojový rozsah, B2C/B2B.
+5. [EDITORIAL_PHILOSOPHY.md](docs/EDITORIAL_PHILOSOPHY.md) — redakční DNA a kritéria výběru.
+6. [BRIEF.md](docs/BRIEF.md) — dramaturgie ranního vydání.
+7. [DETAIL.md](docs/DETAIL.md) — definice prémiového Detailu.
+8. [TODAYS_EDITIONS.md](docs/TODAYS_EDITIONS.md) — úplná mapa FT / WSJ / HB.
+9. [MEMORY.md](docs/MEMORY.md) — role dlouhodobé paměti.
+10. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
 
 ## Stav
 
@@ -53,3 +55,7 @@ Nejdříve fixujeme produkt a redakční principy. Architektura, datový model a
 V3 zůstává technologickou a experimentální referencí. V4 se nemá mechanicky naplnit starými dokumenty a pipeline. Každý převzatý prvek musí znovu projít otázkou:
 
 > **Slouží produktu v4?**
+
+### Historická kontinuita
+
+[PRODUCT_HERITAGE.md](docs/PRODUCT_HERITAGE.md) vysvětluje, co v4 vědomě přebírá z v1, v2 a v3, co mění a proč. Je to ochrana proti tomu, aby se v dalších konverzacích ztrácely starší dobré principy nebo se vracely překonané předpoklady.
