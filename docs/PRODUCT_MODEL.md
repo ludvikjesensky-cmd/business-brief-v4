@@ -92,3 +92,42 @@ Každé vydání musí projít těmito otázkami:
 8. Může si čtenář mimo Brief projít i úplnou mapu vydání?
 
 Pokud je výsledkem pouze efektivní news summary, v4 nesplnila svůj účel.
+
+## 8. Dlouhodobá produktová rodina
+
+V4 se nyní soustředí na Dnešní vydání, Brief, Detail a podpůrnou Memory. Historická vize však obsahuje dvě další přirozené vrstvy:
+
+### Trendy
+Opakující se signály a změny napříč časem. Hodnotou je rozlišit šum od směru a ukázat, zda se určitý ekonomický, firemní nebo technologický jev zesiluje, slábne nebo mění.
+
+### Analýzy / Business Intelligence
+Vlastní analytické výstupy nad více zdroji a delším časem: sektorové přehledy, profily, časové osy, srovnávací analýzy a později custom B2B práce.
+
+Tyto vrstvy zůstávají v produktové vizi, ale nesmějí diktovat architekturu prvního funkčního v4.
+
+Pracovní dlouhodobá zkratka:
+
+> **Daily = today's edition and intellectual delta. Memory = continuity. Trends = direction. Analysis = meaning.**
+
+## 9. Kanály
+
+Kanonickým výstupem redakce má být společné redakční jádro / Master Brief.
+
+Z něj mohou vznikat:
+- web;
+- e-mail;
+- audio.
+
+Jedna redakční pravda, různé způsoby vyprávění. Audio není mechanické TTS e-mailu.
+
+## 10. Komerční princip
+
+Přesný pricing ani free/paid hranice nejsou ve v4 zafixovány.
+
+Zachováváme však zásadu:
+
+> **Placená hodnota nesmí vznikat umělým zamlčením základních faktů. Má vznikat hloubkou, pohodlím, kontinuitou, specializací a redakční kvalitou.**
+
+Detail zůstává přirozeným kandidátem hlavní každodenní prémiové hodnoty. Dlouhodobě mohou přibýt Trendy, Analýzy a B2B služby.
+
+Viz [SCOPE_AND_AUDIENCE.md](SCOPE_AND_AUDIENCE.md).
