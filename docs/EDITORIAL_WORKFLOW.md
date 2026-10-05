@@ -372,3 +372,39 @@ Správná architektura je:
 # 14. Jednovětá definice
 
 > **Editorial Workflow v4 připraví co nejlepší podmínky pro vznik živého Briefu a po jeho napsání zasahuje jen tam, kde existuje konkrétní důvod, aby přesnost, důvěra a disciplína nezničily hlas, kvůli kterému stojí za to Brief číst a poslouchat.**
+
+
+---
+
+# 15. Poznámky pro další referenční vydání
+
+Po poslechu referenčního dne 14. 9. 2026 byly přijaty následující poznatky. Nevedou k další verzi tohoto referenčního Briefu; ověříme je až na následujícím vydání.
+
+## Neopakovat zdroje v úvodu
+Pokud záhlaví už uvádí Financial Times, The Wall Street Journal a Handelsblatt, úvod nemá mechanicky opakovat názvy všech tří titulů. Má začít přirozeně a rovnou plnit svou funkci.
+
+## Počet položek není kvóta
+Redukce úplného vydání nesmí být řízena předem stanoveným počtem textů. Správná otázka není „kolik položek má Brief mít“, ale:
+
+> **Kolik věcí jsme v dnešních vydáních našli, které bychom opravdu neradi nechali čtenáři uniknout?**
+
+Výsledkem mohou být čtyři i čtrnáct položek. Rozhoduje hodnota, nikoli formát.
+
+Pro další referenční den je důležité provést skutečně nezávislý v4 průchod úplnou mapou vydání. v4 nehledá totéž co v3: v3 primárně hledala důležitá témata, v4 hledá také dobré myšlenky, argumenty, otázky a nečekané perspektivy.
+
+## Cross-paper není univerzální formát
+„Tři noviny, tři pohledy“ používáme jen tehdy, když rozdíl pohledů sám vytváří novou hodnotu. Jiné propojení článků může mít jinou konstrukci. Například jeden text může otevřít konkrétní firemní problém a druhý jej rozšířit na systémovou otázku. Není důvod oba případy stylisticky sjednocovat.
+
+## Doporučení ke čtení musí inspirovat
+Závěrečné doporučení nesmí být pouhá navigační poznámka typu „přečtěte si tento článek“. Má dát čtenáři chuť pokračovat.
+
+Současně nesmí znovu převyprávět pointu, která už zazněla v Briefu.
+
+Nové rozdělení funkcí:
+
+> **Brief říká, co jsme v článku našli. Doporučení říká, proč stojí za to přečíst si samotný článek.**
+
+Doporučení proto může mluvit o kvalitě argumentace, způsobu vidění, překvapivosti, reportérské práci, intelektuálním zážitku nebo o tom, komu a proč by text mohl stát za čas. Tím přidává novou hodnotu místo opakování obsahu.
+
+## Experimentální disciplína
+Referenční Brief 14. 9. už dále neupravujeme. Jeho různé verze zůstávají experimentální stopou. Výše uvedené poznatky se mají projevit až při tvorbě dalšího vydání, aby bylo možné posoudit jejich účinek na novém materiálu.
