@@ -30,3 +30,7 @@ select cron.alter_job(1,command:='select public.reconcile_technician_inbox(); se
 alter view public.dashboard_today set (security_invoker=true);
 alter view public.dashboard_technician_jobs set (security_invoker=true);
 alter view public.dashboard_metrics_30d set (security_invoker=true);
+-- Replacements at an existing key also create a new queue generation.
+drop trigger if exists bbv4_wake_technician on storage.objects;
+create trigger bbv4_wake_technician after insert or update of version on storage.objects
+for each row when (new.bucket_id='source-inbox') execute function public.wake_technician_on_inbox_insert();
