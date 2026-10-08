@@ -24,9 +24,10 @@ if [ "${MODE:-login}" = login ]; then
   pids+=("$!")
   /usr/bin/websockify --web=/usr/share/novnc 127.0.0.1:6080 127.0.0.1:5900 &
   pids+=("$!")
-  login_location='location / { auth_basic "WSJ private browser"; auth_basic_user_file /tmp/admin.htpasswd; proxy_pass http://127.0.0.1:6080; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; proxy_read_timeout 3600s; }'
+  login_location='location / { auth_basic "WSJ private browser"; auth_basic_user_file /tmp/admin.htpasswd; proxy_pass http://127.0.0.1:6080; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; proxy_read_timeout 3600s; proxy_buffering off; }'
 fi
 cat >/tmp/nginx.conf <<EOF
+user pwuser;
 worker_processes 1;
 pid /tmp/nginx/nginx.pid;
 error_log /dev/stderr warn;
