@@ -280,3 +280,25 @@ Jedno syntetické číslo nemá nahrazovat úsudek.
 A nad tím:
 
 > **Dnešní vydání orientuje. Brief otevírá. Detail rozvíjí. Čtenář si ponechává úsudek.**
+
+## 23. Relevantní zdroje před množstvím zdrojů
+
+Business Brief nemá dokazovat kvalitu číslem „monitorujeme tisíce zdrojů“.
+
+> **Kurátorství začíná výběrem zdrojů.**
+
+Cílem je mít zdroje, které jsou pro daného čtenáře a produkt relevantní, systematicky je číst, vysvětlovat a ukazovat jejich perspektivy. Rozšíření zdrojového světa má vznikat vědomě podle produktu, země nebo sektoru, nikoli jako nekonečný feed.
+
+## 24. Autonomie bez slepoty
+
+Ranní provoz má být schopen bezpečně dokončit a publikovat vydání bez přítomnosti člověka. To ale nezrušuje lidskou odpovědnost.
+
+> **Zdravý systém publikuje sám. Nezdravý systém umí sám zastavit.**
+
+Autonomie proto vyžaduje Publication Gate, audit, self-healing, observability, dashboard a výjimečné alerty. Zelený provoz patří na dashboard; telefon je pro skutečné problémy.
+
+## 25. Hlas je součást značky
+
+Audio kanál má mít vlastní rozpoznatelnou hlasovou identitu. Stejně jako typografie nebo vizuální styl má být hlas dlouhodobě konzistentní, přirozený a neunavující.
+
+Technologie hlasu je implementační rozhodnutí. Charakter a redakční pravda hlasu jsou produktové rozhodnutí.
