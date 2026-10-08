@@ -1,5 +1,5 @@
 from __future__ import annotations
-import json, logging, os, threading
+import json, logging, os, threading, sys
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from .events import EventLogger
@@ -65,7 +65,8 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,format,*args): pass
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO,stream=sys.stdout)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     threading.Thread(target=drain_inbox,daemon=True).start()
     ThreadingHTTPServer(("0.0.0.0",int(os.environ.get("PORT","8080"))),Handler).serve_forever()
 

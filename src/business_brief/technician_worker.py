@@ -1,6 +1,7 @@
 from __future__ import annotations
 import argparse,json,tempfile
 from pathlib import Path
+from uuid import uuid4
 from .contracts import SOURCE_BUNDLE_SCHEMA
 from .database import TechnicianRepository
 from .storage import SupabaseArchive
@@ -33,7 +34,7 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
         source_id_placeholder=None
         prefix_base=f"{bundle.identity.publication_id}/{bundle.identity.edition_date[:4]}/{bundle.identity.edition_date}"
         # Source id is the physical SHA identity for storage; DB source remains UUID.
-        prefix=f"{prefix_base}/sha256-{bundle.source_sha256}"
+        prefix=f"{prefix_base}/sha256-{bundle.source_sha256}/{TECHNICIAN_VERSION}/attempt-{uuid4()}"
         bundle_dir=Path(bundle.original_path).parent
         with log.timed("ARCHIVE_UPLOAD_COMPLETE",stage="T21",metadata={"archive_prefix":prefix,"original_filename":bundle.original_filename,"identity":bundle.identity.to_dict(),"page_count":bundle.page_count}): uploaded=archive.upload_bundle(bundle_dir,prefix)
         original_remote=f"{prefix}/original.pdf"; manifest_remote=f"{prefix}/manifest.json"
