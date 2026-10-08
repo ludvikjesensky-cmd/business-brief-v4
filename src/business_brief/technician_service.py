@@ -3,7 +3,7 @@ import json, os, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from .events import EventLogger
 from .storage import SupabaseArchive
-from .technician import IdentityUnresolved
+from .technician import IdentityUnresolved, TECHNICIAN_VERSION
 from .technician_worker import process_inbox_object
 
 _lock=threading.Lock()
@@ -15,7 +15,7 @@ def drain_inbox():
         for key in keys:
             try: results.append({"object_key":key,**process_inbox_object(key)})
             except IdentityUnresolved as exc:
-                EventLogger(archive.client).emit("IDENTITY_UNRESOLVED",stage="T05",severity="ERROR",status="IDENTITY_UNRESOLVED",message=str(exc),metadata={"object_key":key})
+                EventLogger(archive.client).emit("IDENTITY_UNRESOLVED",stage="T05",severity="ERROR",status="IDENTITY_UNRESOLVED",message=str(exc),metadata={"object_key":key,"technician_version":TECHNICIAN_VERSION})
                 results.append({"object_key":key,"status":"IDENTITY_UNRESOLVED","error":str(exc)})
             except Exception as exc:
                 EventLogger(archive.client).emit("TECHNICIAN_FAILED",stage="T24",severity="ERROR",status="FAILED",message=str(exc),metadata={"object_key":key})
