@@ -57,16 +57,48 @@ def _parse_date(text: str) -> str|None:
         mo,d,y=m.groups(); return f"{int(y):04d}-{MONTHS[mo]:02d}-{int(d):02d}"
     return None
 
+KNOWN_PUBLICATIONS = (
+    ("the-wall-street-journal", "The Wall Street Journal", (r"\\bthe\\s+wall\\s+street\\s+journal\\b", r"\\bwall\\s+street\\s+journal\\b", r"\\bwsj\\b")),
+    ("financial-times", "Financial Times", (r"\\bfinancial\\s+times\\b",)),
+    ("handelsblatt", "Handelsblatt", (r"\\bhandelsblatt\\b",)),
+)
+
+def _known_publication(text: str):
+    normalized=re.sub(r"\\s+"," ",text).strip().lower()
+    for publication_id,canonical_name,patterns in KNOWN_PUBLICATIONS:
+        if any(re.search(pattern,normalized,re.I) for pattern in patterns):
+            return publication_id,canonical_name
+    return None
+
 def identify_pdf(path: Path, publication=None, edition_date=None, edition_variant="default", language=None) -> PublicationIdentity:
     meta,first,_=_probe(path); evidence=[]
-    lines=[re.sub(r"\s+"," ",x).strip() for x in first.splitlines() if x.strip()]
-    candidate=meta.get("title") or next((x for x in lines[:20] if 2<=len(x)<=100 and not re.fullmatch(r"[\d\s./-]+",x)),None)
-    if publication: candidate=publication; evidence.append(f"trusted_intake.publication={publication}")
-    if candidate: evidence.append(f"publication_evidence={candidate}")
-    date=edition_date or _parse_date("\n".join([meta.get("title",""),meta.get("subject",""),first[:6000]]))
+    filename=path.name
+    corpus="\\n".join([filename,meta.get("title",""),meta.get("subject",""),first[:12000]])
+    date=edition_date or _parse_date(corpus)
     if edition_date: evidence.append(f"trusted_intake.edition_date={edition_date}")
-    if not candidate or not date: raise IdentityUnresolved("Could not establish publication and edition date")
-    return PublicationIdentity(slugify(candidate),candidate,date,edition_variant or "default",language,1.0 if publication and edition_date else .75,tuple(evidence))
+    if not date: raise IdentityUnresolved("Could not establish edition date")
+
+    if publication:
+        candidate=publication.strip()
+        if not candidate or slugify(candidate)=="unknown-publication":
+            raise IdentityUnresolved("Trusted publication identity is empty or unresolved")
+        evidence.append(f"trusted_intake.publication={candidate}")
+        return PublicationIdentity(slugify(candidate),candidate,date,edition_variant or "default",language,1.0,tuple(evidence))
+
+    known=_known_publication(corpus)
+    if known:
+        publication_id,canonical_name=known
+        evidence.append(f"publication_pattern={canonical_name}")
+        return PublicationIdentity(publication_id,canonical_name,date,edition_variant or "default",language,.95,tuple(evidence))
+
+    # Generic metadata is accepted only when it looks like a deliberate publication title.
+    # Arbitrary first-page lines must never become a publication identity.
+    title=(meta.get("title") or "").strip()
+    if title and 2<=len(title)<=100 and slugify(title)!="unknown-publication":
+        evidence.append(f"pdf_metadata.title={title}")
+        return PublicationIdentity(slugify(title),title,date,edition_variant or "default",language,.80,tuple(evidence))
+
+    raise IdentityUnresolved("Could not establish publication identity with sufficient confidence")
 
 def _ocr(src:Path,dst:Path,mode:str,languages:str,binary:str):
     exe=shutil.which(binary)
