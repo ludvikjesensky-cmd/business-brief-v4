@@ -33,3 +33,17 @@ To však není důvod, aby v4 předčasně optimalizovala ranní Brief pro dlouh
 Předpokládaný směr z v3 zůstává rozumný: relační metadata, full text, vektorové vyhledávání, provenance, vazby článek ↔ vydání ↔ téma ↔ entita ↔ argument a časová kontinuita.
 
 Konkrétní schéma se nepřenáší automaticky. Bude navrženo až podle ověřeného v4 produktu.
+
+## 6. Interní vs. zákaznická Memory
+
+Interní Article Memory může být bohatší než to, co je zpřístupněno uživateli. Její účel je redakční práce, provenance, kontinuita a pozdější syntéza.
+
+Zákaznická Memory nemá fungovat jako cesta k reprodukci plných zdrojových článků. Má pracovat především s vlastními redakčními objekty Business Briefu: Briefy, Detaily, tématy, entitami, vztahy, trendy a časovými liniemi.
+
+Toto oddělení je produktové i právně-rizikové pravidlo. Viz [RIGHTS_AND_TRANSFORMATION.md](RIGHTS_AND_TRANSFORMATION.md).
+
+## 7. Memory jako spojovací tkáň portálu
+
+Dlouhodobě má Memory umožnit, aby čtenář při vstupu do tématu nedostal stovky izolovaných článků, ale smysluplnou cestu přes vybrané Detaily, klíčové obraty, rozdílné perspektivy a vývoj v čase.
+
+> **Brief je časový produkt. Detail je znalostní produkt. Memory je spojovací tkáň.**
