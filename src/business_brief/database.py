@@ -48,12 +48,9 @@ class TechnicianRepository:
     def finish_job(self,job_id,status,error=None):
         self.db.table("technician_jobs").update({"status":status,"completed_at":now() if status=="READY_FOR_INGESTOR" else None,"last_error":error,"updated_at":now()}).eq("id",job_id).execute()
 
-    def finalize_ready(self,source_id,edition_id,arrival_id):
-        self.db.table("sources").update({"status":"READY_FOR_INGESTOR"}).eq("id",source_id).execute()
-        edition=self.db.table("editions").select("active_source_id").eq("id",edition_id).execute().data[0]
-        if not edition.get("active_source_id"):
-            self.db.table("editions").update({"active_source_id":source_id,"status":"READY"}).eq("id",edition_id).execute()
-        self.db.table("source_arrivals").update({"source_id":source_id,"disposition":"ARCHIVED"}).eq("id",arrival_id).execute()
+    def finalize(self,source_id,edition_id,arrival_id,job_id):
+        result=self.db.rpc("finalize_technician_source",{"p_source_id":source_id,"p_edition_id":edition_id,"p_arrival_id":arrival_id,"p_job_id":job_id}).execute()
+        return result.data
 
     def mark_duplicate(self,arrival_id,blob,source):
         self.db.table("source_arrivals").update({"blob_id":blob["id"],"source_id":source["id"] if source else None,"disposition":"DUPLICATE_SOURCE"}).eq("id",arrival_id).execute()
