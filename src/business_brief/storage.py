@@ -15,6 +15,9 @@ class SupabaseArchive:
         if not url or not key: raise StorageError("SUPABASE_URL and SUPABASE_SECRET_KEY are required")
         return cls(create_client(url,key))
 
+    def inbox_version(self, object_key):
+        return self.client.rpc("technician_inbox_version", {"p_object_key":object_key}).execute().data
+
     def list_inbox(self) -> list[str]:
         rows=self.client.storage.from_(self.inbox).list("",{"limit":1000,"sortBy":{"column":"created_at","order":"asc"}})
         return [row["name"] for row in rows if row.get("name")]
@@ -29,16 +32,20 @@ class SupabaseArchive:
         rows=self.client.storage.from_(self.archive).list(parent,{"search":name,"limit":100})
         return any(row.get("name")==name for row in rows)
 
+    def verify_file(self, local:Path, remote:str):
+        stored = self.client.storage.from_(self.archive).download(remote)
+        if hashlib.sha256(stored).hexdigest() != hashlib.sha256(local.read_bytes()).hexdigest():
+            raise StorageError(f"Archive verification failed: {remote}")
+
     def upload_file(self, local:Path, remote:str, content_type:str):
         # Archive paths are immutable. A retry reuses an already present object;
         # it never overwrites it.
         if self.object_exists(remote):
-            existing = self.client.storage.from_(self.archive).download(remote)
-            if hashlib.sha256(existing).hexdigest() != hashlib.sha256(local.read_bytes()).hexdigest():
-                raise StorageError(f"Immutable archive content mismatch: {remote}")
+            self.verify_file(local, remote)
             return
         with local.open("rb") as fh:
             self.client.storage.from_(self.archive).upload(remote,fh,{"content-type":content_type,"upsert":"false"})
+        self.verify_file(local, remote)
 
     def upload_bundle(self,bundle_dir:Path,prefix:str):
         manifest = bundle_dir / "manifest.json"

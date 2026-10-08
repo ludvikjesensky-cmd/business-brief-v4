@@ -46,3 +46,9 @@ begin
 end $migration$;
 revoke all on function public.wake_technician_on_inbox_insert() from public,anon,authenticated;
 select public.reconcile_technician_inbox();
+create or replace function public.technician_inbox_version(p_object_key text) returns text
+language sql security invoker set search_path=public as $$
+ select coalesce(version,id::text) from storage.objects where bucket_id='source-inbox' and name=p_object_key;
+$$;
+revoke all on function public.technician_inbox_version(text) from public,anon,authenticated;
+grant execute on function public.technician_inbox_version(text) to service_role;

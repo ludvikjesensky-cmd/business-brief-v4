@@ -83,3 +83,47 @@ def test_event_failure_does_not_mask_processing_error():
     with pytest.raises(ValueError,match='original failure'):
         with log.timed('test'):
             raise ValueError('original failure')
+
+import pytest
+@pytest.mark.parametrize('status,fail,removed', [('READY_FOR_INGESTOR',False,True),('EDITION_COLLISION',False,False),('READY_FOR_INGESTOR',True,False)])
+def test_worker_only_removes_after_ready(tmp_path,monkeypatch,status,fail,removed):
+    import business_brief.technician_worker as worker
+    src=tmp_path/'input.pdf'; make_pdf(src)
+    class Archive:
+        client=None
+        deleted=False
+        def inbox_version(self,key): return 'v1'
+        def download_inbox(self,key,target): target.write_bytes(src.read_bytes()); return target
+        def upload_bundle(self,*args): return ['manifest.json']
+        def remove_inbox(self,key): self.deleted=True
+    archive=Archive()
+    class Repo:
+        def __init__(self,*a): pass
+        def register_arrival(self,*a): return {'id':'arrival','received_at':'2026-10-08T00:00:00Z'}
+        def blob_by_sha(self,*a): return None
+        def create_publication(self,*a): return {'id':'pub'}
+        def get_or_create_edition(self,*a): return {'id':'edition'},False
+        def create_blob(self,*a): return {'id':'blob'}
+        def source_for_blob(self,*a): return None
+        def create_source(self,*a): return {'id':'source'}
+        def create_job(self,*a): return 'job'
+        def finish_job(self,*a): pass
+        def finalize(self,*a):
+            assert not archive.deleted
+            if fail: raise RuntimeError('finalization failed')
+            return status
+    class Log:
+        def __init__(self,*a): pass
+        def emit(self,*a,**kw): pass
+        def timed(self,*a,**kw):
+            from contextlib import nullcontext
+            return nullcontext()
+    monkeypatch.setattr(worker.SupabaseArchive,'from_env',lambda:archive)
+    monkeypatch.setattr(worker,'TechnicianRepository',Repo)
+    monkeypatch.setattr(worker,'EventLogger',Log)
+    if fail:
+        with pytest.raises(RuntimeError,match='finalization failed'):
+            worker.process_inbox_object('original-filename.pdf',object_version='v1')
+    else:
+        assert worker.process_inbox_object('original-filename.pdf',object_version='v1')['status']==status
+    assert archive.deleted is removed
