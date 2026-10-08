@@ -167,3 +167,17 @@ V4 zatím **nefixuje pricing ani přesnou hranici free/paid**.
 Fixuje však zásadu:
 
 > **Placená hodnota nevzniká zamlčením základního faktu. Vzniká hloubkou, pohodlím, kontinuitou, specializací a kvalitní redakční prací.**
+
+## 11. Zdrojová strategie po v4 validaci
+
+Business Brief nemá ambici stát se službou „tisíce zdrojů“. Hodnota vzniká z **relevance, kvality, vysvětlení a perspektivy**, ne z objemu monitoringu.
+
+FT, WSJ a Handelsblatt zůstávají denním jádrem hlavního produktu. Další zdrojové sady mohou v budoucnu živit samostatné geografické nebo sektorové Briefy, například Německo, Čínu nebo Evropu.
+
+## 12. Portál a knihovna Detailů
+
+Dlouhodobý web není jen distribuční stránka ranního newsletteru. Má být také společným místem pro rostoucí knihovnu redakčně vybraných Detailů.
+
+Portál má postupně umožnit orientaci podle témat, firem, lidí, zemí, sektorů, technologií a časových vazeb. Ne každý ingestovaný článek se stává veřejným Detailem.
+
+Viz [SOURCE_AND_PORTAL_STRATEGY.md](SOURCE_AND_PORTAL_STRATEGY.md).
