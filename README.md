@@ -44,11 +44,15 @@ Doporučené pořadí:
 7. [DETAIL.md](docs/DETAIL.md) — definice prémiového Detailu.
 8. [TODAYS_EDITIONS.md](docs/TODAYS_EDITIONS.md) — úplná mapa FT / WSJ / HB.
 9. [MEMORY.md](docs/MEMORY.md) — role dlouhodobé paměti.
-10. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
+10. [SOURCE_AND_PORTAL_STRATEGY.md](docs/SOURCE_AND_PORTAL_STRATEGY.md) — kurátorství zdrojů, portál a knihovna Detailů.
+11. [RIGHTS_AND_TRANSFORMATION.md](docs/RIGHTS_AND_TRANSFORMATION.md) — hranice zdrojové a publikační vrstvy.
+12. [AUTONOMOUS_MORNING.md](docs/AUTONOMOUS_MORNING.md) — autonomní ranní provoz, dashboard, gate a alerty.
+13. [AUDIO.md](docs/AUDIO.md) — audio produkt, hlas a TTS principy.
+14. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
 
 ## Stav
 
-**Fáze: Product & Editorial Foundation.**
+**Fáze: Product & Editorial Foundation → Autonomous Production Design.**
 
 Nejdříve fixujeme produkt a redakční principy. Architektura, datový model a automatizace mají následovat až poté, co ručně ověříme, že umíme vytvořit vydání, které odpovídá této filozofii.
 
@@ -59,3 +63,10 @@ V3 zůstává technologickou a experimentální referencí. V4 se nemá mechanic
 ### Historická kontinuita
 
 [PRODUCT_HERITAGE.md](docs/PRODUCT_HERITAGE.md) vysvětluje, co v4 vědomě přebírá z v1, v2 a v3, co mění a proč. Je to ochrana proti tomu, aby se v dalších konverzacích ztrácely starší dobré principy nebo se vracely překonané předpoklady.
+
+
+## Aktuální provozní směr — 8. 10. 2026
+
+Ranní produkt má být schopen bezpečně vzniknout bez přítomnosti člověka. Pracovní target je 08:35, provozní hranice 08:45 Europe/Prague. Autonomie je podmíněna Publication Gate, observability, dashboardem a exception-only alerty.
+
+Audio je plnohodnotný kanál s vlastním Audio Adapterem a cílově originálním hlasem značky. Konkrétní TTS vendor zůstává v ověřování.
