@@ -554,3 +554,129 @@ ARRIVE
 → READY FOR INGESTOR
 → NEXT JOB / EXIT
 ```
+
+
+## 21. Canonical persistence model
+
+Technician uses two persistent layers:
+
+- **Supabase PostgreSQL** stores identity, relationships, state, provenance and jobs.
+- **Supabase Storage** stores physical source material and generated technical artifacts.
+- **Railway filesystem is temporary workspace only.** It is never the authoritative archive.
+
+> **Supabase is memory and archive. Railway is the workshop.**
+
+### Core database entities
+
+`publications` represents the canonical publication, independent of any individual edition.
+
+`editions` represents one logical edition. Its uniqueness is:
+
+```
+publication + edition_date + edition_variant
+```
+
+`source_blobs` represents unique physical bytes. SHA-256 is unique here.
+
+`sources` connects a physical blob to a logical edition and to a particular Technician/contract processing result.
+
+`source_arrivals` records every arrival into the inbox, including duplicate uploads and renamed copies. This preserves audit history without forcing duplicate processing.
+
+`technician_jobs` is the durable processing queue.
+
+This distinction is canonical:
+
+> **Edition is the newspaper issue. Source is a physical representation of that issue. Arrival is the event that a file appeared.**
+
+A single Edition may therefore have several Sources when different physical files claim to represent the same logical edition. A single physical blob may arrive repeatedly under different filenames without being processed repeatedly.
+
+### Storage layout
+
+The authoritative Storage layout is conceptually:
+
+```
+source-inbox/
+    <incoming object>
+
+source-archive/
+    <publication_id>/
+        <year>/
+            <edition_date>/
+                <source_id>/
+                    original/
+                        original.pdf
+                    prepared/
+                        ocr.pdf
+                    pages/
+                        page-0001.png
+                        ...
+                    parts/
+                        ...
+                    manifest.json
+```
+
+The human-readable path is organizational convenience, not identity. Database IDs, SHA-256 and `edition_key` are authoritative.
+
+The final implementation may use UUID/source-addressed path components to guarantee immutability. Renaming a source must never create a new logical identity.
+
+### Persistence sequence
+
+A normal source follows:
+
+```
+Storage inbox arrival
+→ source_arrivals
+→ SHA-256
+→ source_blobs lookup/create
+→ physical duplicate check
+→ publication identity
+→ editions lookup/create
+→ sources lookup/create
+→ logical edition collision check
+→ technician_jobs
+→ Railway temporary workspace
+→ Source Bundle validation
+→ upload artifacts to source-archive
+→ database READY_FOR_INGESTOR
+→ remove temporary Railway workspace
+```
+
+The database status must not become `READY_FOR_INGESTOR` until all mandatory artifacts are durably present in Storage and the Source Bundle contract has passed validation.
+
+### Duplicate arrival
+
+If the same bytes arrive under another filename:
+
+```
+source_arrivals: new row
+source_blobs: existing SHA row
+edition: existing
+source: existing processing identity where applicable
+Technician processing: not repeated
+arrival disposition: DUPLICATE_SOURCE
+```
+
+Thus duplicate uploads remain observable without wasting processing.
+
+### Edition collision
+
+If a new SHA resolves to an existing `edition_key`:
+
+```
+edition: existing
+source_blob: new
+source: new candidate
+status: EDITION_COLLISION
+```
+
+The new bytes are preserved. They are not silently deleted and do not silently replace the active source.
+
+### Repository schema
+
+The first concrete PostgreSQL schema is versioned in:
+
+`supabase/migrations/001_technician_source_archive.sql`
+
+It defines the six core tables, uniqueness constraints, indexes and RLS baseline.
+
+It is intentionally committed before deployment. The v4 Supabase project does not yet exist, so this migration is not yet applied to a production database.
