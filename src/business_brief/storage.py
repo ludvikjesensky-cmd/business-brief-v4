@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+import os, json, hashlib
 from pathlib import Path
 from supabase import Client, create_client
 
@@ -32,17 +32,35 @@ class SupabaseArchive:
     def upload_file(self, local:Path, remote:str, content_type:str):
         # Archive paths are immutable. A retry reuses an already present object;
         # it never overwrites it.
-        if self.object_exists(remote): return
+        if self.object_exists(remote):
+            existing = self.client.storage.from_(self.archive).download(remote)
+            if hashlib.sha256(existing).hexdigest() != hashlib.sha256(local.read_bytes()).hexdigest():
+                raise StorageError(f"Immutable archive content mismatch: {remote}")
+            return
         with local.open("rb") as fh:
             self.client.storage.from_(self.archive).upload(remote,fh,{"content-type":content_type,"upsert":"false"})
 
     def upload_bundle(self,bundle_dir:Path,prefix:str):
+        manifest = bundle_dir / "manifest.json"
+        data = json.loads(manifest.read_text())
+        def remote_path(value):
+            return f"{prefix}/{Path(value).relative_to(bundle_dir).as_posix()}"
+        data["original_path"] = remote_path(data["original_path"])
+        data["prepared_pdf_path"] = remote_path(data["prepared_pdf_path"])
+        data["ocr"]["prepared_pdf_path"] = remote_path(data["ocr"]["prepared_pdf_path"])
+        for item in data["page_images"] + data["parts"]:
+            item["path"] = remote_path(item["path"])
+        archive_manifest = bundle_dir / ".archive-manifest.json"
+        archive_manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
         mapping=[]
         for p in sorted(bundle_dir.rglob("*")):
-            if not p.is_file(): continue
+            if not p.is_file() or p.name.startswith(".") or p == manifest: continue
             rel=p.relative_to(bundle_dir).as_posix(); remote=f"{prefix}/{rel}"
             mime="application/pdf" if p.suffix.lower()==".pdf" else "image/png" if p.suffix.lower()==".png" else "application/json"
             self.upload_file(p,remote,mime); mapping.append(remote)
+        self.upload_file(archive_manifest, f"{prefix}/manifest.json", "application/json")
+        mapping.append(f"{prefix}/manifest.json")
+        archive_manifest.unlink()
         return mapping
 
     def remove_inbox(self, object_key:str):

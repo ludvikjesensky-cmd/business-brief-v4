@@ -48,3 +48,38 @@ def test_filename_only_identity_is_rejected(tmp_path):
     from business_brief.technician import IdentityUnresolved
     with pytest.raises(IdentityUnresolved):
         prepare_pdf(src,workspace=tmp_path/"work3",dpi=72)
+
+def test_identity_serialization(tmp_path):
+    src=tmp_path/'transport.pdf'; make_pdf(src)
+    b=prepare_pdf(src,workspace=tmp_path/'work',dpi=72)
+    assert b.identity.to_dict()['edition_key']=='nikkei-asia:2026-10-08:default'
+    assert b.original_filename=='transport.pdf'
+
+def test_archive_manifest_uses_storage_paths(tmp_path):
+    import json
+    from business_brief.storage import SupabaseArchive
+    src=tmp_path/'original-name.pdf'; make_pdf(src)
+    b=prepare_pdf(src,workspace=tmp_path/'work',dpi=72)
+    class Archive(SupabaseArchive):
+        def upload_file(self,local,remote,content_type):
+            if remote.endswith('manifest.json'):
+                self.manifest=json.loads(local.read_text())
+    archive=Archive(None)
+    uploaded=archive.upload_bundle(Path(b.original_path).parent,'paper/sha256-test')
+    manifest=archive.manifest
+    assert uploaded[-1]=='paper/sha256-test/manifest.json'
+    assert manifest['original_filename']=='original-name.pdf'
+    assert manifest['original_path']=='paper/sha256-test/original.pdf'
+    assert all(p['path'].startswith('paper/sha256-test/pages/') for p in manifest['page_images'])
+    assert str(tmp_path) not in json.dumps(manifest)
+
+def test_event_failure_does_not_mask_processing_error():
+    import pytest
+    from business_brief.events import EventLogger
+    class Broken:
+        def table(self,*args): raise RuntimeError('database unavailable')
+    log=EventLogger(Broken())
+    log.emit('test')
+    with pytest.raises(ValueError,match='original failure'):
+        with log.timed('test'):
+            raise ValueError('original failure')

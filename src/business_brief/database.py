@@ -8,10 +8,11 @@ def now(): return datetime.now(timezone.utc).isoformat()
 class TechnicianRepository:
     def __init__(self, client): self.db=client
 
-    def register_arrival(self, object_key, original_filename, byte_size=None):
-        existing=(self.db.table("source_arrivals").select("*").eq("bucket_id","source-inbox").eq("object_key",object_key).execute().data or [])
+    def register_arrival(self, object_key, original_filename, byte_size=None, object_version=None):
+        query=self.db.table("source_arrivals").select("*").eq("bucket_id","source-inbox").eq("object_key",object_key).eq("object_version",object_version) if object_version else self.db.table("source_arrivals").select("*").eq("bucket_id","source-inbox").eq("object_key",object_key).is_("object_version","null")
+        existing=query.execute().data or []
         if existing: return existing[0]
-        return self.db.table("source_arrivals").insert({"bucket_id":"source-inbox","object_key":object_key,"original_filename":original_filename,"byte_size":byte_size,"disposition":"RECEIVED"}).execute().data[0]
+        return self.db.table("source_arrivals").insert({"bucket_id":"source-inbox","object_key":object_key,"object_version":object_version,"original_filename":original_filename,"byte_size":byte_size,"disposition":"RECEIVED"}).execute().data[0]
 
     def blob_by_sha(self, sha):
         rows=self.db.table("source_blobs").select("*").eq("sha256",sha).execute().data or []

@@ -2,10 +2,10 @@ from __future__ import annotations
 import hashlib, json, os, re, shutil, subprocess, unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
-import fitz
+import pymupdf as fitz
 from .contracts import OcrInfo, PageImage, PublicationIdentity, SourceBundle, SourcePart
 
-TECHNICIAN_VERSION = "technician-v4.1"
+TECHNICIAN_VERSION = "technician-v4.2"
 MONTHS = {"january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,"august":8,"september":9,"october":10,"november":11,"december":12,
 "januar":1,"februar":2,"marz":3,"maerz":3,"april":4,"mai":5,"juni":6,"juli":7,"august":8,"september":9,"oktober":10,"november":11,"dezember":12}
 
@@ -94,7 +94,7 @@ def identify_pdf(path: Path, publication=None, edition_date=None, edition_varian
     if not date or (not publication and not _known_publication(corpus) and not meta.get("title")):
         first_page_ocr=_identity_ocr(path)
         if first_page_ocr:
-            corpus += "\\n" + first_page_ocr
+            corpus += "\n" + first_page_ocr
             evidence.append("first_page_ocr=tesseract")
             date=edition_date or _parse_date(corpus)
     if edition_date: evidence.append(f"trusted_intake.edition_date={edition_date}")
