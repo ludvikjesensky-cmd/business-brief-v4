@@ -90,7 +90,13 @@ def identify_pdf(path: Path, publication=None, edition_date=None, edition_varian
     meta,first,_=_probe(path); evidence=[]
     # Filename is transport metadata only. Never use it as identity evidence.
     corpus="\n".join([meta.get("title",""),meta.get("subject",""),first[:12000]])
-    date=edition_date or _parse_date(corpus)\n    if not date or (not publication and not _known_publication(corpus) and not meta.get("title")):\n        first_page_ocr=_identity_ocr(path)\n        if first_page_ocr:\n            corpus += "\\n" + first_page_ocr\n            evidence.append("first_page_ocr=tesseract")\n            date=edition_date or _parse_date(corpus)
+    date=edition_date or _parse_date(corpus)
+    if not date or (not publication and not _known_publication(corpus) and not meta.get("title")):
+        first_page_ocr=_identity_ocr(path)
+        if first_page_ocr:
+            corpus += "\\n" + first_page_ocr
+            evidence.append("first_page_ocr=tesseract")
+            date=edition_date or _parse_date(corpus)
     if edition_date: evidence.append(f"trusted_intake.edition_date={edition_date}")
     if not date: raise IdentityUnresolved("Could not establish edition date from document content")
 
