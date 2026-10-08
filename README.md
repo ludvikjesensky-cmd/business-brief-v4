@@ -48,7 +48,8 @@ Doporučené pořadí:
 11. [RIGHTS_AND_TRANSFORMATION.md](docs/RIGHTS_AND_TRANSFORMATION.md) — hranice zdrojové a publikační vrstvy.
 12. [AUTONOMOUS_MORNING.md](docs/AUTONOMOUS_MORNING.md) — autonomní ranní provoz, dashboard, gate a alerty.
 13. [AUDIO.md](docs/AUDIO.md) — audio produkt, hlas a TTS principy.
-14. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
+14. [TECHNICIAN.md](docs/TECHNICIAN.md) — kanonická definice univerzální technické vstupní brány, identity vydání, deduplikace a Source Bundle v4.
+15. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
 
 ## Stav
 
