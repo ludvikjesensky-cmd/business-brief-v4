@@ -20,7 +20,7 @@ xdpyinfo -display :99 >/dev/null 2>&1 || { echo 'Display startup failed' >&2; ex
 login_location='location / { return 404; }'
 if [ "${MODE:-login}" = login ]; then
   # Reachable only behind nginx authentication, never published as raw VNC.
-  su -s /bin/bash pwuser -c 'exec x11vnc -display :99 -localhost -nopw -forever -shared -rfbport 5900' &
+  su -s /bin/bash pwuser -c 'exec x11vnc -display :99 -noshm -localhost -nopw -forever -shared -rfbport 5900' &
   pids+=("$!")
   /usr/bin/websockify --web=/usr/share/novnc 127.0.0.1:6080 127.0.0.1:5900 &
   pids+=("$!")
