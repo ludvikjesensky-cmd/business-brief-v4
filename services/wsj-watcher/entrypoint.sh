@@ -20,9 +20,9 @@ xdpyinfo -display :99 >/dev/null 2>&1 || { echo 'Display startup failed' >&2; ex
 login_location='location / { return 404; }'
 if [ "${MODE:-login}" = login ]; then
   # Reachable only behind nginx authentication, never published as raw VNC.
-  su -s /bin/bash pwuser -c 'x11vnc -display :99 -localhost -nopw -forever -shared -rfbport 5900 -o /tmp/vnc.log' &
+  su -s /bin/bash pwuser -c 'exec x11vnc -display :99 -localhost -nopw -forever -shared -rfbport 5900' &
   pids+=("$!")
-  websockify --web=/usr/share/novnc 127.0.0.1:6080 127.0.0.1:5900 >/tmp/websockify.log 2>&1 &
+  /usr/bin/websockify --web=/usr/share/novnc 127.0.0.1:6080 127.0.0.1:5900 &
   pids+=("$!")
   login_location='location / { auth_basic "WSJ private browser"; auth_basic_user_file /tmp/admin.htpasswd; proxy_pass http://127.0.0.1:6080; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade"; proxy_read_timeout 3600s; }'
 fi
@@ -51,5 +51,8 @@ su -s /bin/bash pwuser -c 'cd /app && exec python watcher.py' &
 pids+=("$!")
 trap 'kill "${pids[@]}" 2>/dev/null || true; wait || true' EXIT
 trap 'exit 0' TERM INT
-wait -n "${pids[@]}"
+set +e
+wait -n -p exited_pid "${pids[@]}"
+exit_status=$?
+echo "Required process exited: pid=${exited_pid:-unknown}, status=$exit_status" >&2
 exit 1
