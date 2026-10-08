@@ -37,10 +37,9 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
         job=repo.create_job(source["id"])
         try:
             # All durable artifacts exist before READY is committed.
-            repo.finalize_ready(source["id"],edition["id"],arrival["id"])
-            repo.finish_job(job,"READY_FOR_INGESTOR")
+            final_status=repo.finalize(source["id"],edition["id"],arrival["id"],job)
             archive.remove_inbox(object_key)
-            return {"status":"READY_FOR_INGESTOR","source_id":source["id"],"edition_id":edition["id"],"archive_prefix":prefix,"uploaded_count":len(uploaded)}
+            return {"status":final_status,"source_id":source["id"],"edition_id":edition["id"],"archive_prefix":prefix,"uploaded_count":len(uploaded)}
         except Exception as e:
             repo.finish_job(job,"FAILED",str(e)); raise
 
