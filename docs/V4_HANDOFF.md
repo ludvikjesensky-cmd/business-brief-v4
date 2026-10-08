@@ -253,3 +253,51 @@ Stále otevřené:
 - pořadí a scope budoucích geografických / sektorových Briefů.
 
 Již **není otevřené**, zda ranní workflow má být schopno autonomie: ano, musí. Není otevřené ani to, zda má audio být mechanické TTS: nemá.
+
+
+## 19. Technician v4 — první zafixovaná produkční komponenta
+
+Dne 8. října 2026 byla po vědomém přezkoumání v3 zafixována kanonická definice první komponenty produkční pipeline v4: `TECHNICIAN.md`.
+
+Technician v4 je univerzální technická vstupní brána platformy, nikoli komponenta specifická pro FT / WSJ / Handelsblatt.
+
+Kanonický tok:
+
+```
+Source Acquirer / manual upload
+→ Source Inbox
+→ Technician
+→ source-bundle-v4
+→ Ingestor
+```
+
+Klíčová rozhodnutí:
+- acquisition není odpovědnost Techniciana;
+- Technician je on-demand Railway worker, nikoli permanentní polling daemon;
+- webhook/event je wake-up signal, databázová job queue je source of truth;
+- po probuzení Technician zpracuje všechny dostupné claimable jobs a poté skončí;
+- jobs musí podporovat atomic claim, lease/heartbeat, retry a idempotenci;
+- Technician musí umět libovolný, i dříve neznámý titul;
+- filename není autorita pro identitu;
+- před drahým zpracováním proběhne lightweight IDENTIFY;
+- identita se získává kaskádou metadata → native text → lightweight OCR → úzce omezený multimodální fallback;
+- fyzická identita je `source_sha256`;
+- logická identita vydání je konceptuálně `publication_id + edition_date + edition_variant`;
+- stejný SHA se nezpracovává znovu jako nové vydání;
+- jiný SHA se stejnou logickou identitou se nesmí automaticky zahodit, jde o edition collision / possible variant;
+- originál je immutable;
+- OCR patří Technicianovi a vytváří pouze derivative;
+- splitting je výhradně mechanický;
+- split-PDF byte SHA není correctness gate;
+- Ingestor nikdy nesmí vidět rozpracovaný Source Bundle;
+- handoff je povolen pouze po validaci a atomic finalize jako `READY_FOR_INGESTOR`.
+
+Hranice role:
+
+> **Technician smí zjistit, co je to za dokument. Nesmí zjišťovat, o čem dokument je.**
+
+Technician tedy může znát titul, datum/variantu vydání, jazyk a fyzické vlastnosti dokumentu. Nesmí vybírat články, určovat témata, důležitost, article boundaries, editorial reading order ani vytvářet Issue Map / Article Records.
+
+Nový kontrakt `source-bundle-v4` bude při implementaci formalizován machine-readable JSON Schema. V3 `source-bundle-v2` zůstává historicky frozen a nebude potichu mutován.
+
+Další komponenta k vědomému převodu z v3 je **Ingestor**.
