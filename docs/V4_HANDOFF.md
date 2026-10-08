@@ -192,3 +192,64 @@ Před nákladným nebo destruktivním krokem:
 Nevytvářet armádu agentů jen proto, že je to možné. Redakční role jsou odpovědnosti, ne nutně procesy nebo API calls.
 
 Technologie je prostředek. **Architektura má následovat ověřený redakční produkt.**
+
+## 16. Rozhodnutí z 8. října 2026
+
+### Positioning
+- Neprodáváme počet zdrojů. Máme **relevantní kvalitní zdroje**, které za čtenáře čteme, vysvětlujeme a zasazujeme do perspektivy.
+- Hlavní ranní produkt musí stále dostát jednoduchému slibu: **FT, WSJ a Handelsblatt každé ráno v češtině na vašem stole.**
+- Více perspektiv je součást značky. Nehledáme povinný syntetický „správný názor“.
+
+### Portál
+- Ambice velkého portálu Detailů zůstává.
+- **Brief je časový produkt. Detail je znalostní produkt. Memory je spojovací tkáň.**
+- Ne každý ingestovaný článek se stává Detailem.
+- Portál má časem organizovat znalost také podle témat, firem, osob, zemí, sektorů a časových vazeb.
+- `businessbrief.cz` je současná pracovní doména. Kratší umbrella brand **BRIEF** je možnost, ne podmínka a ne aktuální investiční priorita.
+
+### Rights / transformation
+- Zdrojová vrstva může být bohatší než publikační.
+- Veřejný produkt nemá zpřístupňovat fulltextovou Article Memory ani fungovat jako náhrada předplatného zdrojových médií.
+- Detail je vlastní transformační redakční rekonstrukce s kontextem a odděleným komentářem.
+- Před komerčním spuštěním je požadována cílená právní revize workflow.
+
+### Autonomní ráno
+- Ranní výroba musí být schopna proběhnout bez přítomnosti člověka.
+- Pracovní **TARGET 08:35**, **SLA 08:45 Europe/Prague**.
+- FT/HB se zpracovávají předem; WSJ je poslední kritický vstup. Pracovní pozorování: ranní elektronické WSJ bývá dostupné několik minut po 08:00. Dále měřit.
+- Povinné koncepty: Publication Gate, self-healing/retry, Event Log, observability, dashboard, exception-only phone alerts.
+- Dashboard má jednoduché stavy ⚪ waiting / 🟡 running / 🟢 passed / 🔴 blocked.
+- Zdravý provoz nemá spamovat telefon. Tvrdý alert pouze při ohrožení integrity nebo vydání.
+
+### Audio
+- Audio je plnohodnotná adaptace Master Briefu, ne TTS webu.
+- Potřebuje Audio Adapter a pronunciation layer.
+- Cílem je originální rozpoznatelný hlas značky, dlouhodobě neunavující.
+- Preferován je jeden konzistentní hlas, ne „AI rádio“.
+- Segmentovaná generace audia je preferovaný technický směr kvůli retry, QA, cache a kapitolám.
+- ElevenLabs API je kandidát, **nikoli zatím uzamčené rozhodnutí**. Implementační variantu právě ověřuje paralelní Codex práce.
+
+## 17. Nové kanonické dokumenty
+
+Před technickým návrhem čti také:
+- `SOURCE_AND_PORTAL_STRATEGY.md`
+- `RIGHTS_AND_TRANSFORMATION.md`
+- `AUTONOMOUS_MORNING.md`
+- `AUDIO.md`
+
+Tyto dokumenty zachycují produktová rozhodnutí, která vznikla po prvním ověření v4 a mají přednost před staršími otevřenými otázkami v tomto handoffu.
+
+## 18. Aktualizované otevřené otázky
+
+Stále otevřené:
+- přesná délka a denní variabilita Briefu;
+- kolik Detailů denně a jaký Detail selection threshold;
+- pricing a free/paid hranice;
+- právní stanovisko ke konkrétnímu produkčnímu workflow;
+- finální název umbrella portálu;
+- finální TTS/voice technologie a licence hlasu;
+- přesná automatizační architektura a implementace dashboardu;
+- datový model zákaznické Memory;
+- pořadí a scope budoucích geografických / sektorových Briefů.
+
+Již **není otevřené**, zda ranní workflow má být schopno autonomie: ano, musí. Není otevřené ani to, zda má audio být mechanické TTS: nemá.
