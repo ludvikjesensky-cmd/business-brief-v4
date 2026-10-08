@@ -26,8 +26,8 @@ a kompatibilita s Railway jsou neověřené.
 2. Persistent volume připojený na `/data` (profile, reference, SQLite outbox).
 3. Region Amsterdam, sleep vypnutý. Neukládat session do image/repozitáře/logů.
 4. Proměnné: `MODE=login`, `ADMIN_PASSWORD` náhodné alespoň 24 znaků, `DATA_DIR=/data`.
-   `PORT` dodá Railway. Healthcheck `/health`; ten potvrzuje život procesu,
-   nikoli připravenost WSJ nebo pipeline. Autentizovaný `/status` ukazuje stav.
+   `PORT` dodá Railway. Healthcheck `/health` čeká na dokončení startu browseru,
+   nikoli na platné předplatné nebo připravenost pipeline. Autentizovaný `/status` ukazuje stav.
 5. Dočasná HTTPS doména pro přihlášení: `/vnc.html?autoconnect=true&resize=scale`.
    HTTP Basic username `admin`, password z `ADMIN_PASSWORD`. Heslo nikdy v URL.
    Veřejné rozhraní umožňuje ovládat browser: zapnout pouze pro vlastní přihlášení.
@@ -40,8 +40,8 @@ a kompatibilita s Railway jsou neověřené.
 9. Po třech chybách/požadavku na autentizaci pozastaví daný den. Náprava:
    přepnout do `login`, obnovit session, pak znovu `once`/`watch`.
 
-Chromium běží jako `pwuser`, sandbox je vyžadovaný. Pokud hostitel nepovolí potřebné
-user namespaces, nesnižovat ochranu přes `--no-sandbox`; ověřit kompatibilní runtime.
+Browser běží jako `pwuser`. Chromium na Railway selhalo na oprávnění sandboxu;
+PoC nyní používá Firefox s výchozím sandboxem. Sandbox nevypínáme.
 VNC porty nejsou publikované: reverse proxy ověřuje uživatele i pro websocket.
 Před zapnutím služby zkontrolovat dostupné kredity a účet Railway.
 
