@@ -15,6 +15,10 @@ class SupabaseArchive:
         if not url or not key: raise StorageError("SUPABASE_URL and SUPABASE_SECRET_KEY are required")
         return cls(create_client(url,key))
 
+    def list_inbox(self) -> list[str]:
+        rows=self.client.storage.from_(self.inbox).list("",{"limit":1000,"sortBy":{"column":"created_at","order":"asc"}})
+        return [row["name"] for row in rows if row.get("name")]
+
     def download_inbox(self, object_key:str, target:Path)->Path:
         target.parent.mkdir(parents=True,exist_ok=True)
         target.write_bytes(self.client.storage.from_(self.inbox).download(object_key))
