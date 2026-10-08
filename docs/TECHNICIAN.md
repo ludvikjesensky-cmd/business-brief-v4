@@ -680,3 +680,27 @@ The first concrete PostgreSQL schema is versioned in:
 It defines the six core tables, uniqueness constraints, indexes and RLS baseline.
 
 It is intentionally committed before deployment. The v4 Supabase project does not yet exist, so this migration is not yet applied to a production database.
+
+
+## 22. Inbox lifecycle
+
+The inbox is transient. A successfully archived source must not remain in `source-inbox`.
+
+Canonical commit order:
+
+```
+download inbox object
+→ process in temporary Railway workspace
+→ validate Source Bundle
+→ upload complete bundle to source-archive
+→ persist/confirm durable state
+→ delete original inbox object
+```
+
+The deletion is deliberately the **last** destructive step.
+
+If processing, validation, archive upload or durable database commit fails, the inbox object remains available for retry. Technician must never delete an inbox object merely because processing started.
+
+After a successful handoff, the immutable original still exists inside `source-archive/<publication>/<year>/<edition>/<source>/original/`; therefore deleting the inbox copy does not delete the archived evidence.
+
+Duplicate arrivals follow the same principle: their arrival is recorded, physical identity is resolved, and an inbox object may be removed only after the system has proved that the corresponding immutable blob is already durably archived.
