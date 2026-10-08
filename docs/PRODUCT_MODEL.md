@@ -131,3 +131,39 @@ Zachováváme však zásadu:
 Detail zůstává přirozeným kandidátem hlavní každodenní prémiové hodnoty. Dlouhodobě mohou přibýt Trendy, Analýzy a B2B služby.
 
 Viz [SCOPE_AND_AUDIENCE.md](SCOPE_AND_AUDIENCE.md).
+
+## 11. Upřesnění positioningu a portálu — 8. 10. 2026
+
+Business Brief nesoutěží počtem zdrojů. Značka stojí na tom, že **vybírá relevantní kvalitní zdroje, čte je za uživatele, vysvětluje je a pomáhá jim porozumět z více perspektiv**.
+
+Veřejný ranní slib FT + WSJ + Handelsblatt zůstává pevnou páteří. Budoucí geografické či sektorové Briefy mohou mít vlastní pečlivě kurátorované sady zdrojů.
+
+Dlouhodobou ambicí je společný portál s rozsáhlou knihovnou Detailů. Pracovní rozlišení:
+
+> **Brief je časový produkt. Detail je znalostní produkt. Memory je spojovací tkáň.**
+
+Viz [SOURCE_AND_PORTAL_STRATEGY.md](SOURCE_AND_PORTAL_STRATEGY.md).
+
+## 12. Autonomní ranní provoz
+
+Protože ranní publikace nemůže být závislá na každodenní přítomnosti člověka, produkční směr je plně autonomní ranní workflow s bezpečnostním Publication Gate, observability, dashboardem a alerty.
+
+Pracovní cíl je publikace kolem **08:35**, provozní hranice **08:45 Europe/Prague**. Nejde zatím o veřejnou SLA.
+
+Viz [AUTONOMOUS_MORNING.md](AUTONOMOUS_MORNING.md).
+
+## 13. Audio jako produktový kanál
+
+Audio je plnohodnotná mluvená adaptace Master Briefu. Cílem je vlastní rozpoznatelný hlas značky, nikoli generický katalogový hlas ani mechanické TTS e-mailu.
+
+Konkrétní TTS vendor zatím není kanonicky zvolen. ElevenLabs API je kandidát; řešení se paralelně ověřuje.
+
+Viz [AUDIO.md](AUDIO.md).
+
+## 14. Transformační hranice
+
+Zdrojová vrstva může být bohatší než publikační vrstva. Veřejný produkt nesmí být vyhledávatelnou náhradou placených originálů. Detail a zákaznická Memory mají být vlastní redakční vrstvou Business Briefu.
+
+Před komerčním spuštěním je nutná cílená právní revize konkrétního workflow.
+
+Viz [RIGHTS_AND_TRANSFORMATION.md](RIGHTS_AND_TRANSFORMATION.md).
