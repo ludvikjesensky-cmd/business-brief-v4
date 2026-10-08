@@ -20,7 +20,15 @@ class SupabaseArchive:
         target.write_bytes(self.client.storage.from_(self.inbox).download(object_key))
         return target
 
+    def object_exists(self, remote:str) -> bool:
+        parent,name=remote.rsplit("/",1)
+        rows=self.client.storage.from_(self.archive).list(parent,{"search":name,"limit":100})
+        return any(row.get("name")==name for row in rows)
+
     def upload_file(self, local:Path, remote:str, content_type:str):
+        # Archive paths are immutable. A retry reuses an already present object;
+        # it never overwrites it.
+        if self.object_exists(remote): return
         with local.open("rb") as fh:
             self.client.storage.from_(self.archive).upload(remote,fh,{"content-type":content_type,"upsert":"false"})
 
