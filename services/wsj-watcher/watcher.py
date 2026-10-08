@@ -190,7 +190,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_error(404)
             return
         body = json.dumps({'alive': True} if self.path == '/health' else STATE).encode()
-        self.send_response(200)
+        ready = STATE.get('state') != 'STARTING'
+        self.send_response(200 if self.path != '/health' or ready else 503)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
         self.wfile.write(body)
@@ -210,9 +211,9 @@ def main():
     threading.Thread(target=server.serve_forever, daemon=True).start()
     mode = os.getenv('MODE', 'login')
     with sync_playwright() as pw:
-        context = pw.chromium.launch_persistent_context(
+        context = pw.firefox.launch_persistent_context(
             str(DATA / 'profile'), headless=False, accept_downloads=True,
-            chromium_sandbox=True, viewport={'width': 1400, 'height': 950})
+            viewport={'width': 1400, 'height': 950})
         try:
             if mode == 'login':
                 page = context.new_page()
