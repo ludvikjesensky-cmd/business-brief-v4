@@ -70,11 +70,27 @@ def _known_publication(text: str):
             return publication_id,canonical_name
     return None
 
+def _identity_ocr(path: Path) -> str:
+    """OCR only the first page for edition identity; no editorial interpretation."""
+    executable=shutil.which("tesseract")
+    if not executable: return ""
+    doc=fitz.open(path)
+    try:
+        pix=doc[0].get_pixmap(matrix=fitz.Matrix(2.5,2.5),alpha=False)
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix="bb-identity-") as td:
+            image=Path(td)/"first.png"; pix.save(image)
+            run=subprocess.run([executable,str(image),"stdout","-l","eng+deu","--psm","3"],capture_output=True,text=True,timeout=90)
+            if run.returncode:
+                run=subprocess.run([executable,str(image),"stdout","-l","eng","--psm","3"],capture_output=True,text=True,timeout=90)
+            return run.stdout if run.returncode==0 else ""
+    finally: doc.close()
+
 def identify_pdf(path: Path, publication=None, edition_date=None, edition_variant="default", language=None) -> PublicationIdentity:
     meta,first,_=_probe(path); evidence=[]
     # Filename is transport metadata only. Never use it as identity evidence.
     corpus="\n".join([meta.get("title",""),meta.get("subject",""),first[:12000]])
-    date=edition_date or _parse_date(corpus)
+    date=edition_date or _parse_date(corpus)\n    if not date or (not publication and not _known_publication(corpus) and not meta.get("title")):\n        first_page_ocr=_identity_ocr(path)\n        if first_page_ocr:\n            corpus += "\\n" + first_page_ocr\n            evidence.append("first_page_ocr=tesseract")\n            date=edition_date or _parse_date(corpus)
     if edition_date: evidence.append(f"trusted_intake.edition_date={edition_date}")
     if not date: raise IdentityUnresolved("Could not establish edition date from document content")
 
