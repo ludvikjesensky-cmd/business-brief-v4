@@ -55,7 +55,7 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
             log.emit("TECHNICIAN_FAILED",stage="T24",severity="ERROR",status="FAILED",edition_id=edition["id"],source_id=source["id"],job_id=job,message=str(e))
             raise
         log.emit("TECHNICIAN_FINALIZED",stage="T22",status=final_status,edition_id=edition["id"],source_id=source["id"],job_id=job)
-        if final_status == "READY_FOR_INGESTOR" and archive.inbox_version(object_key)==object_version:
+        if final_status in {"READY_FOR_INGESTOR", "EDITION_COLLISION"} and archive.inbox_version(object_key)==object_version:
             archive.remove_inbox(object_key)
             log.emit("INBOX_REMOVED",stage="T22",status=final_status,edition_id=edition["id"],source_id=source["id"],job_id=job,metadata={"object_key":object_key})
         return {"status":final_status,"source_id":source["id"],"edition_id":edition["id"],"archive_prefix":prefix,"uploaded_count":len(uploaded)}
