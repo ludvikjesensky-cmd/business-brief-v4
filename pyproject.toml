@@ -14,6 +14,7 @@ dev = ["pytest>=8,<9"]
 [project.scripts]
 bb-technician = "business_brief.technician_cli:main"
 bb-technician-worker = "business_brief.technician_worker:main"
+bb-dashboard = "business_brief.dashboard:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
