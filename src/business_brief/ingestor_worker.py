@@ -49,7 +49,7 @@ def build_archived_map(archive, source: dict, blob: dict, workspace: Path) -> di
     return physical.to_dict()
 
 
-def process_job(archive, task: dict) -> dict:
+def process_job(archive, task: dict, *, verify_repeat: bool = False) -> dict:
     db = archive.client
     log = EventLogger(db, component="INGESTOR")
     source = db.table("sources").select("*").eq("id", task["source_id"]).single().execute().data
@@ -60,6 +60,11 @@ def process_job(archive, task: dict) -> dict:
         payload = build_archived_map(archive, source, blob, workspace)
         encoded = (json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode()
         digest = hashlib.sha256(encoded).hexdigest()
+        if verify_repeat:
+            repeated = build_archived_map(archive, source, blob, workspace)
+            repeated_bytes = (json.dumps(repeated, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode()
+            if repeated_bytes != encoded:
+                raise IngestorError("Physical Map repeatability check failed")
         key = f"ingestor/{source['id']}/{INGESTOR_VERSION}/sha256-{digest}/physical-map.json"
         output = workspace / "physical-map.json"
         output.write_bytes(encoded)
@@ -67,6 +72,8 @@ def process_job(archive, task: dict) -> dict:
         metrics = {"page_count":len(payload["pages"]),
                    "block_count":sum(len(p["blocks"]) for p in payload["pages"]),
                    "text_characters":sum(len(b["text"]) for p in payload["pages"] for b in p["blocks"])}
+        if verify_repeat:
+            metrics["repeatability_verified"] = True
         db.rpc("finalize_ingestor_job", {"p_job_id":task["id"], "p_lease_token":task["lease_token"],
                "p_path":key, "p_sha256":digest, "p_metrics":metrics}).execute()
     log.emit("INGESTOR_FINALIZED", status="DONE", source_id=source["id"],
@@ -74,13 +81,13 @@ def process_job(archive, task: dict) -> dict:
     return {"source_id":source["id"], "status":"DONE", "sha256":digest, **metrics}
 
 
-def drain(archive=None) -> list[dict]:
+def drain(archive=None, *, source_id: str | None = None, verify_repeat: bool = False) -> list[dict]:
     archive = archive or SupabaseArchive.from_env()
     db = archive.client
     db.rpc("reconcile_ingestor_queue", {"p_version":INGESTOR_VERSION}).execute()
     results = []
     while True:
-        rows = db.rpc("claim_ingestor_job", {"p_version":INGESTOR_VERSION}).execute().data or []
+        rows = db.rpc("claim_ingestor_job", {"p_version":INGESTOR_VERSION, "p_source_id":source_id}).execute().data or []
         if not rows:
             return results
         task = rows[0]
@@ -94,7 +101,7 @@ def drain(archive=None) -> list[dict]:
         thread = threading.Thread(target=heartbeat, daemon=True)
         thread.start()
         try:
-            results.append(process_job(archive, task))
+            results.append(process_job(archive, task, verify_repeat=verify_repeat))
         except Exception as exc:
             db.rpc("fail_ingestor_job", {"p_job_id":task["id"], "p_lease_token":task["lease_token"],
                    "p_error":str(exc), "p_blocked":isinstance(exc, IngestorError)}).execute()
@@ -107,8 +114,11 @@ def drain(archive=None) -> list[dict]:
 
 
 def main() -> int:
-    argparse.ArgumentParser(description="Drain the durable Ingestor queue").parse_args()
-    results = drain()
+    parser = argparse.ArgumentParser(description="Drain the durable Ingestor queue")
+    parser.add_argument("--source-id", help="Restrict claims to one database source UUID")
+    parser.add_argument("--verify-repeat", action="store_true", help="Build twice and require identical canonical bytes")
+    args = parser.parse_args()
+    results = drain(source_id=args.source_id, verify_repeat=args.verify_repeat)
     print(json.dumps(results, ensure_ascii=False))
     return int(any(r["status"] == "FAILED" for r in results))
 

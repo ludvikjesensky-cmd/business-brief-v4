@@ -77,7 +77,8 @@ def test_reject_artifact_outside_bundle():
 
 
 @pytest.mark.parametrize('failure', [None, 'upload', 'finalize'])
-def test_upload_must_succeed_before_finalize(monkeypatch, failure):
+@pytest.mark.parametrize('verify_repeat', [False, True])
+def test_upload_must_succeed_before_finalize(monkeypatch, failure, verify_repeat):
     from business_brief import ingestor_worker as worker
     calls = []
     source = {'id':'db-uuid', 'blob_id':'blob'}
@@ -104,9 +105,11 @@ def test_upload_must_succeed_before_finalize(monkeypatch, failure):
         {'blocks':[{'text':'exact text'}]}]})
     task = {'id':'job','source_id':'db-uuid','lease_token':'token'}
     if failure:
-        with pytest.raises(RuntimeError): worker.process_job(Archive(),task)
+        with pytest.raises(RuntimeError): worker.process_job(Archive(),task,verify_repeat=verify_repeat)
     else:
-        assert worker.process_job(Archive(),task)['block_count']==1
+        result = worker.process_job(Archive(),task,verify_repeat=verify_repeat)
+        assert result['block_count']==1
+        assert result.get('repeatability_verified',False)==verify_repeat
     assert [c[0] for c in calls] == (['upload'] if failure=='upload' else ['upload','finalize'])
     if failure!='upload':
         assert calls[-1][1]['p_lease_token']=='token'

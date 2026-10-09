@@ -28,13 +28,13 @@ language sql security invoker set search_path=public as $$
  where s.status='READY_FOR_INGESTOR' and s.source_bundle_contract='source-bundle-v4'
  on conflict do nothing;
 $$;
-create function public.claim_ingestor_job(p_version text) returns setof public.ingestor_jobs
+create function public.claim_ingestor_job(p_version text,p_source_id uuid default null) returns setof public.ingestor_jobs
 language sql security invoker set search_path=public as $$
  update public.ingestor_jobs q set status='PROCESSING',attempt=attempt+1,
  lease_token=gen_random_uuid(),lease_until=now()+interval '10 minutes',updated_at=now()
  where id=(select j.id from public.ingestor_jobs j
  join public.sources s on s.id=j.source_id join public.editions e on e.active_source_id=s.id
- where j.ingestor_version=p_version and s.status='READY_FOR_INGESTOR' and
+ where j.ingestor_version=p_version and (p_source_id is null or j.source_id=p_source_id) and s.status='READY_FOR_INGESTOR' and
  ((j.status in ('PENDING','RETRY') and j.available_at<=now()) or (j.status='PROCESSING' and j.lease_until<now()))
  order by j.created_at for update of j skip locked limit 1) returning q.*;
 $$;
@@ -61,5 +61,5 @@ language sql security invoker set search_path=public as $$
  last_error=p_error,lease_until=null,available_at=now()+interval '5 minutes',updated_at=now()
  where id=p_job_id and lease_token=p_lease_token and status='PROCESSING';
 $$;
-revoke all on function public.reconcile_ingestor_queue(text),public.claim_ingestor_job(text),public.heartbeat_ingestor_job(uuid,uuid),public.finalize_ingestor_job(uuid,uuid,text,text,jsonb),public.fail_ingestor_job(uuid,uuid,text,boolean) from public,anon,authenticated;
-grant execute on function public.reconcile_ingestor_queue(text),public.claim_ingestor_job(text),public.heartbeat_ingestor_job(uuid,uuid),public.finalize_ingestor_job(uuid,uuid,text,text,jsonb),public.fail_ingestor_job(uuid,uuid,text,boolean) to service_role;
+revoke all on function public.reconcile_ingestor_queue(text),public.claim_ingestor_job(text,uuid),public.heartbeat_ingestor_job(uuid,uuid),public.finalize_ingestor_job(uuid,uuid,text,text,jsonb),public.fail_ingestor_job(uuid,uuid,text,boolean) from public,anon,authenticated;
+grant execute on function public.reconcile_ingestor_queue(text),public.claim_ingestor_job(text,uuid),public.heartbeat_ingestor_job(uuid,uuid),public.finalize_ingestor_job(uuid,uuid,text,text,jsonb),public.fail_ingestor_job(uuid,uuid,text,boolean) to service_role;
