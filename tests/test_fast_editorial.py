@@ -75,6 +75,7 @@ def test_provider_uses_strict_schema_and_no_secret_output(monkeypatch):
         body=json.loads(req.data)
         assert body['store'] is False
         assert body['max_output_tokens']==64000
+        assert timeout==600
         assert body['text']['format']['strict'] is True
         assert body['input'][0]['content'][1]['image_url'].startswith('data:image/png;base64,')
         return BytesIO(json.dumps({'id':'r','status':'completed','model':'test-model',

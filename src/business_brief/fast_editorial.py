@@ -154,7 +154,7 @@ class ResponsesProvider:
                headers={"Authorization":"Bearer "+self.key,"Content-Type":"application/json"})
         for attempt in range(3):
             try:
-                with request.urlopen(req, timeout=180) as response:
+                with request.urlopen(req, timeout=600 if max_output_tokens > 16000 else 180) as response:
                     raw = json.load(response)
                 break
             except error.HTTPError as exc:

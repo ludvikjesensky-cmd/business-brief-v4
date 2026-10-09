@@ -86,3 +86,6 @@ the watermark guidance. No source or stored page checkpoint is overwritten.
 Issue-level synthesis has a separate 64,000-token output ceiling; page calls retain
 the 16,000-token ceiling. Incomplete API responses are rejected with a sanitized
 reason. Resuming synthesis reuses all persisted page results.
+
+Full-edition synthesis permits up to 600 seconds for its larger response; page
+requests keep the 180-second timeout. Heartbeats renew the DB lease while waiting.
