@@ -35,7 +35,7 @@ def test_no_physical_hints_leak_into_discovery(sample):
     assert data['blocks'][0]['text']=='Acme reports profits'
 
 
-@pytest.mark.parametrize('fault',['quote','block','no_evidence','duplicate','wrong_page','review'])
+@pytest.mark.parametrize('fault',['quote','block','no_evidence','duplicate','wrong_page'])
 def test_reject_unsupported_discovery_evidence(sample,fault):
     page,result,_=copy.deepcopy(sample)
     if fault=='quote': result['items'][0]['evidence'][0]['quote']='invented profits'
@@ -43,7 +43,6 @@ def test_reject_unsupported_discovery_evidence(sample,fault):
     if fault=='no_evidence': result['items'][0]['evidence']=[]
     if fault=='duplicate': result['items'].append(copy.deepcopy(result['items'][0]))
     if fault=='wrong_page': result['page_no']=2
-    if fault=='review': result['needs_review']=True
     with pytest.raises(EditorialError): validate_page(result,page)
 
 
@@ -101,3 +100,30 @@ def test_api_error_does_not_leak_response_body(monkeypatch):
     with pytest.raises(EditorialError,match='HTTP 401') as caught:
         ResponsesProvider('test','secret').generate('',{},PAGE_SCHEMA)
     assert 'private message' not in str(caught.value)
+
+
+def test_review_page_does_not_block_but_marks_coverage_and_items(sample):
+    page,result,synthesis=copy.deepcopy(sample)
+    result['needs_review']=True
+    result['page_note_cs']='Vodoznak zakrývá konec odstavce.'
+    result['items'][0]['uncertainties']=['Chybí závěr.']
+    out=freeze_issue('uuid','sha',[page],{1:result},synthesis)
+    assert out['coverage_status']=='needs_review'
+    assert out['review_page_refs']==[1]
+    assert out['items'][0]['requires_review'] is True
+    assert out['items'][0]['review_page_refs']==[1]
+    assert 'Chybí závěr.' in out['items'][0]['uncertainties']
+    assert any('Vodoznak' in u for u in out['items'][0]['uncertainties'])
+    result['items'][0]['evidence'][0]['quote']='invented'
+    with pytest.raises(EditorialError): validate_page(result,page)
+
+
+def test_unreadable_page_is_preserved_as_explicit_gap(sample):
+    page,result,synthesis=copy.deepcopy(sample)
+    result.update(needs_review=True,page_note_cs='Text nelze přečíst.',items=[])
+    synthesis['items']=[]
+    out=freeze_issue('uuid','sha',[page],{1:result},synthesis)
+    assert out['coverage_status']=='needs_review'
+    assert out['review_page_refs']==[1]
+    assert out['items']==[]
+    assert out['page_observations'][0]['page_note_cs']=='Text nelze přečíst.'

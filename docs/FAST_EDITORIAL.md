@@ -69,3 +69,16 @@ fragment accounting, lease fencing and incomplete-edition freeze rejection.
 They do not establish that a real WSJ Issue Map has been generated or editorially
 reviewed. Record the real run separately, with page count, item funnel, timing,
 token usage, important uncertainties and the human acceptance result.
+
+
+## Watermarks and review gaps
+Watermarks are expected input artifacts. Page review is nonfatal for provisional
+Issue Maps; exact source-block quotes remain mandatory and invalid evidence still
+rejects the page. Unreadable pages retain explicit observations and review flags,
+with no invented items. `coverage_status=needs_review` and `review_page_refs`
+identify incomplete coverage. Affected items retain source uncertainties and
+`requires_review` independently of the synthesis model. FROZEN means immutable,
+not verified or complete coverage. Markdown exposes these flags.
+Previously validated v4.1 checkpoints are reused only when physical-map/image SHA,
+model, schema and the exact legacy prompt fingerprint match; remaining pages use
+the watermark guidance. No source or stored page checkpoint is overwritten.

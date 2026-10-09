@@ -9,7 +9,7 @@ import tempfile
 import threading
 
 from .events import EventLogger
-from .fast_editorial import (VERSION, PAGE_PROMPT, ISSUE_PROMPT, PAGE_SCHEMA, ISSUE_SCHEMA,
+from .fast_editorial import (VERSION, PAGE_PROMPT, WATERMARK_GUIDANCE, ISSUE_PROMPT, PAGE_SCHEMA, ISSUE_SCHEMA,
     EditorialError, ResponsesProvider, neutral_page, validate_page, freeze_issue)
 from .ingestor_worker import archive_key
 from .storage import SupabaseArchive
@@ -64,16 +64,18 @@ def process(archive, source_id, provider, concurrency=4):
         def discover(page):
             number = page["page_no"]
             image = images[number]
-            fingerprint = hashlib.sha256(encoded({"physical_map":ingested["physical_map_sha256"],
+            def fingerprint_for(prompt):
+                return hashlib.sha256(encoded({"physical_map":ingested["physical_map_sha256"],
                 "image":image["sha256"],"version":VERSION,"model":provider.model,
-                "prompt":PAGE_PROMPT,"schema":PAGE_SCHEMA})).hexdigest()
+                "prompt":prompt,"schema":PAGE_SCHEMA})).hexdigest()
+            fingerprint = fingerprint_for(PAGE_PROMPT + WATERMARK_GUIDANCE)
             prior = cached.get(number)
-            if prior and prior["input_sha256"]==fingerprint:
+            if prior and prior["input_sha256"] in {fingerprint, fingerprint_for(PAGE_PROMPT)}:
                 validate_page(prior["response"]["result"], page)
                 return number, prior["response"]
             key = archive_key(image["path"],manifest_key.rsplit("/",1)[0]+"/")
             raster = checked_download(bucket,key,image["sha256"])
-            response = provider.generate(PAGE_PROMPT,neutral_page(page),PAGE_SCHEMA,image=raster)
+            response = provider.generate(PAGE_PROMPT + WATERMARK_GUIDANCE,neutral_page(page),PAGE_SCHEMA,image=raster)
             validate_page(response["result"], page)
             db.rpc("save_fast_editorial_page",{**auth,"p_page_no":number,"p_input_sha256":fingerprint,"p_response":response}).execute()
             log.emit("EDITORIAL_PAGE_SAVED",source_id=source_id,metadata={"page_no":number,"items":len(response["result"]["items"]),"usage":response.get("usage",{})})
@@ -94,7 +96,7 @@ def process(archive, source_id, provider, concurrency=4):
         synthesis = provider.generate(ISSUE_PROMPT,{"fragments":fragments},ISSUE_SCHEMA)
         issue = freeze_issue(source_id,physical["source_sha256"],physical["pages"],results,synthesis["result"])
         issue["provenance"] = {"physical_map_sha256":ingested["physical_map_sha256"],
-            "manifest_path":manifest_key,"model":provider.model,"page_calls":audits,
+            "manifest_path":manifest_key,"watermark_policy":"review_is_nonfatal_v1","model":provider.model,"page_calls":audits,
             "issue_call":{k:v for k,v in synthesis.items() if k!="result"}}
         digest = hashlib.sha256(encoded(issue)).hexdigest()
         prefix = f"fast-editorial/{source_id}/{task['id']}/sha256-{digest}"
@@ -118,16 +120,19 @@ def process(archive, source_id, provider, concurrency=4):
 
 
 def render_markdown(issue):
-    lines = ["# Předběžná redakční mapa vydání", "", "Provisional — před Selective Deep Read a verifikací.","",issue["edition_note_cs"],""]
+    lines = ["# Předběžná redakční mapa vydání", "", "Provisional — před Selective Deep Read a verifikací.","",issue["edition_note_cs"],"",
+             "Pokrytí: "+issue["coverage_status"],
+             "Strany k revizi: "+(", ".join(map(str,issue["review_page_refs"])) or "žádné"),""]
     for item in issue["items"]:
         lines += [f"## {item['provisional_id']} · {item['priority'].upper()} · {item['headline_original'] or '(pokračování bez titulku)'}",
                   "",f"Strany: {', '.join(map(str,item['page_refs']))}","",item["summary_cs"],"",
                   "Pohled autora: "+item["author_angle_cs"],"Nová informace: "+item["new_information_cs"],
                   "Význam události: "+item["importance_reason_cs"],"Hodnota četby: "+item["reading_value_reason_cs"],
+                  "Vyžaduje revizi: "+str(item["requires_review"]),
                   "Deep Read: "+item["deep_read_reason_cs"],"Nejistoty: "+"; ".join(item["uncertainties"]),""]
     lines += ["## Poznámky k průchodu stran",""]
     for page in issue["page_observations"]:
-        lines.append(f"- Strana {page['page_no']}: {page['page_note_cs']}")
+        lines.append(f"- Strana {page['page_no']} (revize: {page['needs_review']}): {page['page_note_cs']}")
     return "\n".join(lines)+"\n"
 
 

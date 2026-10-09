@@ -55,6 +55,13 @@ local_ids on the page. Flag unreadable/ambiguous page evidence with needs_review
 do not pretend to have read missing material. This is a provisional map, not a
 canonical semantic map, article text, verified Brief, or publication decision."""
 
+WATERMARK_GUIDANCE = """ Watermarks are expected input artifacts, not editorial content.
+Ignore watermark lettering when discovering articles. A watermark alone does not
+require review if the source remains readable. If content is obscured, retain only
+supported readable items, set needs_review=true and describe the exact coverage
+gap in page_note_cs and affected item uncertainties. For a wholly unreadable page
+return no items and needs_review=true. Never reconstruct missing text by guessing."""
+
 ISSUE_PROMPT = """Build a provisional Issue Map from independent page discoveries of
 ONE newspaper edition. Preserve each original text and its author's angle. Group
 fragments ONLY when the evidence explicitly supports the same article or its
@@ -75,8 +82,6 @@ def neutral_page(page):
 def validate_page(result, page):
     if result["page_no"] != page["page_no"]:
         raise EditorialError("Discovery page mismatch")
-    if result["needs_review"]:
-        raise EditorialError(f"Page {page['page_no']} requires evidence review: {result['page_note_cs']}")
     blocks = {b["block_id"]:b["text"] for b in page["blocks"]}
     seen = set()
     for item in result["items"]:
@@ -101,6 +106,7 @@ def freeze_issue(source_id, source_sha256, pages, page_results, synthesis):
         result = validate_page(page_results[page["page_no"]], page)
         for item in result["items"]:
             fragments[f"p{page['page_no']:04d}:{item['local_id']}"] = (page["page_no"], item)
+    review_pages = sorted(n for n, result in page_results.items() if result["needs_review"])
     used = []
     items = []
     for index, group in enumerate(synthesis["items"], 1):
@@ -108,7 +114,13 @@ def freeze_issue(source_id, source_sha256, pages, page_results, synthesis):
         if not refs or any(ref not in fragments for ref in refs):
             raise EditorialError("Unknown/empty issue fragment reference")
         used.extend(refs)
-        items.append({"provisional_id":f"item-{index:04d}", **group,
+        affected = sorted({fragments[r][0] for r in refs} & set(review_pages))
+        uncertainties = list(dict.fromkeys(group["uncertainties"] +
+            [u for r in refs for u in fragments[r][1]["uncertainties"]] +
+            [f"Strana {n} vyžaduje revizi: {page_results[n]['page_note_cs']}" for n in affected]))
+        items.append({"provisional_id":f"item-{index:04d}", **group, "uncertainties":uncertainties,
+                      "requires_review":bool(affected or uncertainties),
+                      "review_page_refs":affected,
                       "page_refs":sorted({fragments[r][0] for r in refs}),
                       "evidence":[{"page_no":fragments[r][0], **ev} for r in refs for ev in fragments[r][1]["evidence"]],
                       "canonical_match_status":"not_checked", "deep_read_status":"not_started"})
@@ -117,6 +129,8 @@ def freeze_issue(source_id, source_sha256, pages, page_results, synthesis):
     return {"schema_version":SCHEMA, "worker_version":VERSION, "source_id":source_id,
             "source_sha256":source_sha256, "provisional":True,
             "coverage_kind":"all_pages_inspected_not_canonical_character_coverage",
+            "review_page_refs":review_pages,
+            "coverage_status":"needs_review" if review_pages else "all_pages_inspected",
             "page_count":len(pages), "edition_note_cs":synthesis["edition_note_cs"],
             "page_observations":[page_results[p["page_no"]] for p in pages], "items":items}
 
