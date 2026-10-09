@@ -142,13 +142,13 @@ class ResponsesProvider:
         if not self.model or not self.key:
             raise EditorialError("FAST_EDITORIAL_MODEL and OPENAI_API_KEY must be configured")
 
-    def generate(self, prompt, data, schema, image=None):
+    def generate(self, prompt, data, schema, image=None, max_output_tokens=16000):
         content = [{"type":"input_text","text":json.dumps(data,ensure_ascii=False)}]
         if image is not None:
             content.append({"type":"input_image","image_url":"data:image/png;base64,"+base64.b64encode(image).decode(),"detail":"high"})
         body = {"model":self.model,"store":False,"instructions":prompt,
                 "reasoning":{"effort":"low"},
-                "input":[{"role":"user","content":content}],"max_output_tokens":16000,
+                "input":[{"role":"user","content":content}],"max_output_tokens":max_output_tokens,
                 "text":{"format":{"type":"json_schema","name":"editorial_map","strict":True,"schema":schema}}}
         req = request.Request("https://api.openai.com/v1/responses",data=json.dumps(body).encode(),
                headers={"Authorization":"Bearer "+self.key,"Content-Type":"application/json"})
@@ -162,7 +162,9 @@ class ResponsesProvider:
                     raise EditorialError(f"OpenAI API HTTP {exc.code}; response not accepted") from None
                 time.sleep(2**attempt)
         if raw.get("status") != "completed":
-            raise EditorialError("Incomplete model response; not accepted")
+            reason = (raw.get("incomplete_details") or {}).get("reason")
+            reason = reason if reason in {"max_output_tokens", "content_filter"} else "unspecified"
+            raise EditorialError(f"Incomplete model response ({reason}); not accepted")
         texts = [c["text"] for o in raw.get("output",[]) for c in o.get("content",[]) if c.get("type")=="output_text"]
         if not texts:
             raise EditorialError("Refused/empty model response; not accepted")

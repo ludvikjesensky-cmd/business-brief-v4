@@ -74,13 +74,14 @@ def test_provider_uses_strict_schema_and_no_secret_output(monkeypatch):
     def urlopen(req,timeout):
         body=json.loads(req.data)
         assert body['store'] is False
+        assert body['max_output_tokens']==64000
         assert body['text']['format']['strict'] is True
         assert body['input'][0]['content'][1]['image_url'].startswith('data:image/png;base64,')
         return BytesIO(json.dumps({'id':'r','status':'completed','model':'test-model',
             'output':[{'content':[{'type':'output_text','text':'{"ok":true}'}]}],
             'usage':{'input_tokens':12}}).encode())
     monkeypatch.setattr(mod.request,'urlopen',urlopen)
-    result=ResponsesProvider('test-model','secret').generate('prompt',{},PAGE_SCHEMA,image=b'image')
+    result=ResponsesProvider('test-model','secret').generate('prompt',{},PAGE_SCHEMA,image=b'image',max_output_tokens=64000)
     assert result['usage']['input_tokens']==12
     assert 'secret' not in json.dumps(result)
 

@@ -82,3 +82,7 @@ not verified or complete coverage. Markdown exposes these flags.
 Previously validated v4.1 checkpoints are reused only when physical-map/image SHA,
 model, schema and the exact legacy prompt fingerprint match; remaining pages use
 the watermark guidance. No source or stored page checkpoint is overwritten.
+
+Issue-level synthesis has a separate 64,000-token output ceiling; page calls retain
+the 16,000-token ceiling. Incomplete API responses are rejected with a sanitized
+reason. Resuming synthesis reuses all persisted page results.

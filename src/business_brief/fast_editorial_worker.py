@@ -93,7 +93,7 @@ def process(archive, source_id, provider, concurrency=4):
                 raise
         fragments = [{"fragment_id":f"p{n:04d}:{item['local_id']}","page_no":n,**item}
                      for n in sorted(results) for item in results[n]["items"]]
-        synthesis = provider.generate(ISSUE_PROMPT,{"fragments":fragments},ISSUE_SCHEMA)
+        synthesis = provider.generate(ISSUE_PROMPT,{"fragments":fragments},ISSUE_SCHEMA,max_output_tokens=64000)
         issue = freeze_issue(source_id,physical["source_sha256"],physical["pages"],results,synthesis["result"])
         issue["provenance"] = {"physical_map_sha256":ingested["physical_map_sha256"],
             "manifest_path":manifest_key,"watermark_policy":"review_is_nonfatal_v1","model":provider.model,"page_calls":audits,
