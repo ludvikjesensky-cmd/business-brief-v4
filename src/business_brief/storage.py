@@ -20,7 +20,30 @@ class SupabaseArchive:
 
     def list_inbox(self) -> list[str]:
         rows=self.client.storage.from_(self.inbox).list("",{"limit":1000,"sortBy":{"column":"created_at","order":"asc"}})
-        return [row["name"] for row in rows if row.get("name")]
+        return [row["name"] for row in rows if row.get("name") and Path(row["name"]).name != ".emptyFolderPlaceholder"]
+
+    def cleanup_folder_placeholders(self):
+        rows=self.client.storage.from_(self.inbox).list("",{"limit":1000})
+        for row in rows:
+            if row.get("name")==".emptyFolderPlaceholder" and (row.get("metadata") or {}).get("size")==0:
+                self.remove_inbox(row["name"])
+
+    def verify_archived_source(self, source, digest):
+        manifest_path=source["source_bundle_path"]
+        data=json.loads(self.client.storage.from_(self.archive).download(manifest_path))
+        if data["source_sha256"] != digest:
+            raise StorageError("Archived manifest source hash mismatch")
+        prefix=manifest_path.rsplit("/",1)[0]+"/"
+        artifacts={data["original_path"]:digest,data["prepared_pdf_path"]:data["ocr"]["prepared_sha256"]}
+        artifacts.update({item["path"]:item["sha256"] for item in data["page_images"]+data.get("parts",[])})
+        if len(data["page_images"]) != data["page_count"]:
+            raise StorageError("Archived page count mismatch")
+        for key,expected in artifacts.items():
+            if not key.startswith(prefix) or ".." in Path(key).parts:
+                raise StorageError("Invalid archived artifact path")
+            payload=self.client.storage.from_(self.archive).download(key)
+            if hashlib.sha256(payload).hexdigest()!=expected:
+                raise StorageError(f"Archived artifact hash mismatch: {key}")
 
     def download_inbox(self, object_key:str, target:Path)->Path:
         target.parent.mkdir(parents=True,exist_ok=True)

@@ -9,6 +9,8 @@ from .technician import TECHNICIAN_VERSION, prepare_pdf, sha256_file
 from .events import EventLogger
 
 def process_inbox_object(object_key,*,publication=None,edition_date=None,variant="default",object_version=None):
+    if Path(object_key).name == ".emptyFolderPlaceholder":
+        return {"status":"IGNORED","reason":"Storage folder placeholder"}
     archive=SupabaseArchive.from_env(); repo=TechnicianRepository(archive.client); log=EventLogger(archive.client)
     current_version=archive.inbox_version(object_key)
     if object_version and current_version != object_version:
@@ -21,8 +23,15 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
         arrival=repo.register_arrival(object_key,Path(object_key).name,local.stat().st_size,object_version)
         digest=sha256_file(local); log.emit("SHA256_COMPLETE",stage="T04",status="OK",metadata={"sha256":digest}); blob=repo.blob_by_sha(digest)
         if blob:
-            old=repo.source_for_blob(blob["id"]); repo.mark_duplicate(arrival["id"],blob,old)
+            old=repo.source_for_blob(blob["id"])
+            if old and old.get("status")=="EDITION_COLLISION":
+                archive.verify_archived_source(old,digest)
+                if archive.inbox_version(object_key)==object_version:
+                    archive.remove_inbox(object_key)
+                    log.emit("INBOX_REMOVED",stage="T22",status="EDITION_COLLISION",source_id=old["id"],metadata={"object_key":object_key,"archive_verified":True})
+                return {"status":"EDITION_COLLISION","source_id":old["id"],"inbox_cleaned":True}
             if old and old.get("status")=="READY_FOR_INGESTOR":
+                repo.mark_duplicate(arrival["id"],blob,old)
                 log.emit("DUPLICATE_SOURCE",stage="T06",status="DUPLICATE_SOURCE",source_id=old["id"],metadata={"sha256":digest})
                 archive.remove_inbox(object_key) if archive.inbox_version(object_key)==object_version else None
                 log.emit("INBOX_REMOVED",stage="T22",status="DUPLICATE_SOURCE",source_id=old["id"],metadata={"object_key":object_key})
@@ -55,7 +64,7 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
             log.emit("TECHNICIAN_FAILED",stage="T24",severity="ERROR",status="FAILED",edition_id=edition["id"],source_id=source["id"],job_id=job,message=str(e))
             raise
         log.emit("TECHNICIAN_FINALIZED",stage="T22",status=final_status,edition_id=edition["id"],source_id=source["id"],job_id=job)
-        if final_status in {"READY_FOR_INGESTOR", "EDITION_COLLISION"} and archive.inbox_version(object_key)==object_version:
+        if final_status in {"READY_FOR_INGESTOR","EDITION_COLLISION"} and archive.inbox_version(object_key)==object_version:
             archive.remove_inbox(object_key)
             log.emit("INBOX_REMOVED",stage="T22",status=final_status,edition_id=edition["id"],source_id=source["id"],job_id=job,metadata={"object_key":object_key})
         return {"status":final_status,"source_id":source["id"],"edition_id":edition["id"],"archive_prefix":prefix,"uploaded_count":len(uploaded)}

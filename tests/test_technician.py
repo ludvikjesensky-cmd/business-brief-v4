@@ -85,8 +85,8 @@ def test_event_failure_does_not_mask_processing_error():
             raise ValueError('original failure')
 
 import pytest
-@pytest.mark.parametrize('status,fail,removed', [('READY_FOR_INGESTOR',False,True),('EDITION_COLLISION',False,False),('READY_FOR_INGESTOR',True,False)])
-def test_worker_only_removes_after_ready(tmp_path,monkeypatch,status,fail,removed):
+@pytest.mark.parametrize('status,fail,removed', [('READY_FOR_INGESTOR',False,True),('EDITION_COLLISION',False,True),('READY_FOR_INGESTOR',True,False)])
+def test_worker_only_removes_after_durable_finalization(tmp_path,monkeypatch,status,fail,removed):
     import business_brief.technician_worker as worker
     src=tmp_path/'input.pdf'; make_pdf(src)
     class Archive:
@@ -127,3 +127,11 @@ def test_worker_only_removes_after_ready(tmp_path,monkeypatch,status,fail,remove
     else:
         assert worker.process_inbox_object('original-filename.pdf',object_version='v1')['status']==status
     assert archive.deleted is removed
+
+@pytest.mark.parametrize('key',['.emptyFolderPlaceholder','folder/.emptyFolderPlaceholder'])
+def test_placeholder_never_enters_pdf_pipeline(monkeypatch,key):
+    import business_brief.technician_worker as worker
+    def unexpected():
+        raise AssertionError('Placeholder must be ignored before accessing Storage')
+    monkeypatch.setattr(worker.SupabaseArchive,'from_env',unexpected)
+    assert worker.process_inbox_object(key)['status']=='IGNORED'

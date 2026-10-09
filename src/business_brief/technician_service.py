@@ -14,6 +14,7 @@ def drain_inbox():
         return {"status": "ALREADY_RUNNING"}
     try:
         archive = SupabaseArchive.from_env()
+        archive.cleanup_folder_placeholders()
         db = archive.client
         db.rpc("reconcile_technician_inbox", {}).execute()
         results = []
@@ -34,8 +35,8 @@ def drain_inbox():
             thread.start()
             try:
                 result = process_inbox_object(task["object_key"], object_version=task["object_version"])
-                state = "DONE" if result["status"] in {"READY_FOR_INGESTOR", "DUPLICATE_SOURCE", "STALE"} else "BLOCKED"
-                error = None
+                state = "DONE" if result["status"] in {"READY_FOR_INGESTOR", "DUPLICATE_SOURCE", "STALE", "IGNORED"} else "BLOCKED"
+                error = None if state == "DONE" else result["status"]
             except Exception as exc:
                 state = "BLOCKED" if isinstance(exc, IdentityUnresolved) else "RETRY"
                 error = str(exc)
