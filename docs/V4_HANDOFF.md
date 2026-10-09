@@ -17,6 +17,13 @@ Níže zachovaná zakládající doporučení „nezačínat implementaci“ a �
 je Ingestor“ popisují historický stav; pro aktuální postup je nahrazuje uvedený
 provozní záznam. Produktové a redakční zásady zůstávají platné.
 
+### Provozní změna po prvním testu
+
+WSJ watcher byl na pokyn uživatele zrušen (Railway služba, volume/session,
+zdrojové soubory a PR); nepokračovat v jeho obnově. Aktuálně ruční upload PDF.
+Další placené Fast Editorial běhy jsou pozastaveny do auditu nákladů a rozpočtu.
+Podrobnosti a zbývající historická Git ref jsou v provozním záznamu výše.
+
 ## 1. Kde projekt stojí
 
 Business Brief v4 byl založen po zásadní produktové a redakční revizi v3.
