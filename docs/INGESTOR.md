@@ -30,6 +30,10 @@ PYTHONPATH=src python -m business_brief.ingestor_worker
 ```
 
 Required environment: `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (server only).
+For a scoped acceptance run, add `--source-id <database UUID> --verify-repeat`.
+This downloads and extracts the same prepared PDF twice and requires identical
+canonical Physical Map bytes before upload/finalization. The job metrics record
+`repeatability_verified: true` only when that check succeeds.
 The CLI drains eligible DB jobs and exits; it does not install a scheduler or HTTP
 wake endpoint. Repeated invocations reconcile missing jobs without duplicating DONE
 work. Job identity is `(source_id, ingestor_version)`.
