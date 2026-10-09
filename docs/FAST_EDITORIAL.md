@@ -19,7 +19,8 @@ Ads/listings/navigation are noted in per-page observations rather than editorial
 
 Coverage means all pages inspected. It does not establish complete character
 accounting, perfect article recall, or the canonical Coverage Gate. A page marked
-unreadable/needs_review blocks freezing and needs correction/review.
+unreadable/needs_review does not block provisional freezing; its coverage gap and
+affected items remain explicitly flagged for correction/review.
 
 Each item preserves source page/block references, exact evidence quotes, author's
 angle, new information, event importance, reading value, priority, uncertainties
@@ -51,8 +52,8 @@ PYTHONPATH=src python -m business_brief.fast_editorial_worker --source-id <sourc
 ```
 
 First acceptance is scoped to WSJ 9 October 2026, 44 pages. With no retries/cache:
-44 page requests plus one issue synthesis. The provider bounds each response to
-16,000 output tokens and retries only selected transient HTTP failures, at most
+44 page requests plus one issue synthesis. The provider bounds each page response to
+16,000 output tokens and issue synthesis to 64,000 output tokens and retries only selected transient HTTP failures, at most
 three attempts. Refused, incomplete or unsupported evidence is not accepted.
 Use of Responses API image inputs and strict JSON schema follows:
 https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses
@@ -89,3 +90,8 @@ reason. Resuming synthesis reuses all persisted page results.
 
 Full-edition synthesis permits up to 600 seconds for its larger response; page
 requests keep the 180-second timeout. Heartbeats renew the DB lease while waiting.
+
+## Recorded production acceptance
+
+See [PROGRESS_2026-10-09.md](PROGRESS_2026-10-09.md) for the real WSJ run,
+artifact identities, actual test results, review limitations and remaining work.

@@ -51,7 +51,16 @@ Doporučené pořadí:
 14. [TECHNICIAN.md](docs/TECHNICIAN.md) — kanonická definice univerzální technické vstupní brány, identity vydání, deduplikace a Source Bundle v4.
 15. [V4_HANDOFF.md](docs/V4_HANDOFF.md) — autoritativní handoff pro nové konverzace.
 
-## Stav
+## Ověřený implementační stav — 9. 10. 2026
+
+WSJ prošel **Technician → Ingestor → Fast Editorial**: 44 stran, 137 fragmentů,
+99 předběžných redakčních položek, stav `FROZEN`. Finální Brief zatím není hotový;
+úplnost textu pod vodoznakem není nezávisle ověřena. Poslední testy: 50 passed.
+
+Podrobný stav, artefakty, limity ověření a další kroky:
+[PROGRESS_2026-10-09.md](docs/PROGRESS_2026-10-09.md).
+
+## Výchozí produktová fáze (historický kontext)
 
 **Fáze: Product & Editorial Foundation → Autonomous Production Design.**
 

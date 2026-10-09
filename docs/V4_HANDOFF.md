@@ -4,6 +4,19 @@
 **Created:** 3 October 2026  
 **Use:** první dokument pro každou novou konverzaci, která má pokračovat ve v4
 
+## Aktuální implementační stav — 9. 10. 2026
+
+Pro pokračování čti nejdříve [PROGRESS_2026-10-09.md](PROGRESS_2026-10-09.md).
+WSJ prošel Technicianem, Ingestorem a Fast Editorial do předběžné FROZEN Issue Map:
+44 stran, 137 fragmentů, 99 položek. Finální Brief ani úplné pokrytí zakrytého textu
+nejsou ověřeny. Další krok je redakční QA včetně strany 15, poté další deníky,
+cross-paper selection a Selective Deep Read. Čti také [FAST_EDITORIAL.md](FAST_EDITORIAL.md)
+a [INGESTOR.md](INGESTOR.md).
+
+Níže zachovaná zakládající doporučení „nezačínat implementaci“ a „další komponenta
+je Ingestor“ popisují historický stav; pro aktuální postup je nahrazuje uvedený
+provozní záznam. Produktové a redakční zásady zůstávají platné.
+
 ## 1. Kde projekt stojí
 
 Business Brief v4 byl založen po zásadní produktové a redakční revizi v3.
