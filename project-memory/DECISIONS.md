@@ -19,6 +19,7 @@ OCR a fyzická příprava patří Technicianovi; semantic/editorial interpretati
 
 ## D006 — ACTIVE — Physical Map je evidence, ne článek
 Ingestor nesmí do fyzické reprezentace vkládat editorial význam.
+**Clarification 2026-10-12 (D015):** Ingestor nyní vlastní také oddělenou Visual Page Map. Neutralita se vztahuje na Physical Map; její kontrakt se sémantikou nemění.
 
 ## D007 — ACTIVE — Automatizace následuje po ručním/levném ověření
 Placené nebo autonomní workflow se nepouští do produkčního rytmu bez acceptance testu ceny, času a kvality.
@@ -51,3 +52,9 @@ Relevantní principy, decisions, failures a lessons se přenášejí do v4 Proje
 **Decision:** normalized top-left bboxy, explicitní BODY_FLOW, plné object footprints, jednotlivé block assignments a source/image/layout provenance. Overlap používá union průniků / plochu textového bboxu; pracovní photo default >60 % je nastavitelný a zůstává předmětem acceptance. Cross-page merge vyžaduje schválenou explicitní vazbu a printed cue, ne podobné téma.
 **Reason:** reprodukovatelný kontrakt umožňuje testovat geometrii nezávisle na placeném modelu a chrání před ztrátou/duplikací zdrojových bloků.
 **Consequences:** sekvenční lokální proces, durable mapy/attempts, žádné automatické placené retries; offline cesta nevyžaduje API. Live API vyžaduje explicitní model/opt-in a limit calls. `all_pages_processed` a `needs_review` jsou odlišné věci. D007/D011 a otevřené Q001/Q009/Q010 zůstávají platné; implementace není potvrzení kvality WSJ ani ceny.
+
+## D015 — ACTIVE — Ingestor tvoří obě mapy, Assembler sestavuje články
+**Date:** 2026-10-12.
+**Decision:** Visual Page Mapper je interní fáze Ingestoru. Ingestor produkuje Physical Map i Visual Page Map jako oddělené artefakty se společnou proveniencí. Samostatný Assembler tyto mapy vykonává a skládá články; editorial výběr následuje až za ním.
+**Reason:** uživatel explicitně upřesnil hranice rolí. Tvorba map patří k ingestion, geometrické sestavení je samostatná auditovatelná odpovědnost. Role nevyžaduje vlastní službu ani API volání.
+**Consequences:** lokální `bb-ingestor` nevytváří assembled text a předává `ingestor-output.json`; `bb-assembler` kontroluje identitu/hash map a vykonává deterministické sestavení bez modelových calls. D006 zůstává ACTIVE pro neutrální Physical Map. D013/D014 zůstávají platné jako dělba vision úsudku a geometrického vykonání; mapper už není samostatná top-level role. Produkční queue worker zatím zůstává Physical Map-only a není automaticky přepnut.

@@ -27,4 +27,6 @@ Denní runtime eventy se nepřepisují do Markdownu. Do Project Memory patří p
 ## Visual Page Map local lab
 Příkazy a artefakty jsou v [SYSTEM](SYSTEM.md#visual-page-map-v1--implementace-a-spuštění). Lokální prepare/offline map/assemble nespouštějí placenou službu. Live mapper vyžaduje `--live --allow-paid --model`, default nejvýše jeden request na spuštění a výstupový limit; jde o limit calls/tokens, nikoli zaručenou cenu v USD. Modelový usage se uchovává po stránkách. Bez předem spočítaného cost modelu a acceptance se neplánuje automatický full-edition běh.
 
+Doporučený vstup je `bb-ingestor` (Source Bundle → obě mapy + handoff) a následně `bb-assembler` (ověřený handoff → text/coverage). Částečný Ingestor run vrací kód 2 a `PARTIAL`; nejde o hotové vydání. Existující durable worker v produkční queue je zatím Physical Map-only, nový kontrakt na něj nebyl nasazen a nezapíná modelová volání automaticky.
+
 API timeout s neznámým billing stavem nemá automatický retry. Durable attempt je nutné prozkoumat před novým pokusem; uloženou odpověď lze znovu validovat bez placení. OS lock brání paralelním writerům v jednom lokálním issue adresáři. Žádné Railway deploye nebo obrázky v base64 logách nejsou součástí tohoto CLI workflow. Produkční runtime a gates zůstávají beze změny.

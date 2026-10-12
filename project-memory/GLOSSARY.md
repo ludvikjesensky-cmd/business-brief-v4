@@ -14,7 +14,9 @@
 
 **Source Bundle** — immutable original + připravené deriváty + page evidence + manifest/provenance.
 
-**Ingestor** — převádí připravený zdroj na neutrální fyzickou/textovou evidenci.
+**Ingestor** — vytváří dvě oddělené mapy připraveného zdroje: neutrální Physical Map a sémantickou Visual Page Map. Předává obě Assembleru; články nesestavuje.
+
+**Assembler** — deterministická role vykonávající Visual Page Map nad Physical Map: sestavený text, provenance, schválené continuations a review/coverage. Bez vlastního modelového úsudku a editorial výběru.
 
 **Physical Map** — geometrická/textová evidence dokumentu bez editorial interpretace.
 
@@ -30,7 +32,7 @@
 
 **Visual Page Map / semantic layout** — experimentální sémantická mapa článků, jejich oblastí, reading order a vložených/vyloučených objektů odvozená z obrazu stránky. Je oddělená od Physical Map.
 
-**Visual Page Mapper** — vision role vytvářející Visual Page Map; v1 má lokální opt-in API adaptér, neprovádí OCR těla ani editorial deep read.
+**Visual Page Mapper** — interní vision fáze Ingestoru vytvářející Visual Page Map; v1 má lokální opt-in API adaptér, neprovádí OCR těla ani editorial deep read.
 
 **BODY_FLOW** — uspořádaný seznam explicitních oblastí těla článku, podle kterého Python skládá zdrojový text.
 

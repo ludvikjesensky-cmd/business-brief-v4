@@ -7,7 +7,10 @@ Technická vrstva připravuje evidence. Editorial vrstva interpretuje. Publishin
 Input: uzavřené source edition. Output: validovaný Source Bundle. Odpovědnosti: identity, immutable original, SHA/provenance, container validation, OCR decision/derivative, page renders, mechanical split, manifest, atomic handoff. Žádná editorial interpretace.
 
 ## Ingestor
-Input: Source Bundle. Output: neutral Physical Map / evidence representation. Odpovědnost je geometrie, text a fyzická struktura, nikoli article/editorial truth.
+Input: Source Bundle. Output: **Physical Map + Visual Page Map**. Physical Map obsahuje neutrální text/geometrii; Visual Page Map samostatně popisuje sémantický layout a reading order. Vision mapper je interní fáze Ingestoru. Ingestor nevytváří sestavené články ani editorial selection.
+
+## Assembler
+Input: obě mapy Ingestoru se společnou proveniencí. Output: sestavené články/fragmenty, reference na bloky, coverage a review flags. Deterministicky vykonává Visual Page Map nad Physical Map, řeší pouze schválené continuations a nejasnosti označuje. Nepoužívá vlastní modelový úsudek. Role může běžet ve stejném procesu, ale má oddělený kontrakt a odpovědnost.
 
 ## Editorial
 Fast Editorial prokázal možnost page-level discovery, ale jeho současný full-edition cost profile není přijatelný jako default production architecture. Budoucí editorial design musí respektovat tuto zkušenost.
@@ -80,10 +83,27 @@ Strany 5 a 2 jsou proof of concept; neprokazují úplnost vydání, continuation
 - `visual_mapper.py`: samostatný Responses API adaptér, JPEG input + strict JSON Schema; žádný import/spuštění Fast Editorial.
 - `visual_assembly.py`: geometrický matching a pořadí podle BODY_FLOW, zachování přesného textu a block IDs.
 - `visual_continuations.py`: pouze explicitně schválené spojování fragmentů s vytištěným page cue.
-- `visual_pipeline.py`: verifikace vstupů, render, durable artefakty, resume, coverage a HTML overlay.
+- `ingestor.py::extract_maps` + `ingestor_cli.py`: orchestrace Ingestoru, vytváření obou map a ověřený handoff pro Assembler.
+- `visual_pipeline.py`: interní mapovací fáze Ingestoru, verifikace vstupů, render, durable mapy a resume; původní assembly importy zůstávají kompatibilní delegáty.
+- `assembler.py` + `assembler_cli.py`: samostatná role Assemblera, sestavení, coverage, HTML overlay a kontrola handoffu Ingestoru.
 - `visual_page_map_cli.py`: CLI `bb-visual-page-map` / `python -m business_brief.visual_page_map_cli`.
 
-Jde o lokální tooling. Nezavádí queue, DB migrace, Railway deployment ani scheduler. Výstup je podklad pro editorial selection/deep read; tyto redakční kroky ani publikování tento nástroj neprovádí.
+Jde o lokální tooling. Nezavádí queue, DB migrace, Railway deployment ani scheduler. Existující durable `bb-ingestor-worker` je stále starší Physical Map-only implementace; nový dvoumapový kontrakt je dostupný přes `bb-ingestor` a nebyl automaticky zapnut v produkční queue. Výstup Assemblera je podklad pro editorial selection/deep read; tyto redakční kroky ani publikování tento nástroj neprovádí.
+
+### Doporučený role-based vstup
+Ingestor přebírá Source Bundle a sám vytváří fyzickou i vizuální mapu. Assembler se spouští až následně:
+
+```bash
+bb-ingestor --bundle source-bundle/manifest.json --pdf prepared.pdf \
+  --output work/visual-issue --maps-dir work/reviewed-layouts
+bb-assembler --issue-dir work/visual-issue --require-full-issue
+```
+
+Pro live fázi Ingestoru nahraď `--maps-dir` explicitním `--live --allow-paid --model "$VISUAL_PAGE_MAP_MODEL" --max-api-calls 1`; ostatní API gates níže zůstávají platné. `--pdf` je lokální override, hash se ověřuje podle Source Bundle, nikoli odhadem. `--pages 2,5` podporuje dílčí test.
+
+Ingestor ukládá `ingestor-output.json` (`ingestor-maps-v1`) s producentem INGESTOR, konzumentem ASSEMBLER, source/prepared identity, hashem Physical Map a seznamem cest/hashů Visual Page Map. Stav `READY_FOR_ASSEMBLER` znamená všechny fyzické strany zmapované, nikoli schválenou redakční kvalitu. Jinak stav zůstává `PARTIAL` a CLI vrací kód 2; pokračování dalšími mapami podporuje resume. `assembly_status` zůstává `not_started`. Selhání nového ingest pokusu odstraní starý ready handoff, aby nemohl maskovat chybu.
+
+`bb-assembler` před sestavením vyžaduje tento handoff a kontroluje jeho source identity, readiness, úplný seznam existujících map a hashe. Ingestor Assembler automaticky nevolá. Assembler nevytváří mapy ani nevolá vision API. Původní `bb-visual-page-map` příkazy níže zůstávají nízkoúrovňovým laboratorním rozhraním, včetně kompatibilní assembly cesty pro starší artefakty bez nového handoffu.
 
 ### Vstupy, souřadnice a matching
 Vstupem je ověřený PDF a existující Physical Map v1/v2. Jejich source identity, SHA-256, souvislá posloupnost fyzických stran a rozměry musí souhlasit. Pro OCR/prepared derivát odlišný od originalu je nutné předat jeho ověřený hash ze Source Bundle; original SHA v Physical Map zůstává zachován. Nástroj neposkytuje OCR ani neopravuje text Physical Map. PDF s rotací odmítá: nejdříve připrav normalizovaný PDF a odpovídající Physical Map, aby se nemíchaly souřadnicové rámce.

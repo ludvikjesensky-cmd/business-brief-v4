@@ -335,3 +335,71 @@ def write_physical_map(manifest_path: str | Path, output_path: str | Path | None
     )
     temp.replace(output)
     return output
+
+
+def extract_maps(manifest_path: str | Path, output_dir: str | Path, *,
+                 pdf_path: str | Path | None = None, source_id: str | None = None,
+                 pages: list[int] | None = None, maps_dir: str | Path | None = None,
+                 provider=None, max_api_calls: int = 1, width: int = 600,
+                 quality: int = 75) -> dict:
+    """Ingestor owns BOTH maps; article assembly belongs to the Assembler.
+
+    Creates a provenance-bound handoff, never assembled text or an editorial
+    decision. A partial page/model run remains PARTIAL and can be resumed.
+    The existing durable Physical Map worker is not implicitly upgraded or paid.
+    """
+    from .visual_page_map import PageMapError
+    from .visual_pipeline import (
+        canonical, digest, issue_lock, load_json, map_issue, prepare_issue,
+        validate_envelope, verify_issue, write_json,
+    )
+
+    if (maps_dir is None) == (provider is None):
+        raise PageMapError("Ingestor requires either offline visual maps or an explicit live provider")
+    if type(max_api_calls) is not int or max_api_calls < 1:
+        raise PageMapError("max_api_calls must be positive")
+    root = Path(output_dir).expanduser().resolve()
+    manifest_file = Path(manifest_path).expanduser().resolve()
+    bundle = load_json(manifest_file)
+    source_path = Path(pdf_path or bundle["prepared_pdf_path"])
+    if not source_path.is_absolute():
+        source_path = manifest_file.parent / source_path
+    # Serialize the whole orchestration separately from page-stage locks.
+    with issue_lock(root / ".ingestor"):
+        handoff_path = root / "ingestor-output.json"
+        if handoff_path.exists():
+            handoff_path.unlink()  # A failed new attempt cannot leave stale READY.
+        physical = extract_physical_map(manifest_file, pdf_path=source_path, source_id=source_id).to_dict()
+        physical_input = root / ".ingestor" / "physical-map.json"
+        write_json(physical_input, physical)
+        prepared = prepare_issue(source_path, physical_input, root, pages=pages,
+            width=width, quality=quality, prepared_sha256=bundle["ocr"]["prepared_sha256"])
+        mapping = map_issue(root, maps_dir=maps_dir, provider=provider, max_api_calls=max_api_calls)
+        manifest, _ = verify_issue(root)
+        visual_maps = []
+        needs_review = False
+        for meta in manifest["pages"]:
+            relative = f"maps/p{meta['page_no']:04d}.json"
+            path = root / relative
+            if not path.exists():
+                continue
+            envelope = validate_envelope(load_json(path), manifest, meta)
+            visual_maps.append({"page_no": meta["page_no"], "path": relative,
+                                "sha256": digest(path.read_bytes())})
+            layout = envelope["layout"]
+            needs_review |= layout["needs_review"] or any(a["needs_review"] for a in layout["articles"])
+        mapped_pages = [m["page_no"] for m in visual_maps]
+        complete = mapped_pages == list(range(1, prepared["settings"]["page_count"] + 1))
+        handoff = {"schema_version": "ingestor-maps-v1", "producer": "INGESTOR",
+            "consumer": "ASSEMBLER", "source_id": physical["source_id"],
+            "source_sha256": physical["source_sha256"],
+            "prepared_pdf_sha256": prepared["settings"]["pdf_sha256"],
+            "physical_map": {"path": "physical-map.json", "sha256": digest((root / "physical-map.json").read_bytes()),
+                             "canonical_sha256": digest(canonical(physical))},
+            "visual_maps": visual_maps, "page_count": prepared["settings"]["page_count"],
+            "selected_pages": prepared["settings"]["selected_pages"], "mapped_pages": mapped_pages,
+            "status": "READY_FOR_ASSEMBLER" if complete else "PARTIAL",
+            "all_pages_mapped": complete, "needs_review": bool(needs_review or not complete),
+            "api_calls_this_run": mapping["api_calls_this_run"], "assembly_status": "not_started"}
+        write_json(handoff_path, handoff)
+        return handoff

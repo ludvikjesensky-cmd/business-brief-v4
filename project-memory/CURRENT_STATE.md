@@ -5,17 +5,17 @@
 **Runtime must be re-verified in Supabase/Railway before operational claims.**
 
 ## Current phase
-v4 ověřuje levnější editorial discovery. Visual Page Map v1 je naprogramovaný samostatný lokální proces; semantic layout má původní dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12. Plně autonomní ranní výroba ani reálná WSJ full-issue validation nejsou hotové. Detail experimentu i implementace má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
+v4 ověřuje levnější editorial discovery. Lokální Ingestor vytváří Physical Map i Visual Page Map; samostatný Assembler sestavuje články (D015). Semantic layout má původní dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12. Plně autonomní ranní výroba ani reálná WSJ full-issue validation nejsou hotové. Detail experimentu i implementace má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
 
 ## Established foundation
-- Technician/Ingestor oddělují technickou přípravu a Physical Map od sémantické interpretace.
+- Technician připravuje Source Bundle; Ingestor drží neutrální Physical Map a sémantický layout v oddělené Visual Page Map. Assembler vykonává mapy, editorial výběr je následná vrstva.
 - Repository, Railway/Supabase infrastruktura a dashboard existují podle dosavadní dokumentace; současný health není tímto potvrzen.
 - WSJ watcher byl odstraněn; acquisition není vyřešená.
-- Platná architektura je v ARCHITECTURE; Visual Page Mapper je implementované laboratorní tooling, není nasazen do produkčních workerů.
+- Platná architektura je v ARCHITECTURE; Visual Page Mapper je interní fáze lokálního Ingestoru. Existující produkční durable worker zatím vytváří pouze Physical Map; nový kontrakt není nasazen do queue.
 
 ## Implementation validation
-- CLI prepare/map/assemble, kontrakt v1, lokální render a offline/API adaptér, geometrické přiřazování, review/coverage, durable provenance/resume a explicitní reviewed continuations jsou implementovány. Rozhodnutí D014; použití v docs/SYSTEM.md.
-- 62 nových testů ověřuje lokální mechaniku včetně řádků pod fotkou, footprintů, reading order, nejednoznačnosti, hashů, limitů calls, chyb API a cross-page linků. Se stávající sadou prošlo 111 testů; jeden původní HTTP startup test dashboardu byl po zjištění sandboxového zákazu lokálního socketu vynechán. Tento limit není chyba nového mapperu ani důkaz runtime health.
+- `bb-ingestor` / `extract_maps` vytváří obě mapy a handoff `ingestor-output.json`, neprovádí assembly. `bb-assembler` ověřuje handoff a sestavuje text; CLI prepare/map/assemble zůstává kompatibilní laboratorní cesta. Kontrakt v1, lokální render, offline/API adaptér, review/coverage, durable provenance/resume a explicitní reviewed continuations jsou implementovány. Rozhodnutí D014/D015; použití v docs/SYSTEM.md.
+- 74 nových testů ověřuje lokální mechaniku včetně řádků pod fotkou, footprintů, reading order, nejednoznačnosti, hashů, limitů calls, chyb API, cross-page linků a dvoumapového handoffu Ingestor → Assembler. Se stávající sadou prošlo 123 testů; jeden původní HTTP startup test dashboardu byl po zjištění sandboxového zákazu lokálního socketu vynechán. Tento limit není chyba nového mapperu ani důkaz runtime health.
 - Syntetické dvoustránkové PDF prošlo skutečným Ingestorem, renderem a offline mapováním/sestavením: 11 bloků, 9 assigned, 2 excluded, žádné unmatched/ambiguous. Toto neověřuje schopnost vision modelu na reálném WSJ.
 
 ## Experimental results and blockers
