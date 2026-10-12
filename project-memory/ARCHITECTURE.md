@@ -15,3 +15,6 @@ Supabase PostgreSQL drží identity, relationships, jobs, state, provenance a ev
 Dnešní vydání nese completeness. Brief je kurátorský. Detail rozvíjí hloubku. Editorial Memory přidává kontinuitu. Kanály adaptují jednu redakční pravdu.
 
 Acquisition je upstream problém. Technician není downloader/crawler a odstraněný watcher není current komponenta.
+
+## Experimental local tooling
+Visual Page Map v1 má samostatný CLI pro ověřený PDF/Physical Map → JPEG → dodanou nebo opt-in vision mapu → geometrické sestavení → coverage/provenance/editorial handoff. Produkční tok výše ani workery se tím nemění; nejde o nasazenou náhradu Fast Editorial. Kontrakt, moduly a provozní použití mají jediný detailní domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map-v1--implementace-a-spuštění). Stav acceptance je v CURRENT_STATE, pravidla D013/D014 a gate D007/D011.

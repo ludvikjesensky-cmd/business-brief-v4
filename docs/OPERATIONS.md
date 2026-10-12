@@ -23,3 +23,8 @@ Reálný Fast Editorial WSJ run ukázal přibližně USD 7.95 za jeden průchod 
 
 ## Documentation
 Denní runtime eventy se nepřepisují do Markdownu. Do Project Memory patří pouze změna stavu, decision, failure nebo lesson s dlouhodobou hodnotou.
+
+## Visual Page Map local lab
+Příkazy a artefakty jsou v [SYSTEM](SYSTEM.md#visual-page-map-v1--implementace-a-spuštění). Lokální prepare/offline map/assemble nespouštějí placenou službu. Live mapper vyžaduje `--live --allow-paid --model`, default nejvýše jeden request na spuštění a výstupový limit; jde o limit calls/tokens, nikoli zaručenou cenu v USD. Modelový usage se uchovává po stránkách. Bez předem spočítaného cost modelu a acceptance se neplánuje automatický full-edition běh.
+
+API timeout s neznámým billing stavem nemá automatický retry. Durable attempt je nutné prozkoumat před novým pokusem; uloženou odpověď lze znovu validovat bez placení. OS lock brání paralelním writerům v jednom lokálním issue adresáři. Žádné Railway deploye nebo obrázky v base64 logách nejsou součástí tohoto CLI workflow. Produkční runtime a gates zůstávají beze změny.

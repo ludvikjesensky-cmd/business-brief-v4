@@ -43,4 +43,11 @@ Relevantní principy, decisions, failures a lessons se přenášejí do v4 Proje
 **Scope:** přijatý směr laboratorního experimentu, nikoli produkční rollout.  
 **Decision:** model mapuje, jak člověk stránku čte, včetně explicitních BODY_FLOW zón a reading order; Python mapu vykonává geometricky nad Physical Map. Nepokračovat v rekonstrukci sémantiky z pouhé geometrie.  
 **Reason:** dílčí výsledky stran 5 a 2 přinesly funkční tok textu; přetrvávající chyby jsou zejména na hranicích objektů.  
-**Consequences:** zachovat D006 a znalost F001; tento přístup je nová podmínka pro experiment, nikoli popření předchozího failure. Schéma a evidence jsou v [SYSTEM](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12). D007/D011 zůstávají ACTIVE. Full-issue kvalita, přesný overlap práh a ekonomika nejsou rozhodnuté ani ověřené.
+**Consequences:** zachovat D006 a znalost F001; tento přístup je nová podmínka pro experiment, nikoli popření předchozího failure. Schéma a evidence jsou v [SYSTEM](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12). D007/D011 zůstávají ACTIVE. Implementační kontrakt a konfigurovatelné defaults nyní definuje D014; full-issue kvalita, empirický overlap práh a ekonomika nejsou ověřené.
+
+## D014 — ACTIVE — Lokální kontrakt Visual Page Map v1 a auditovatelné vykonání
+**Date:** 2026-10-12.
+**Scope:** implementace samostatného experimentálního tooling, žádný produkční rollout.
+**Decision:** normalized top-left bboxy, explicitní BODY_FLOW, plné object footprints, jednotlivé block assignments a source/image/layout provenance. Overlap používá union průniků / plochu textového bboxu; pracovní photo default >60 % je nastavitelný a zůstává předmětem acceptance. Cross-page merge vyžaduje schválenou explicitní vazbu a printed cue, ne podobné téma.
+**Reason:** reprodukovatelný kontrakt umožňuje testovat geometrii nezávisle na placeném modelu a chrání před ztrátou/duplikací zdrojových bloků.
+**Consequences:** sekvenční lokální proces, durable mapy/attempts, žádné automatické placené retries; offline cesta nevyžaduje API. Live API vyžaduje explicitní model/opt-in a limit calls. `all_pages_processed` a `needs_review` jsou odlišné věci. D007/D011 a otevřené Q001/Q009/Q010 zůstávají platné; implementace není potvrzení kvality WSJ ani ceny.

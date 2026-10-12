@@ -43,4 +43,6 @@ Dnešní vydání nese systematickou coverage. Brief je redakční výběr. Deta
 
 Nezačínej čtením celého repository ani archivu. Začni `PROJECT.md`.
 
+Lokální experimentální CLI `bb-visual-page-map` připraví low-res stránky, načte Visual Page Map a geometricky sestaví text s auditovatelnou coverage. Instalace: `pip install -e '.[dev]'`; použití a opt-in API gate jsou v [docs/SYSTEM.md](docs/SYSTEM.md#visual-page-map-v1--implementace-a-spuštění).
+
 Před architektonickou změnou vždy zkontroluj DECISIONS a FAILURES. Před provozním tvrzením ověř live stav v operational Source of Truth. Starší Business Brief v1, v2 a v3 jsou historické Projects ve stejné family a slouží jako provenance a zdroj lessons, nikoli jako current code dependencies.

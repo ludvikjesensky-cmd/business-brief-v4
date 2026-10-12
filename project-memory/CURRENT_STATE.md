@@ -1,17 +1,22 @@
 # Current State — Business Brief v4
 
 **Last consolidated:** 2026-10-12  
-**Evidence:** projektová dokumentace + uživatelovo zadání a dostupný záznam konverzace „Stav zpracování WSJ“. Experimenty nebyly při konsolidaci znovu spuštěny.  
+**Evidence:** projektová dokumentace + uživatelovo zadání a dostupný záznam konverzace „Stav zpracování WSJ“; následná lokální implementace a syntetické testy. Původní WSJ experimenty nebyly znovu spuštěny.
 **Runtime must be re-verified in Supabase/Railway before operational claims.**
 
 ## Current phase
-v4 ověřuje levnější editorial discovery. Visual Page Map / semantic layout má dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12; plně autonomní ranní výroba ani full-issue validation nejsou hotové. Detail experimentu má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
+v4 ověřuje levnější editorial discovery. Visual Page Map v1 je naprogramovaný samostatný lokální proces; semantic layout má původní dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12. Plně autonomní ranní výroba ani reálná WSJ full-issue validation nejsou hotové. Detail experimentu i implementace má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
 
 ## Established foundation
 - Technician/Ingestor oddělují technickou přípravu a Physical Map od sémantické interpretace.
 - Repository, Railway/Supabase infrastruktura a dashboard existují podle dosavadní dokumentace; současný health není tímto potvrzen.
 - WSJ watcher byl odstraněn; acquisition není vyřešená.
-- Platná architektura je v ARCHITECTURE; Visual Page Mapper je laboratorní návrh.
+- Platná architektura je v ARCHITECTURE; Visual Page Mapper je implementované laboratorní tooling, není nasazen do produkčních workerů.
+
+## Implementation validation
+- CLI prepare/map/assemble, kontrakt v1, lokální render a offline/API adaptér, geometrické přiřazování, review/coverage, durable provenance/resume a explicitní reviewed continuations jsou implementovány. Rozhodnutí D014; použití v docs/SYSTEM.md.
+- 62 nových testů ověřuje lokální mechaniku včetně řádků pod fotkou, footprintů, reading order, nejednoznačnosti, hashů, limitů calls, chyb API a cross-page linků. Se stávající sadou prošlo 111 testů; jeden původní HTTP startup test dashboardu byl po zjištění sandboxového zákazu lokálního socketu vynechán. Tento limit není chyba nového mapperu ani důkaz runtime health.
+- Syntetické dvoustránkové PDF prošlo skutečným Ingestorem, renderem a offline mapováním/sestavením: 11 bloků, 9 assigned, 2 excluded, žádné unmatched/ambiguous. Toto neověřuje schopnost vision modelu na reálném WSJ.
 
 ## Experimental results and blockers
 - Strany 5 a 2 podporují vision mapování článků a explicitního reading order; Python sestavuje text z Physical Map. 600px JPEG stačil pro layout.
@@ -21,8 +26,8 @@ v4 ověřuje levnější editorial discovery. Visual Page Map / semantic layout 
 - Paid Fast Editorial automation zůstává pozastavena (D011/F003). Ekonomická výhoda Visual Page Map je hypotéza, nikoli naměřená úspora.
 
 ## Next steps
-1. Přesně definovat page-map kontrakt, footprint objektů a overlap metriku; ověřit hranice na stranách 5 a 2.
-2. Navázat od strany 5 malými sekvenčními dávkami (např. 4 strany), po ověření runtime stavu; zabránit překrývajícím se deployům a přenosu velkých obrázků přes logy.
+1. Ověřit implementovaný kontrakt a geometrické defaults na skutečných mapách/artefaktech stran 5 a 2; zachovat provenance a porovnat chyby s původním experimentem.
+2. Dokončit render/map/assembly přes lokální sekvenční CLI po malých dávkách; bez překrývajících se Railway deployů a bez přenosu obrázků přes logy. Live API má default limit jeden call na spuštění a vyžaduje explicitní opt-in/model.
 3. Dokončit mapování, sestavení a audit všech 26 stran včetně continuations; změřit omissions, kontaminaci, reading order a chybovost.
 4. Před placeným benchmarkem spočítat cost model; cenu, čas a kvalitu ověřit malým acceptance testem před automatizací.
 

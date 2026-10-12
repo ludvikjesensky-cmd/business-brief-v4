@@ -30,10 +30,12 @@
 
 **Visual Page Map / semantic layout** — experimentální sémantická mapa článků, jejich oblastí, reading order a vložených/vyloučených objektů odvozená z obrazu stránky. Je oddělená od Physical Map.
 
-**Visual Page Mapper** — navržená vision role vytvářející Visual Page Map; neprovádí OCR těla ani editorial deep read.
+**Visual Page Mapper** — vision role vytvářející Visual Page Map; v1 má lokální opt-in API adaptér, neprovádí OCR těla ani editorial deep read.
 
 **BODY_FLOW** — uspořádaný seznam explicitních oblastí těla článku, podle kterého Python skládá zdrojový text.
 
 **Visual footprint** — celá plocha objektu včetně přidružených popisků; u grafu zahrnuje osy, legendu a poznámky.
 
-**page-map.json** — navrhovaný serializovaný výstup mapperu; přesný strojový kontrakt dosud není uzavřen.
+**Page-map envelope** — v1 serializovaný layout spolu s binding k original/prepared PDF, Physical Map a renderu, layout hash a mapper proveniencí; v CLI artefaktech `maps/pNNNN.json`. Strojový layout kontrakt je `visual_page_map.py` / CLI `schema`.
+
+**Block accounting** — rozdělení Physical Map bloků na assigned/excluded/unmatched/ambiguous. Neprokazuje sémantickou úplnost vydání ani správnost exclusions.
