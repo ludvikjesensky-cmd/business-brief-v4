@@ -27,3 +27,13 @@
 **Master editorial truth** — schválené společné redakční jádro, z něhož vznikají kanálové adaptace.
 
 **Reference day/edition** — reálné vydání používané k lidskému acceptance a porovnávání workflow.
+
+**Visual Page Map / semantic layout** — experimentální sémantická mapa článků, jejich oblastí, reading order a vložených/vyloučených objektů odvozená z obrazu stránky. Je oddělená od Physical Map.
+
+**Visual Page Mapper** — navržená vision role vytvářející Visual Page Map; neprovádí OCR těla ani editorial deep read.
+
+**BODY_FLOW** — uspořádaný seznam explicitních oblastí těla článku, podle kterého Python skládá zdrojový text.
+
+**Visual footprint** — celá plocha objektu včetně přidružených popisků; u grafu zahrnuje osy, legendu a poznámky.
+
+**page-map.json** — navrhovaný serializovaný výstup mapperu; přesný strojový kontrakt dosud není uzavřen.

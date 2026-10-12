@@ -16,3 +16,6 @@ Technicky v4 znovu oddělila Technician a Ingestor od editorial interpretation, 
 
 ## Documentation reset — 2026-10-10
 Dosavadní v4 docs byly archivovány a nahrazeny Project Memory standardem: PROJECT.md, project-memory/ a malou sadou tematických docs. Cílem je zachovat historii bez soupeřících zdrojů pravdy.
+
+## Semantic layout research pivot — 2026-10-12
+WSJ experiment přesunul hledání sémantiky článku z inference nad Physical Map na vizuální stránku: vision určuje oblasti a reading order, Python skládá zdrojový text. Strany 5 a 2 přinesly dílčí pozitivní evidence i konkrétní geometrické limity. Jde o výzkumný směr D013, ne změnu produkční architektury; F001 se zachovává. Pokus rozšířit ověření na 26 stran se přerušil na Railway orchestrace/logování (F007). Placený Fast Editorial/OpenAI API se nespustil. Detail metody je v docs/SYSTEM.md, současná rozpracovanost pouze v CURRENT_STATE.

@@ -5,6 +5,7 @@
 **Goal:** z fyzické mapy vydání spolehlivě rekonstruovat články a jejich continuations.  
 **Result:** cesta byla křehká, publication/layout dependent a náročná na ověřování; pro ranní produkt nebyla spolehlivým univerzálním základem.  
 **Lesson:** Physical Map je evidence, ne semantic truth.  
+**2026-10-12 clarification:** opuštěna je inference sémantiky pouze z Physical Map, nikoli její použití jako textové/geometrické evidence. D013 zkouší externí vision mapu; dílčí výsledky a limity jsou v docs/SYSTEM.md. F001 zůstává relevantní.  
 **Retry only if:** nová metoda prokáže na malém reálném corpus výrazně lepší spolehlivost/cenu a nevrací projekt k publication-specific patchování.
 
 ## F002 — Předčasná složitost pipeline
@@ -34,3 +35,12 @@
 **Origin:** zkušenost v2–v4.  
 **Result:** technicky funkční automatizace neprokazuje editorial value.  
 **Lesson:** nejdřív skutečný referenční den a lidské acceptance, potom škálování.
+
+## F007 — Překrývající se Railway deploye/logy při full-issue render testu
+**Date / origin:** 2026-10-12, WSJ 26 stran; dostupný konverzační záznam, ne nový audit Railway.  
+**Goal:** rozšířit Visual Page Map ověření na celé vydání.  
+**Attempt:** dočasná laboratorní render funkce; po kontaktním listu stran 1–4 render zbývajících stran 5–26 po skupinách.  
+**Observed:** více překrývajících se deployů téže funkce, výstup se nevracel čistě a velké base64 logy komplikovaly návrat výsledků. Práce přešla do čekání/opakovaného pollingu a byla uživatelem přerušena. Full-issue validation nebyla dokončena.  
+**Cause:** podle pracovního záznamu orchestrace deployů a přenos obrázků přes logy; přesná runtime příčina nebyla při konsolidaci nezávisle ověřena. Není to důkaz selhání semantic layout metody.  
+**Cost/risk:** ztracený čas a nejasný stav testu; žádný placený Fast Editorial/OpenAI API nebyl spuštěn, produkční pipeline se neměnila.  
+**Retry only if:** ověřit živý stav a zabránit souběhu deployů; sekvenční malé dávky (návrh 4 strany), kompaktní logy a oddělený přenos artefaktů. Render/contact sheet nepovažovat za article assembly validation.

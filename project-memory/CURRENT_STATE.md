@@ -1,30 +1,30 @@
 # Current State — Business Brief v4
 
-**Last verified from project documentation:** 2026-10-10  
+**Last consolidated:** 2026-10-12  
+**Evidence:** projektová dokumentace + uživatelovo zadání a dostupný záznam konverzace „Stav zpracování WSJ“. Experimenty nebyly při konsolidaci znovu spuštěny.  
 **Runtime must be re-verified in Supabase/Railway before operational claims.**
 
 ## Current phase
-v4 je ve fázi ověřování technického ingestion základu a levnějšího, spolehlivějšího editorial workflow. Produktová filozofie v4 je ustálená, ale plně autonomní ranní výroba není hotová.
+v4 ověřuje levnější editorial discovery. Visual Page Map / semantic layout má dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12; plně autonomní ranní výroba ani full-issue validation nejsou hotové. Detail experimentu má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
 
-## Known working / established
-- Repository v4 a základní Railway/Supabase infrastruktura existují.
-- Technician a Ingestor mají definované oddělené odpovědnosti a durable queue/storage model.
-- Technician watcher byl odstraněn; automatické získávání WSJ se nesmí předpokládat.
-- Dashboard/observability vrstva existuje a byla uvedena do provozu.
-- WSJ 9 Oct 2026 prošel reálným Fast Editorial experimentem.
+## Established foundation
+- Technician/Ingestor oddělují technickou přípravu a Physical Map od sémantické interpretace.
+- Repository, Railway/Supabase infrastruktura a dashboard existují podle dosavadní dokumentace; současný health není tímto potvrzen.
+- WSJ watcher byl odstraněn; acquisition není vyřešená.
+- Platná architektura je v ARCHITECTURE; Visual Page Mapper je laboratorní návrh.
 
-## Critical current constraints
-- Fast Editorial reálný běh vytvořil nepřijatelný API náklad, přibližně USD 7.95 / 49 requests podle tehdejšího měření. Placené automatické spouštění je pozastaveno do cost redesign/auditu.
-- v3 prokázala, že spolehlivá rekonstrukce článků pouze z technické/Physical Map je pro ranní produkt problematická; tento přístup se nesmí znovu navrhovat bez nové evidence.
-- Source acquisition, zejména WSJ, není spolehlivě automatizovaný.
-- Editorial workflow musí být ověřováno na skutečných vydáních, nikoli jen kontrakty/testy.
+## Experimental results and blockers
+- Strany 5 a 2 podporují vision mapování článků a explicitního reading order; Python sestavuje text z Physical Map. 600px JPEG stačil pro layout.
+- Otevřené geometrické problémy: hranové chyby Physical Map, neúplný footprint grafů a vyloučení řádků těsně pod fotografií. Navržený photo overlap threshold ještě není validovaný.
+- Test celého 26stránkového WSJ není dokončen. Strany 1–4 byly vyrenderovány do low-res kontaktního listu a vizuálně prošly; to není ověření sestavení článků. Render stran 5–26 po skupinách se zadrhl při překrývajících se deployích téže dočasné Railway funkce a problémech s návratem/base64 logy. Následovalo čekání/polling a uživatelské přerušení. Pozdější pokyn pokračovat není důkazem dokončení; dostupný záznam dokončení nepotvrzuje.
+- Během těchto experimentů nebyl spuštěn žádný placený Fast Editorial/OpenAI API a produkční pipeline se neměnila.
+- Paid Fast Editorial automation zůstává pozastavena (D011/F003). Ekonomická výhoda Visual Page Map je hypotéza, nikoli naměřená úspora.
 
-## Near-term direction
-1. Udržet Technician/Ingestor jako levnou a auditovatelnou technickou vrstvu.
-2. Změřit a redesignovat editorial processing tak, aby cena a čas byly přijatelné.
-3. Zachovat úplnost zdrojové evidence, ale nepřevádět ji automaticky na drahou úplnou LLM rekonstrukci.
-4. Ověřit workflow na malých reverzibilních testech před schedulerem/autonomií.
-5. Runtime stav před dalším debuggingem ověřit přímo v Supabase/Railway.
+## Next steps
+1. Přesně definovat page-map kontrakt, footprint objektů a overlap metriku; ověřit hranice na stranách 5 a 2.
+2. Navázat od strany 5 malými sekvenčními dávkami (např. 4 strany), po ověření runtime stavu; zabránit překrývajícím se deployům a přenosu velkých obrázků přes logy.
+3. Dokončit mapování, sestavení a audit všech 26 stran včetně continuations; změřit omissions, kontaminaci, reading order a chybovost.
+4. Před placeným benchmarkem spočítat cost model; cenu, čas a kvalitu ověřit malým acceptance testem před automatizací.
 
-## Not authoritative here
-Konkrétní počty jobs, queue stav, poslední deployment a aktuální runtime health patří do provozního Source of Truth, nikoli do tohoto snapshotu.
+## Operational authority
+Jobs, deployments, logs, artefakty a živý health ověřuj v Supabase/Railway. Tento snapshot zachycuje konsolidovaný experimentální stav, nikoli live monitoring.

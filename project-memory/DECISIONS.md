@@ -37,3 +37,10 @@ Po reálném WSJ běhu s nepřijatelným API nákladem se nesmí automaticky pl�
 
 ## D012 — ACTIVE — v1–v3 jsou dědictví, ne current code dependencies
 Relevantní principy, decisions, failures a lessons se přenášejí do v4 Project Memory; staré implementace se nenačítají jako skryté závislosti.
+
+## D013 — ACTIVE — Sémantický layout určuje vision, Physical Map poskytuje text
+**Date:** 2026-10-12.  
+**Scope:** přijatý směr laboratorního experimentu, nikoli produkční rollout.  
+**Decision:** model mapuje, jak člověk stránku čte, včetně explicitních BODY_FLOW zón a reading order; Python mapu vykonává geometricky nad Physical Map. Nepokračovat v rekonstrukci sémantiky z pouhé geometrie.  
+**Reason:** dílčí výsledky stran 5 a 2 přinesly funkční tok textu; přetrvávající chyby jsou zejména na hranicích objektů.  
+**Consequences:** zachovat D006 a znalost F001; tento přístup je nová podmínka pro experiment, nikoli popření předchozího failure. Schéma a evidence jsou v [SYSTEM](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12). D007/D011 zůstávají ACTIVE. Full-issue kvalita, přesný overlap práh a ekonomika nejsou rozhodnuté ani ověřené.
