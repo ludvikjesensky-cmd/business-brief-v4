@@ -137,6 +137,20 @@ def assemble_page(page, layout, policy=None):
                             "object_id": oid, "overlap": round(score, 6)}
     block_by_id = {b["block_id"]: b for b in page["blocks"]}
 
+    # Report coincident duplicate source text; never silently delete source evidence.
+    by_text = {}
+    for block in page["blocks"]:
+        if len(block["text"].strip()) < 8:
+            continue
+        for previous in by_text.get(block["text"], []):
+            if max(abs(x - y) for x, y in zip(block["bbox"], previous["bbox"])) <= 0.25:
+                match = assignments.get(block["block_id"], {})
+                warnings.append({"kind": "coincident_duplicate_source_text",
+                    "block_ids": [previous["block_id"], block["block_id"]],
+                    "article_id": match.get("article_id")})
+                break
+        by_text.setdefault(block["text"], []).append(block)
+
     def read(aid, role, regions):
         result = []
         for region in regions:

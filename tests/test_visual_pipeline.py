@@ -265,3 +265,23 @@ def test_cli_schema_and_prepare_map_assemble(source, capsys):
     summaries = [json.loads(s) for s in capsys.readouterr().out.strip().splitlines()]
     assert summaries[0]["api_calls"] == summaries[1]["api_calls_this_run"] == 0
     assert summaries[-1]["all_pages_processed"] and not summaries[-1]["needs_review"]
+
+
+def test_explicit_reasoning_effort_sent_and_resume_bound(source):
+    seen = []
+    def transport(req, timeout):
+        seen.append(json.loads(req.data))
+        return io.BytesIO(b'{"status":"completed","output":[]}')
+    live = VisualResponsesProvider('configured-model', allow_paid=True, key='test-key',
+                                   reasoning_effort='medium', transport=transport)
+    live.generate(b'jpeg', {'page_no': 1})
+    assert seen[0]['reasoning'] == {'effort': 'medium'}
+    prepare_issue(source.pdf, source.physical, source.root)
+    fake = FakeProvider(source.maps)
+    fake.reasoning_effort = 'medium'
+    map_issue(source.root, provider=fake, max_api_calls=1)
+    assert load_json(source.root / 'maps/p0001.json')['mapper']['reasoning_effort'] == 'medium'
+    fake.reasoning_effort = 'low'
+    with pytest.raises(PageMapError, match='config changed'):
+        map_issue(source.root, provider=fake)
+    assert len(fake.calls) == 1

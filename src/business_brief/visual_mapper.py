@@ -27,7 +27,7 @@ def parse_response(raw, page_no):
 
 class VisualResponsesProvider:
     def __init__(self, model, *, allow_paid=False, key=None, max_output_tokens=6000,
-                 detail="low", timeout=120, transport=None):
+                 detail="low", timeout=120, transport=None, reasoning_effort=None):
         if not allow_paid:
             raise PageMapError("live mapping requires explicit --allow-paid")
         self.key = key or os.environ.get("OPENAI_API_KEY")
@@ -35,6 +35,9 @@ class VisualResponsesProvider:
             raise PageMapError("explicit vision model and OPENAI_API_KEY are required")
         if detail not in ("low", "high", "auto") or not 256 <= max_output_tokens <= 32000:
             raise PageMapError("invalid vision request limits")
+        if reasoning_effort not in (None, "none", "minimal", "low", "medium", "high", "xhigh", "max"):
+            raise PageMapError("invalid reasoning effort")
+        self.reasoning_effort = reasoning_effort
         self.model, self.max_output_tokens, self.detail = model, max_output_tokens, detail
         self.timeout, self.transport = timeout, transport or request.urlopen
 
@@ -48,6 +51,8 @@ class VisualResponsesProvider:
                  "image_url": "data:image/jpeg;base64," + base64.b64encode(image).decode("ascii")}]}],
             "text": {"format": {"type": "json_schema", "name": "visual_page_layout",
                                 "strict": True, "schema": LAYOUT_SCHEMA}}}
+        if self.reasoning_effort is not None:
+            body["reasoning"] = {"effort": self.reasoning_effort}
         req = request.Request("https://api.openai.com/v1/responses", data=json.dumps(body).encode(),
             headers={"Authorization": "Bearer " + self.key, "Content-Type": "application/json"})
         try:

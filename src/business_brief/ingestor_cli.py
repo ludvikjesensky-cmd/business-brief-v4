@@ -28,10 +28,11 @@ def main(argv=None):
     parser.add_argument("--max-api-calls", type=int, default=1)
     parser.add_argument("--max-output-tokens", type=int, default=6000)
     parser.add_argument("--detail", choices=["low", "high", "auto"], default="low")
+    parser.add_argument("--reasoning-effort", choices=["none", "minimal", "low", "medium", "high", "xhigh", "max"])
     args = parser.parse_args(argv)
     try:
         provider = VisualResponsesProvider(args.model, allow_paid=args.allow_paid,
-            max_output_tokens=args.max_output_tokens, detail=args.detail) if args.live else None
+            max_output_tokens=args.max_output_tokens, detail=args.detail, reasoning_effort=args.reasoning_effort) if args.live else None
         result = extract_maps(args.bundle, args.output, pdf_path=args.pdf, source_id=args.source_id,
             pages=args.pages, maps_dir=args.maps_dir, provider=provider, max_api_calls=args.max_api_calls,
             width=args.width, quality=args.jpeg_quality)

@@ -1,35 +1,24 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-12  
-**Evidence:** projektová dokumentace + uživatelovo zadání a dostupný záznam konverzace „Stav zpracování WSJ“; následná lokální implementace a syntetické testy. Původní WSJ experimenty nebyly znovu spuštěny.
-**Runtime must be re-verified in Supabase/Railway before operational claims.**
+**Last consolidated:** 2026-10-14
+**Evidence:** lokální implementace, unit/integration testy, uložené placené Responses API odpovědi a vizuální/výběrový textový audit WSJ/HB. Runtime health ověřuj zvlášť.
 
 ## Current phase
-v4 ověřuje levnější editorial discovery. Lokální Ingestor vytváří Physical Map i Visual Page Map; samostatný Assembler sestavuje články (D015). Semantic layout má původní dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12. Plně autonomní ranní výroba ani reálná WSJ full-issue validation nejsou hotové. Detail experimentu i implementace má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
-
-## Established foundation
-- Technician připravuje Source Bundle; Ingestor drží neutrální Physical Map a sémantický layout v oddělené Visual Page Map. Assembler vykonává mapy, editorial výběr je následná vrstva.
-- Repository, Railway/Supabase infrastruktura a dashboard existují podle dosavadní dokumentace; současný health není tímto potvrzen.
-- WSJ watcher byl odstraněn; acquisition není vyřešená.
-- Platná architektura je v ARCHITECTURE; Visual Page Mapper je interní fáze lokálního Ingestoru. Existující produkční durable worker zatím vytváří pouze Physical Map; nový kontrakt není nasazen do queue.
+Ingestor vytváří Physical Map a Visual Page Map; samostatný Assembler vykonává geometrii (D015). Produkční durable worker zůstává Physical Map-only. Lokální WSJ full-issue technický test je dokončený26/26; kvalita rekonstrukce článků acceptance neprošla. HB má jen částečný šestistránkový vzorek, ne full issue.
 
 ## Implementation validation
-- `bb-ingestor` / `extract_maps` vytváří obě mapy a handoff `ingestor-output.json`, neprovádí assembly. `bb-assembler` ověřuje handoff a sestavuje text; CLI prepare/map/assemble zůstává kompatibilní laboratorní cesta. Kontrakt v1, lokální render, offline/API adaptér, review/coverage, durable provenance/resume a explicitní reviewed continuations jsou implementovány. Rozhodnutí D014/D015; použití v docs/SYSTEM.md.
-- 74 nových testů ověřuje lokální mechaniku včetně řádků pod fotkou, footprintů, reading order, nejednoznačnosti, hashů, limitů calls, chyb API, cross-page linků a dvoumapového handoffu Ingestor → Assembler. Se stávající sadou prošlo 123 testů; jeden původní HTTP startup test dashboardu byl po zjištění sandboxového zákazu lokálního socketu vynechán. Tento limit není chyba nového mapperu ani důkaz runtime health.
-- Syntetické dvoustránkové PDF prošlo skutečným Ingestorem, renderem a offline mapováním/sestavením: 11 bloků, 9 assigned, 2 excluded, žádné unmatched/ambiguous. Toto neověřuje schopnost vision modelu na reálném WSJ.
+Mapper v1.1 má obecná pravidla pro titulky/standfirst, byline, sloupce, fotografie/grafy, infographic ownership a utility. Schéma v1 zůstává. Explicitní reasoning effort je opt-in a součást provenance/resume. Assembler hlásí source duplicity bez mazání textu. 125 testů prošlo; jeden původní dashboard HTTP/socket test je vynechán kvůli sandboxu. Syntetický fixture ani unit testy neprokazují vision quality.
 
 ## Experimental results and blockers
-- Strany 5 a 2 podporují vision mapování článků a explicitního reading order; Python sestavuje text z Physical Map. 600px JPEG stačil pro layout.
-- Otevřené geometrické problémy: hranové chyby Physical Map, neúplný footprint grafů a vyloučení řádků těsně pod fotografií. Navržený photo overlap threshold ještě není validovaný.
-- Test celého 26stránkového WSJ není dokončen. Strany 1–4 byly vyrenderovány do low-res kontaktního listu a vizuálně prošly; to není ověření sestavení článků. Render stran 5–26 po skupinách se zadrhl při překrývajících se deployích téže dočasné Railway funkce a problémech s návratem/base64 logy. Následovalo čekání/polling a uživatelské přerušení. Pozdější pokyn pokračovat není důkazem dokončení; dostupný záznam dokončení nepotvrzuje.
-- Během těchto experimentů nebyl spuštěn žádný placený Fast Editorial/OpenAI API a produkční pipeline se neměnila.
-- Paid Fast Editorial automation zůstává pozastavena (D011/F003). Ekonomická výhoda Visual Page Map je hypotéza, nikoli naměřená úspora.
+Kanonický protokol metrik, nákladů a konkrétních chyb je [visual-map-validation-2026-10-14](../docs/reference-days/visual-map-validation-2026-10-14.md). V1.1 re-test dokončil šest ze šesti volání; některé role/oddělení obsahu se zlepšily, geometrie a omissions nikoli konzistentně. Quality acceptance neprošla. HB native PDF má potvrzené duplicitní texty; jejich odstranění není implementováno. Starší HB timeouty mají neznámý billing a nebyly automaticky opakovány.
+
+Původní manuální WSJ experimenty byly bez paid API. Navazující benchmarky byly uživatelem autorizované placené OpenAI calls; Fast Editorial se nespouštěl. F007 Railway render failure je historický a zůstává zachován; lokální WSJ test již dokončil technický průchod celého vydání. Úspora celé editorial pipeline při stejné kvalitě dosud prokázaná není. Paid Fast Editorial automation zůstává pozastavena (D011/F003).
 
 ## Next steps
-1. Ověřit implementovaný kontrakt a geometrické defaults na skutečných mapách/artefaktech stran 5 a 2; zachovat provenance a porovnat chyby s původním experimentem.
-2. Dokončit render/map/assembly přes lokální sekvenční CLI po malých dávkách; bez překrývajících se Railway deployů a bez přenosu obrázků přes logy. Live API má default limit jeden call na spuštění a vyžaduje explicitní opt-in/model.
-3. Dokončit mapování, sestavení a audit všech 26 stran včetně continuations; změřit omissions, kontaminaci, reading order a chybovost.
-4. Před placeným benchmarkem spočítat cost model; cenu, čas a kvalitu ověřit malým acceptance testem před automatizací.
+1. Izolovat geometrickou přesnost na stejném kontrolním vzorku: neměnit model/prompt zároveň s rozlišením; nezvyšovat pokrytí broad boxes.
+2. Odděleně vyřešit text-layer duplicity/decoding a ověřit přesný text; nepřenášet body OCR do Visual Mapperu.
+3. Vyřešit transport/latency a uložit request/response důkazy bez automatických neznámých paid retries.
+4. Před škálováním ověřit skutečné články, omissions, contamination, reading order a reviewed continuations; coverage/full completion není acceptance.
 
 ## Operational authority
-Jobs, deployments, logs, artefakty a živý health ověřuj v Supabase/Railway. Tento snapshot zachycuje konsolidovaný experimentální stav, nikoli live monitoring.
+Jobs, deployments, logs a live health ověřuj v Supabase/Railway. Lokální nástroje a PR nejsou potvrzením produkčního rollout ani editorial acceptance.

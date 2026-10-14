@@ -44,3 +44,9 @@
 **Cause:** podle pracovního záznamu orchestrace deployů a přenos obrázků přes logy; přesná runtime příčina nebyla při konsolidaci nezávisle ověřena. Není to důkaz selhání semantic layout metody.  
 **Cost/risk:** ztracený čas a nejasný stav testu; žádný placený Fast Editorial/OpenAI API nebyl spuštěn, produkční pipeline se neměnila.  
 **Retry only if:** ověřit živý stav a zabránit souběhu deployů; sekvenční malé dávky (návrh 4 strany), kompaktní logy a oddělený přenos artefaktů. Render/contact sheet nepovažovat za article assembly validation.
+
+## F008 — Platný layout JSON / vysoké pokrytí bez sémantické správnosti
+**Origin:** navazující placené WSJ/HB Visual Page Map testy, protokol2026-10-14.
+**Observed:** split narrative do infografiky, crossword contamination, neúplné titulky, pozdní standfirst a nepřesné footprinty; blokové pokrytí tyto chyby neodhalilo. V1.1 opravuje některé role, ale výsledky zůstávají smíšené.
+**Lesson:** hodnotit skutečné články a reading order, odděleně od schema valid/full completion. Native HB duplicity navíc vznikají už před vision. Timeout neprokazuje selhání modelu a má neznámý billing.
+**Retry only if:** explicitní malý kontrolní vzorek, přesná provenance konfigurace, omezená volání a lidský textový/vizuální audit; ne další plošný běh naslepo. Metriky mají jediný domov v docs/reference-days/visual-map-validation-2026-10-14.md.

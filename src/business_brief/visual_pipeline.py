@@ -176,6 +176,8 @@ def map_issue(root, *, maps_dir=None, provider=None, max_api_calls=1):
                      "prompt_sha256": digest(PROMPT.encode()), "mapper_version": MAPPER_VERSION}
         if provider is not None:
             requested.update(model=provider.model, detail=provider.detail, max_output_tokens=provider.max_output_tokens)
+            if getattr(provider, "reasoning_effort", None) is not None:
+                requested["reasoning_effort"] = provider.reasoning_effort
         call_count, accepted = 0, []
         for meta in manifest["pages"]:
             n, name = meta["page_no"], page_name(meta["page_no"])

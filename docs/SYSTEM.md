@@ -156,3 +156,13 @@ bb-visual-page-map assemble --issue-dir work/visual-issue --links work/approved-
 ```
 
 Neznámé fragmenty, jiné vydání, cykly, duplicitní/větvené vazby, různé typy položek nebo absence printed cue vedou k chybě. Review flag se spojením automaticky nemaže. Issue výstup uchovává fragmenty i složené články a nevyřešené continuations; editorial selection/deep read mají explicitně `not_started`. Otestovaná lokální mechanika nenahrazuje dosud nedokončený WSJ full-issue acceptance test.
+
+### Visual Page Mapper v1.1 — obecná pravidla a ověření 2026-10-14
+
+V1.1 ponechává schéma v1. Prompt nově rozlišuje kicker/title/standfirst v headline array, vyžaduje kompletní víceřádkové titulky, oddělené byline, body zóny po skutečných sloupcích, tight unions nepravidelných fotografií a celé grafy včetně popisků. Infographic heading nepřebírá sousední narrative; crossword/publication/table jsou samostatné utility. Nejsou pravidla podle názvu deníku ani předpoklad počtu sloupců.
+
+Provider a obě live CLI podporují volitelný `--reasoning-effort`; bez argumentu se neposílá. Nastavení se zapisuje do mapper config a změna blokuje resume v témže adresáři. Prompt včetně všech instrukcí je v jednom PROMPT a hash není obcházen transportovým doplňkem. Verze mapperu a prompt hash vyžadují nový adresář pro nový benchmark.
+
+Assembler konzervativně hlásí `coincident_duplicate_source_text` pro shodný text >=8 znaků s odpovídajícími bbox souřadnicemi do0,25 bodu. Žádné source bloky nemaže a Physical Map zůstává neutrální evidence. Jde o diagnostiku, ne automatickou opravu textu.
+
+Výsledky autorizovaných placených WSJ/HB benchmarků, smíšený re-test v1.1 a konkrétní acceptance blockers jsou kanonicky v [protokolu ověření](reference-days/visual-map-validation-2026-10-14.md). WSJ26/26 je technicky dokončené; kvalitativní acceptance nikoli. Celý HB nebyl validován. Produkční Physical Map-only worker ani queue se touto změnou nemění.

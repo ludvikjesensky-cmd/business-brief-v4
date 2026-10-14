@@ -52,6 +52,7 @@ def main(argv=None):
     mapping.add_argument("--max-api-calls", type=int, default=1, help="per invocation, default 1; no retries")
     mapping.add_argument("--max-output-tokens", type=int, default=6000)
     mapping.add_argument("--detail", choices=["low", "high", "auto"], default="low")
+    mapping.add_argument("--reasoning-effort", choices=["none", "minimal", "low", "medium", "high", "xhigh", "max"])
     assembly = sub.add_parser("assemble", help="execute maps; write article evidence, coverage and previews")
     assembly.add_argument("--issue-dir", required=True)
     assembly.add_argument("--links", help="reviewed, provenance-bound cross-page continuation links JSON")
@@ -73,7 +74,7 @@ def main(argv=None):
                        "image_bytes": sum(p["image_bytes"] for p in result["pages"]), "api_calls": 0}
         elif args.command == "map":
             provider = VisualResponsesProvider(args.model, allow_paid=args.allow_paid,
-                max_output_tokens=args.max_output_tokens, detail=args.detail) if args.live else None
+                max_output_tokens=args.max_output_tokens, detail=args.detail, reasoning_effort=args.reasoning_effort) if args.live else None
             summary = map_issue(args.issue_dir, maps_dir=args.maps_dir, provider=provider, max_api_calls=args.max_api_calls)
         else:
             policy = MatchingPolicy(args.region_overlap, args.photo_overlap, args.object_overlap,

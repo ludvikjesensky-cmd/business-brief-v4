@@ -169,3 +169,16 @@ def test_schema_all_objects_are_closed_and_all_properties_required():
             for child in schema["properties"].values(): inspect(child)
         if schema["type"] == "array": inspect(schema["items"])
     inspect(LAYOUT_SCHEMA)
+
+
+def test_coincident_source_duplicate_is_reported_without_deleting_text():
+    mapped = layout([article(body_flow=[region('body', [0, 0, 1, 1])])])
+    source = page([block('one', 'Duplicate sentence', [5, 20, 45, 25]),
+                   block('two', 'Duplicate sentence', [5, 20.003, 45, 25.003]),
+                   block('three', 'Duplicate sentence', [5, 40, 45, 45])])
+    result = assemble_page(source, mapped)
+    duplicates = [w for w in result['warnings'] if w['kind'] == 'coincident_duplicate_source_text']
+    assert len(duplicates) == 1
+    assert duplicates[0]['block_ids'] == ['one', 'two']
+    assert result['articles'][0]['body_text'].count('Duplicate sentence') == 3
+    assert result['articles'][0]['needs_review']
