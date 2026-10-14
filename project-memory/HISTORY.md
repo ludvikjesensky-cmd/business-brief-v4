@@ -17,5 +17,10 @@ Technicky v4 znovu oddělila Technician a Ingestor od editorial interpretation, 
 ## Documentation reset — 2026-10-10
 Dosavadní v4 docs byly archivovány a nahrazeny Project Memory standardem: PROJECT.md, project-memory/ a malou sadou tematických docs. Cílem je zachovat historii bez soupeřících zdrojů pravdy.
 
-## Semantic layout research pivot — 2026-10-12
-WSJ experiment přesunul hledání sémantiky článku z inference nad Physical Map na vizuální stránku: vision určuje oblasti a reading order, Python skládá zdrojový text. Strany 5 a 2 přinesly dílčí pozitivní evidence i konkrétní geometrické limity. Jde o výzkumný směr D013, ne změnu produkční architektury; F001 se zachovává. Pokus rozšířit ověření na 26 stran se přerušil na Railway orchestrace/logování (F007). Placený Fast Editorial/OpenAI API se nespustil. Detail metody je v docs/SYSTEM.md, současná rozpracovanost pouze v CURRENT_STATE.
+## Semantic layout research — 2026-10-12 až 2026-10-14
+Physical Map byla doplněna experimenty s vision layoutem, BODY_FLOW, geometry matching a později block-ID assembly. Některé jednotlivé stránky byly částečně úspěšné, ale obecná spolehlivost article ownership, reading order a čistého textu zůstala nedostatečná a vyžadovala opakované ruční zásahy. Tyto experimenty jsou zachovány ve FAILURES, nikoli v current architecture.
+
+## Ingestor v2 pivot — 2026-10-14
+Projekt přijal nový generační řez: Ingestor v1.1 / Physical Map production path je superseded. Ingestor v2.0 je živá Chat role nad Technician Source Bundle, pracuje jednu stránku po druhé a vytváří jeden ověřený Page JSON na stránku.
+
+Tím se page semantics přesouvá tam, kde lze opakovaně kontrolovat source image, textovou evidence a vlastní předchozí hypotézy. Automatizace se vrací až za stabilní Page JSON contract: Assembler skládá články, Composer seskupuje témata napříč zdroji, Translator je kandidát pro API transformaci a Editorial Workflow zůstává vrstvou redakčního judgmentu.
