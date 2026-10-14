@@ -1,30 +1,61 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-12  
-**Evidence:** projektová dokumentace + uživatelovo zadání a dostupný záznam konverzace „Stav zpracování WSJ“. Experimenty nebyly při konsolidaci znovu spuštěny.  
+**Last consolidated:** 2026-10-14  
 **Runtime must be re-verified in Supabase/Railway before operational claims.**
 
 ## Current phase
-v4 ověřuje levnější editorial discovery. Visual Page Map / semantic layout má dílčí pozitivní výsledky na stranách 5 a 2 WSJ 2026-10-12; plně autonomní ranní výroba ani full-issue validation nejsou hotové. Detail experimentu má jediný domov v [docs/SYSTEM.md](../docs/SYSTEM.md#visual-page-map--semantic-layout--experiment-wsj-2026-10-12).
+v4 opouští automatizovanou rekonstrukci článků přes Physical Map / Visual Page Map jako produkční cestu.
+
+Nový přijatý směr je:
+
+closed source edition → Technician → validated Source Bundle → Ingestor v2.0 (live Chat) → one verified JSON per page → Assembler → canonical Article Records → Composer → Translator → Editorial Workflow.
+
+Ingestor v1.1 (ingestor-v4-physical-map-v1.1) a navazující Physical Map / semantic-layout experimenty jsou neaktivní legacy. Jejich kód a historie zůstávají jako evidence a failure knowledge, ale nejsou current production architecture.
 
 ## Established foundation
-- Technician/Ingestor oddělují technickou přípravu a Physical Map od sémantické interpretace.
-- Repository, Railway/Supabase infrastruktura a dashboard existují podle dosavadní dokumentace; současný health není tímto potvrzen.
-- WSJ watcher byl odstraněn; acquisition není vyřešená.
-- Platná architektura je v ARCHITECTURE; Visual Page Mapper je laboratorní návrh.
+- Technician zůstává technický gateway bez editorial interpretation.
+- Source Bundle v4 zůstává upstream kontrakt pro Ingestor.
+- Supabase je operational memory/archive; Railway je workshop.
+- Provenance, immutable source a page-level evidence zůstávají first-class.
+- Watcher byl odstraněn; acquisition je stále explicitní upstream problém.
+- Reálný full-edition API editorial processing se neosvědčil ekonomicky ani jako spolehlivý jednorázový interpretační mechanismus.
 
-## Experimental results and blockers
-- Strany 5 a 2 podporují vision mapování článků a explicitního reading order; Python sestavuje text z Physical Map. 600px JPEG stačil pro layout.
-- Otevřené geometrické problémy: hranové chyby Physical Map, neúplný footprint grafů a vyloučení řádků těsně pod fotografií. Navržený photo overlap threshold ještě není validovaný.
-- Test celého 26stránkového WSJ není dokončen. Strany 1–4 byly vyrenderovány do low-res kontaktního listu a vizuálně prošly; to není ověření sestavení článků. Render stran 5–26 po skupinách se zadrhl při překrývajících se deployích téže dočasné Railway funkce a problémech s návratem/base64 logy. Následovalo čekání/polling a uživatelské přerušení. Pozdější pokyn pokračovat není důkazem dokončení; dostupný záznam dokončení nepotvrzuje.
-- Během těchto experimentů nebyl spuštěn žádný placený Fast Editorial/OpenAI API a produkční pipeline se neměnila.
-- Paid Fast Editorial automation zůstává pozastavena (D011/F003). Ekonomická výhoda Visual Page Map je hypotéza, nikoli naměřená úspora.
+## Ingestor v2.0
+Ingestor v2.0 je pracovní role živého Chatu, ne autonomous API worker.
+
+Pracuje:
+- nad Technician Source Bundle;
+- jednu stránku po druhé;
+- iterativně nad page image + prepared text/evidence;
+- s explicitním ověřováním textu a metadat;
+- s Business Brief relevance v kontextu projektu;
+- s jedním Page JSON jako jediným výstupem každé dokončené stránky.
+
+Po každé stránce se zastaví. Další stránku zpracuje až na pokyn uživatele.
+
+Přesný machine contract Page JSON zatím není frozen; má navázat na existující contracts.py, nikoli vytvořit paralelní contract system.
+
+## Technician
+Produkční runtime je stále na Technician v4.2. PR #3 připravuje novější technickou přípravu s lepším page evidence/OCR validation, ale není mergnutý a práce na něm je dočasně pozastavena kvůli Usage.
+
+Desetistránkový WSJ 2026-10-14 prošel Technicianem v4.2 a skončil ve stavu READY_FOR_INGESTOR.
+
+## Inactive legacy
+Následující nejsou current production path:
+- Ingestor v1.1 / Physical Map worker;
+- reconstruction článků pouze z Physical Map;
+- Visual Page Mapper + BODY_FLOW + bbox/overlap assembly;
+- controller-directed block-ID experiment;
+- paid Fast Editorial full-edition flow.
+
+Neodstraňovat jejich historii z FAILURES/HISTORY; nevracet je do current architecture bez nové ověřené skutečnosti.
 
 ## Next steps
-1. Přesně definovat page-map kontrakt, footprint objektů a overlap metriku; ověřit hranice na stranách 5 a 2.
-2. Navázat od strany 5 malými sekvenčními dávkami (např. 4 strany), po ověření runtime stavu; zabránit překrývajícím se deployům a přenosu velkých obrázků přes logy.
-3. Dokončit mapování, sestavení a audit všech 26 stran včetně continuations; změřit omissions, kontaminaci, reading order a chybovost.
-4. Před placeným benchmarkem spočítat cost model; cenu, čas a kvalitu ověřit malým acceptance testem před automatizací.
+1. Dokončit a otestovat docs/INGESTOR.md na reálné stránce WSJ 2026-10-14.
+2. Navrhnout a zmrazit page-ingest JSON contract v návaznosti na src/business_brief/contracts.py.
+3. Ověřit Ingestor v2.0 ručně na několika různých stránkách a publikacích.
+4. Teprve poté implementovat Assembler nad Page JSONy a uložit canonical Article Records do Supabase Storage + Postgres.
+5. Později navázat Composerem, Translator API workflow a stávajícím Editorial Workflow.
 
 ## Operational authority
-Jobs, deployments, logs, artefakty a živý health ověřuj v Supabase/Railway. Tento snapshot zachycuje konsolidovaný experimentální stav, nikoli live monitoring.
+Jobs, deployments, live status, runtime artifacts a health ověřuj v Supabase/Railway. Tento dokument je kanonický snapshot směru projektu, nikoli live monitoring.
