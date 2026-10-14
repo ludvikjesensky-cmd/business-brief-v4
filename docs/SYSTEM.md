@@ -166,3 +166,7 @@ Provider a obě live CLI podporují volitelný `--reasoning-effort`; bez argumen
 Assembler konzervativně hlásí `coincident_duplicate_source_text` pro shodný text >=8 znaků s odpovídajícími bbox souřadnicemi do0,25 bodu. Žádné source bloky nemaže a Physical Map zůstává neutrální evidence. Jde o diagnostiku, ne automatickou opravu textu.
 
 Výsledky autorizovaných placených WSJ/HB benchmarků, smíšený re-test v1.1 a konkrétní acceptance blockers jsou kanonicky v [protokolu ověření](reference-days/visual-map-validation-2026-10-14.md). WSJ26/26 je technicky dokončené; kvalitativní acceptance nikoli. Celý HB nebyl validován. Produkční Physical Map-only worker ani queue se touto změnou nemění.
+
+### Controller-directed block-ID experiment
+
+Alternativní lokální experiment `bb-article-blocks` připravuje neutrální řádky s ID; controller rozhoduje o přiřazení a pořadí článků a Python vykonává explicitní plan včetně kontrolovaného typografického čištění. Nejde o automatickou inferenci sémantiky z Physical Map ani produkční náhradu Visual Mapperu. Workflow, kontrakt, limity a WSJ strana 2 jsou v [ARTICLE_BLOCKS](ARTICLE_BLOCKS.md).

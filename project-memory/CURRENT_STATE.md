@@ -22,3 +22,6 @@ Původní manuální WSJ experimenty byly bez paid API. Navazující benchmarky 
 
 ## Operational authority
 Jobs, deployments, logs a live health ověřuj v Supabase/Railway. Lokální nástroje a PR nejsou potvrzením produkčního rollout ani editorial acceptance.
+
+## Controller-directed block-ID experiment
+`bb-article-blocks` je lokální experiment: asistent přiřazuje a řadí source IDs, Python extrahuje, validuje a sestavuje čitelný JSON. První WSJ strana2 má dva hlavní články a čtyři briefs, bez paid API. Nízké časy Pythonu nezahrnují čas controllerovy práce; zatím nejde o doloženou automatickou alternativu ani produkční změnu. Jediný detailní domov kontraktu a výsledku je [ARTICLE_BLOCKS](../docs/ARTICLE_BLOCKS.md).

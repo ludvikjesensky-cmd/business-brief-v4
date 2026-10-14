@@ -17,6 +17,7 @@ bb-technician-worker = "business_brief.technician_worker:main"
 bb-dashboard = "business_brief.dashboard:main"
 bb-ingestor-worker = "business_brief.ingestor_worker:main"
 bb-ingestor = "business_brief.ingestor_cli:main"
+bb-article-blocks = "business_brief.article_blocks:main"
 bb-assembler = "business_brief.assembler_cli:main"
 bb-visual-page-map = "business_brief.visual_page_map_cli:main"
 
