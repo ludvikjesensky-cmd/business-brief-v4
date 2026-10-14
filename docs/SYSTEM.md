@@ -6,6 +6,8 @@ Technická vrstva připravuje evidence. Editorial vrstva interpretuje. Publishin
 ## Technician
 Input: uzavřené source edition. Output: validovaný Source Bundle. Odpovědnosti: identity, immutable original, SHA/provenance, container validation, OCR decision/derivative, page renders, mechanical split, manifest, atomic handoff. Žádná editorial interpretace.
 
+Implementace v4.3 přidává zachování původních celostránkových obrazů, náhledy/kontaktní list, per-page kontrolu textové vrstvy a identitu balíčku podle konfigurace. Přesné stavy a hranice jsou v [TECHNICIAN.md](TECHNICIAN.md). `READY_FOR_INGESTOR` necertifikuje věrnost přepisu; nízké textové pokrytí je viditelný review signal. Nasazení této změny se ověřuje samostatně.
+
 ## Ingestor
 Input: Source Bundle. Output: neutral Physical Map / evidence representation. Odpovědnost je geometrie, text a fyzická struktura, nikoli article/editorial truth.
 

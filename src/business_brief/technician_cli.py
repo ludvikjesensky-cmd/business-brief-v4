@@ -10,9 +10,14 @@ def main() -> int:
     p.add_argument("--dpi",type=int,default=144);p.add_argument("--ocr",choices=["auto","always","never"],default="auto")
     p.add_argument("--ocr-language",default="eng");p.add_argument("--min-native-chars",type=int,default=30)
     p.add_argument("--max-pages-per-part",type=int,default=0)
+    p.add_argument("--image-mode",choices=["auto","render"],default="auto")
+    p.add_argument("--preview-width",type=int,default=360)
+    p.add_argument("--contact-columns",type=int,default=5)
+    p.add_argument("--max-render-pixels",type=int,default=20_000_000)
+    p.add_argument("--ocr-jobs",type=int,default=2)
     a=p.parse_args()
     try:
-        b=prepare_pdf(a.source,workspace=a.workspace,publication=a.publication,edition_date=a.edition_date,edition_variant=a.variant,language=a.language,dpi=a.dpi,ocr_mode=a.ocr,ocr_languages=a.ocr_language,min_native_chars_per_page=a.min_native_chars,max_pages_per_part=a.max_pages_per_part)
+        b=prepare_pdf(a.source,workspace=a.workspace,publication=a.publication,edition_date=a.edition_date,edition_variant=a.variant,language=a.language,dpi=a.dpi,ocr_mode=a.ocr,ocr_languages=a.ocr_language,min_native_chars_per_page=a.min_native_chars,max_pages_per_part=a.max_pages_per_part,image_mode=a.image_mode,preview_width=a.preview_width,contact_columns=a.contact_columns,max_render_pixels=a.max_render_pixels,ocr_jobs=a.ocr_jobs)
         print(json.dumps(b.to_dict(),ensure_ascii=False,indent=2));return 0
     except TechnicianError as e:
         print(f"Technician error: {e}");return 2

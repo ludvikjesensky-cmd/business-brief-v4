@@ -35,7 +35,9 @@ class SupabaseArchive:
             raise StorageError("Archived manifest source hash mismatch")
         prefix=manifest_path.rsplit("/",1)[0]+"/"
         artifacts={data["original_path"]:digest,data["prepared_pdf_path"]:data["ocr"]["prepared_sha256"]}
-        artifacts.update({item["path"]:item["sha256"] for item in data["page_images"]+data.get("parts",[])})
+        artifacts.update({item["path"]:item["sha256"] for item in data["page_images"]+data.get("parts",[])+data.get("previews",[])})
+        if data.get("contact_sheet"):
+            item=data["contact_sheet"]; artifacts[item["path"]]=item["sha256"]
         if len(data["page_images"]) != data["page_count"]:
             raise StorageError("Archived page count mismatch")
         for key,expected in artifacts.items():
@@ -44,6 +46,10 @@ class SupabaseArchive:
             payload=self.client.storage.from_(self.archive).download(key)
             if hashlib.sha256(payload).hexdigest()!=expected:
                 raise StorageError(f"Archived artifact hash mismatch: {key}")
+
+    def bundle_configuration_matches(self, source, configuration_sha256):
+        data=json.loads(self.client.storage.from_(self.archive).download(source["source_bundle_path"]))
+        return data.get("configuration_sha256")==configuration_sha256
 
     def download_inbox(self, object_key:str, target:Path)->Path:
         target.parent.mkdir(parents=True,exist_ok=True)
@@ -78,15 +84,17 @@ class SupabaseArchive:
         data["original_path"] = remote_path(data["original_path"])
         data["prepared_pdf_path"] = remote_path(data["prepared_pdf_path"])
         data["ocr"]["prepared_pdf_path"] = remote_path(data["ocr"]["prepared_pdf_path"])
-        for item in data["page_images"] + data["parts"]:
+        for item in data["page_images"] + data["parts"] + data.get("previews", []):
             item["path"] = remote_path(item["path"])
+        if data.get("contact_sheet"):
+            data["contact_sheet"]["path"] = remote_path(data["contact_sheet"]["path"])
         archive_manifest = bundle_dir / ".archive-manifest.json"
         archive_manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
         mapping=[]
         for p in sorted(bundle_dir.rglob("*")):
             if not p.is_file() or p.name.startswith(".") or p == manifest: continue
             rel=p.relative_to(bundle_dir).as_posix(); remote=f"{prefix}/{rel}"
-            mime="application/pdf" if p.suffix.lower()==".pdf" else "image/png" if p.suffix.lower()==".png" else "application/json"
+            mime={".pdf":"application/pdf", ".png":"image/png", ".jpg":"image/jpeg", ".jpeg":"image/jpeg"}.get(p.suffix.lower(),"application/json")
             self.upload_file(p,remote,mime); mapping.append(remote)
         self.upload_file(archive_manifest, f"{prefix}/manifest.json", "application/json")
         mapping.append(f"{prefix}/manifest.json")

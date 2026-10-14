@@ -5,7 +5,7 @@ from uuid import uuid4
 from .contracts import SOURCE_BUNDLE_SCHEMA
 from .database import TechnicianRepository
 from .storage import SupabaseArchive
-from .technician import TECHNICIAN_VERSION, prepare_pdf, sha256_file
+from .technician import TECHNICIAN_VERSION, prepare_pdf, sha256_file, preparation_configuration
 from .events import EventLogger
 
 def process_inbox_object(object_key,*,publication=None,edition_date=None,variant="default",object_version=None):
@@ -30,7 +30,9 @@ def process_inbox_object(object_key,*,publication=None,edition_date=None,variant
                     archive.remove_inbox(object_key)
                     log.emit("INBOX_REMOVED",stage="T22",status="EDITION_COLLISION",source_id=old["id"],metadata={"object_key":object_key,"archive_verified":True})
                 return {"status":"EDITION_COLLISION","source_id":old["id"],"inbox_cleaned":True}
-            if old and old.get("status")=="READY_FOR_INGESTOR":
+            expected_config=preparation_configuration(publication=publication,edition_date=edition_date,edition_variant=variant)[1]
+            if old and old.get("status")=="READY_FOR_INGESTOR" and archive.bundle_configuration_matches(old,expected_config):
+                archive.verify_archived_source(old,digest)
                 repo.mark_duplicate(arrival["id"],blob,old)
                 log.emit("DUPLICATE_SOURCE",stage="T06",status="DUPLICATE_SOURCE",source_id=old["id"],metadata={"sha256":digest})
                 archive.remove_inbox(object_key) if archive.inbox_version(object_key)==object_version else None
