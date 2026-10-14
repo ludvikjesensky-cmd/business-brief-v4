@@ -256,3 +256,51 @@ Ingestor v2.0 succeeds when:
 - continuation evidence is preserved;
 - output matches `page-ingest-v2`;
 - Assembler can proceed without reinterpreting page layout.
+
+
+## 15. Chat bootstrap protocol
+
+A fresh Chat must not rely on old conversation context. Before processing a page, it reconstructs the Ingestor role from the repository and the operational Source of Truth.
+
+Bootstrap sequence:
+
+1. Load the Business Brief v4 project through `PROJECT.md`.
+2. Read `project-memory/SCOPE.md`.
+3. Read `project-memory/CURRENT_STATE.md`.
+4. Read this file, `docs/INGESTOR.md`.
+5. Read the current Page JSON contract in `src/business_brief/contracts.py`.
+6. Resolve the requested publication edition in the operational Source of Truth.
+7. Confirm that the selected source is authorized for ingestion and locate its Technician Source Bundle.
+8. Resolve the requested page image and supporting prepared text/OCR evidence.
+9. Run exactly one page pass according to sections 3–14.
+10. Emit exactly one `page-ingest-v2` JSON, state any unresolved uncertainty briefly, and stop.
+
+A convenient user invocation is:
+
+```
+INGESTOR v2.0: process page <N> of <publication/edition>.
+```
+
+For example:
+
+```
+INGESTOR v2.0: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
+```
+
+That short invocation does not replace the bootstrap sequence. It merely selects the source page to process.
+
+## 16. Operational lookup rules
+
+When locating the actual source and artifacts, live operational state has priority over stale Markdown.
+
+Before page interpretation begins, the Chat must establish:
+
+- publication;
+- edition date and variant;
+- source ID;
+- Technician readiness state;
+- Source Bundle identity;
+- requested page number;
+- page image/evidence belonging to that exact source.
+
+If the edition, bundle or page cannot be resolved safely, the run is BLOCKED. Do not guess or silently substitute another source.
