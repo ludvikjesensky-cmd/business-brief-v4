@@ -1,12 +1,12 @@
 # Failures — Business Brief v4
 
 ## F001 — Rekonstrukce článků z technické/Physical Map
-**Origin:** zejména v3.  
+**Origin:** zejména v3–v4.  
 **Goal:** z fyzické mapy vydání spolehlivě rekonstruovat články a jejich continuations.  
 **Result:** cesta byla křehká, publication/layout dependent a náročná na ověřování; pro ranní produkt nebyla spolehlivým univerzálním základem.  
-**Lesson:** Physical Map je evidence, ne semantic truth.  
-**2026-10-12 clarification:** opuštěna je inference sémantiky pouze z Physical Map, nikoli její použití jako textové/geometrické evidence. D013 zkouší externí vision mapu; dílčí výsledky a limity jsou v docs/SYSTEM.md. F001 zůstává relevantní.  
-**Retry only if:** nová metoda prokáže na malém reálném corpus výrazně lepší spolehlivost/cenu a nevrací projekt k publication-specific patchování.
+**Lesson:** technická/geometrická evidence sama neurčuje article truth.  
+**Status 2026-10-14:** production path opuštěna; Ingestor v1.1 je superseded D014.  
+**Retry only if:** nová skutečnost prokáže zásadně lepší univerzální mechanismus, ne jen další heuristickou vrstvu.
 
 ## F002 — Předčasná složitost pipeline
 **Origin:** v1–v3.  
@@ -37,10 +37,18 @@
 **Lesson:** nejdřív skutečný referenční den a lidské acceptance, potom škálování.
 
 ## F007 — Překrývající se Railway deploye/logy při full-issue render testu
-**Date / origin:** 2026-10-12, WSJ 26 stran; dostupný konverzační záznam, ne nový audit Railway.  
+**Date / origin:** 2026-10-12, WSJ 26 stran.  
 **Goal:** rozšířit Visual Page Map ověření na celé vydání.  
-**Attempt:** dočasná laboratorní render funkce; po kontaktním listu stran 1–4 render zbývajících stran 5–26 po skupinách.  
-**Observed:** více překrývajících se deployů téže funkce, výstup se nevracel čistě a velké base64 logy komplikovaly návrat výsledků. Práce přešla do čekání/opakovaného pollingu a byla uživatelem přerušena. Full-issue validation nebyla dokončena.  
-**Cause:** podle pracovního záznamu orchestrace deployů a přenos obrázků přes logy; přesná runtime příčina nebyla při konsolidaci nezávisle ověřena. Není to důkaz selhání semantic layout metody.  
-**Cost/risk:** ztracený čas a nejasný stav testu; žádný placený Fast Editorial/OpenAI API nebyl spuštěn, produkční pipeline se neměnila.  
-**Retry only if:** ověřit živý stav a zabránit souběhu deployů; sekvenční malé dávky (návrh 4 strany), kompaktní logy a oddělený přenos artefaktů. Render/contact sheet nepovažovat za article assembly validation.
+**Observed:** orchestrace deployů/logů zablokovala čisté dokončení full-issue validation.  
+**Lesson:** laboratorní orchestrace nesmí být zaměněna za ověřenou produkční schopnost.  
+**Status:** experimentální větev byla později opuštěna z širších důvodů F008.
+
+## F008 — Jednorázový semantic/API pass nenahradil iterativní lidsky vedenou interpretaci
+**Date / origin:** 2026-10-12 až 2026-10-14.  
+**Goal:** automatizovaně nebo jedním modelovým průchodem určit article ownership, reading order a věrohodně sestavit text z komplexních novinových stran.  
+**Tried:** Visual Page Map, BODY_FLOW, geometry/overlap execution, full-page model calls, controller-directed block-ID assembly a další varianty mezi Physical Map a final article textem.  
+**Observed:** jednotlivé stránky mohly vypadat slibně, ale kvalita nebyla stabilní napříč layouty; chyby v hranicích, ownership, omissions a contamination vyžadovaly opakované lidsky vedené kontroly. API průchod navíc není vhodné místo pro dlouhou konverzační iteraci.  
+**Cost/risk:** vysoký vývojový čas; u Fast Editorial navíc nepřijatelný API cost.  
+**Lesson:** page semantics je potřeba řešit v live conversation nad source evidence. Previous model output nesmí být evidence; každá oprava se musí vracet k source page.  
+**Decision:** D014.  
+**Retry only if:** nový přístup prokáže na reálném corpus srovnatelnou iterativní spolehlivost, auditovatelnost a výrazně lepší ekonomiku.
