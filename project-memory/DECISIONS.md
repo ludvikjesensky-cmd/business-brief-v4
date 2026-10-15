@@ -1,7 +1,11 @@
 # Decisions — Business Brief v4
 
 ## D001 — ACTIVE — v4 mění hodnotu z pouhé informovanosti na přenos perspektivy
-**Decision:** Produkt nepřenáší jen co se stalo, ale co kvalitní autoři v tématu vidí, jak argumentují a co zůstává otevřené.  
+**Decision:** Produkt nepřenáší jen co se stalo. Přenáší především způsob, jakým o tématu konkrétní médium a autor přemýšlejí a píší: jejich otázku, framing, argumentaci, důrazy, pochybnosti, rozpory a jedinečný úhel pohledu.
+
+Relevantní může být i text bez zásadně nové události, pokud nabízí perspektivu, která mění, zpřesňuje nebo prohlubuje čtenářovo vnímání tématu.
+
+Business Brief nesmí komprimovat zdroj tak, že zachová fakta, ale ztratí autora nebo charakteristický pohled média.  
 **Origin:** v4 Vision / Editorial Philosophy.
 
 ## D002 — ACTIVE — Completeness a curation jsou oddělené vrstvy
