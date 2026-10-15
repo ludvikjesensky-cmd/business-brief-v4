@@ -286,7 +286,49 @@ The current schema identifier is:
 
 Do not invent additional fields outside the contract unless the contract is being deliberately revised.
 
-## 12. Handoff to Assembler
+A page is not complete merely because its JSON appears in Chat. The canonical Page JSON must be durably persisted.
+
+## 12. Persistence contract
+
+The canonical Page JSON artifact belongs in Supabase Storage.
+
+Canonical logical object key:
+
+```
+page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json
+```
+
+Example:
+
+```
+page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.0/page-0001.json
+```
+
+The exact Supabase bucket name is operational configuration. The Chat must resolve the configured artifact bucket from the live project environment and must not invent a bucket name.
+
+The stored file contains the validated `page-ingest-v2` payload for exactly one source page.
+
+For the same source SHA, Ingestor generation and page number, persistence must be deterministic. A rerun must not silently create a second competing canonical artifact.
+
+PostgreSQL is the operational index, not the primary home of the JSON body. When an implemented operational index exists, it should record source/edition identity, page number, schema version, Ingestor version, Storage key, verification status, artifact hash and timestamps.
+
+Do not create a new database table from Chat unless that table is already part of the implemented system or an explicit schema change is requested.
+
+A successful page pass ends as:
+
+```
+interpret page
+→ build page-ingest-v2
+→ validate structure
+→ persist JSON to Supabase Storage
+→ verify durable write
+→ report Storage key and page status
+→ STOP
+```
+
+If persistence fails, the page is not complete. Report the failure and stop.
+
+## 13. Handoff to Assembler
 
 The Page JSON must contain enough page-level truth that Assembler can:
 
@@ -300,7 +342,7 @@ Assembler should combine page-level truth.
 
 It should not rediscover page layout.
 
-## 13. Non-goals
+## 14. Non-goals
 
 Ingestor v2.0 is not:
 
@@ -314,7 +356,7 @@ Ingestor v2.0 is not:
 - Assignment Editor;
 - Brief writer.
 
-## 14. Legacy
+## 15. Legacy
 
 Ingestor v1.1 = `ingestor-v4-physical-map-v1.1`.
 
@@ -322,7 +364,7 @@ Its production role and Physical Map handoff are superseded by D014.
 
 Physical Map, Visual Page Map, BODY_FLOW, bbox/overlap matching and block-ID experiments may remain as historical/debug material only.
 
-## 15. Success criterion
+## 16. Success criterion
 
 Ingestor v2.0 succeeds when:
 
@@ -335,7 +377,7 @@ Ingestor v2.0 succeeds when:
 - Assembler can proceed without reinterpreting page layout.
 
 
-## 16. Chat bootstrap protocol
+## 17. Chat bootstrap protocol
 
 A fresh Chat must not rely on old conversation context. Before processing a page, it reconstructs the Ingestor role from the repository and the operational Source of Truth.
 
@@ -349,8 +391,11 @@ Bootstrap sequence:
 6. Resolve the requested publication edition in the operational Source of Truth.
 7. Confirm that the selected source is authorized for ingestion and locate its Technician Source Bundle.
 8. Resolve the requested page image and supporting prepared text/OCR evidence.
-9. Run exactly one page pass according to sections 3–14.
-10. Emit exactly one `page-ingest-v2` JSON, state any unresolved uncertainty briefly, and stop.
+9. Run exactly one page pass according to the rules above.
+10. Validate the resulting `page-ingest-v2` payload.
+11. Persist it according to section 12.
+12. Confirm the durable Storage object key and page status.
+13. State any unresolved uncertainty briefly and stop.
 
 A convenient user invocation is:
 
@@ -366,7 +411,7 @@ INGESTOR v2.0: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
 
 That short invocation does not replace the bootstrap sequence. It merely selects the source page to process.
 
-## 17. Operational lookup rules
+## 18. Operational lookup rules
 
 When locating the actual source and artifacts, live operational state has priority over stale Markdown.
 
