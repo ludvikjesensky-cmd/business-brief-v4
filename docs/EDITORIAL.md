@@ -42,7 +42,9 @@ Upstream chain:
 
 Technician Source Bundle → Ingestor v2 Page JSONs → Assembler Article Records → Composer topic groupings → optional Translator.
 
-Ingestor může zaznamenat Business Brief relevance, ale finální editorial selection patří až editorial workflow.
+Ingestor může zaznamenat Business Brief relevance a page-level perspective evidence, ale finální editorial selection patří až editorial workflow.
+
+Page-level perspective evidence není automaticky finální interpretace článku. Assembler může spojit evidence z více stran; editorial workflow teprve rozhoduje, jakou autorskou otázku, framing a argumentační osu považovat za stabilně podložené na úrovni celého článku.
 
 ## Workflow principle
 1. Získat auditovatelná canonical Article Records dnešních vydání.
