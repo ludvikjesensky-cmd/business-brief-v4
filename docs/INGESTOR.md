@@ -427,7 +427,6 @@ Before page interpretation begins, the Chat must establish:
 
 If the edition, bundle or page cannot be resolved safely, the run is BLOCKED. Do not guess or silently substitute another source.
 
-
 ## 19. Ingestor Access Bridge — normative HTTP contract v1
 
 **Status (2026-10-15): accepted design, not implemented or deployed.** This section is the single authority for the bridge wire contract. `contracts.py` remains the authority for the Page JSON body. No Python contract or service implementation is introduced by this decision.
