@@ -6,7 +6,11 @@
 **Repository:** ludvikjesensky-cmd/business-brief-v4
 
 ## Purpose
-Business Brief zpřístupňuje českému profesionálnímu čtenáři hodnotu kvalitního světového ekonomického a business tisku. Nepřenáší jen události, ale také to, co jejich autoři vidí: otázky, argumenty, perspektivy, rozpory a souvislosti.
+Business Brief zpřístupňuje českému profesionálnímu čtenáři hodnotu kvalitního světového ekonomického a business tisku.
+
+Nepřenáší pouze to, co se stalo. Přenáší především **způsob, jakým o tématu konkrétní médium a autor přemýšlejí a píší**: jak problém rámují, jakou otázku kladou, jak vedou argumentaci, na co kladou důraz, co zpochybňují, jaké rozpory vidí a jaké nové souvislosti otevírají.
+
+Cílem není jen informovat, ale přenášet texty a perspektivy, které dokážou měnit, zpřesňovat nebo prohlubovat čtenářovo vnímání tématu.
 
 Hlavní teze v4: **Není hlavní, na co se díváš. Hlavní je, co vidíš.**
 
@@ -37,5 +41,7 @@ OPERATIONAL: Supabase je autoritativní pro jobs, state, provenance, eventy a ar
 
 ## Critical rules
 Před návrhem starého přístupu čti FAILURES. Nezaměňuj extraction completeness za editorial selection. Neautomatizuj placený modelový workflow před změřeným acceptance testem. Provenance se nesmí ztratit.
+
+Business Brief nesmí redukovat zdrojový text na „co se stalo“. Musí zachovat mediální a autorskou perspektivu, otázku, rámování a argumentaci, pokud právě v nich spočívá hodnota textu.
 
 Technician připravuje technickou evidenci. Ingestor v2.0 je živá Chat role, zpracovává jednu stránku po druhé a vytváří ověřený JSON pro každou stránku. Ingestor v1.1 / Physical Map production path je superseded a neaktivní. Staré v1–v3 Projects jsou historické zdroje znalosti, ne current code dependencies.
