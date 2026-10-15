@@ -69,3 +69,14 @@ U relevantních textů zachycuje page-level perspective evidence: autorskou otá
 Jasně nerelevantní položky zůstávají minimálně inventarizované kvůli completeness auditu.  
 **Reason:** Business Brief nesmí ztratit texty, jejichž hodnota spočívá v perspektivě, a zároveň nesmí z jedné continuation stránky vyrábět definitivní interpretaci celého článku.  
 **Consequences:** page-ingest-v2 nese explicitní PerspectiveEvidence; article-level perspective vzniká až po assembly a musí zachovat provenance/uncertainty.
+
+
+## D017 — ACTIVE — Page JSON je durable Storage artefakt; Chat output sám nestačí
+**Date:** 2026-10-15.  
+**Decision:** Canonical `page-ingest-v2` body se ukládá do Supabase Storage. Logický object key je `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní bucket je operational konfigurace a nesmí být v Chatu hádán.
+
+Page pass je dokončen teprve po validaci JSONu, durable write a ověření identity uloženého objektu. Vypsání JSONu pouze do konverzace není canonical persistence.
+
+PostgreSQL slouží jako operational index/state/provenance vrstva. Dedicated page-ingest tabulka se nemá improvizovat před implementací; do té doby je autoritativním artefaktem JSON ve Storage.  
+**Reason:** Assembler potřebuje stabilní, auditovatelný a znovu načitatelný handoff mezi Chat Ingestorem a downstream workflow.  
+**Consequences:** Ingestor musí po každé stránce reportovat Storage key a page status; při persistence failure se stránka nepovažuje za dokončenou a workflow se zastaví.
