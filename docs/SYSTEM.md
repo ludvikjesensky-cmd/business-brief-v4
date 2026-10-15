@@ -28,6 +28,8 @@ Nevytváří final multi-page Article Record. Nespojuje více publikací. Neprov
 
 Po dokončení každé stránky se zastaví.
 
+Stránka je dokončená až po validaci a durable uložení canonical Page JSONu do Supabase Storage podle persistence contractu v docs/INGESTOR.md.
+
 Detail role je v docs/INGESTOR.md.
 
 ## Page JSON
@@ -43,7 +45,11 @@ Má reprezentovat:
 - verification a explicitní uncertainty;
 - provenance k Technician source.
 
-Přesné machine schema ještě není frozen. Má být definováno v existujícím contract systemu v src/business_brief/contracts.py.
+Machine schema je definováno v `src/business_brief/contracts.py` jako `page-ingest-v2`.
+
+Canonical Page JSON body patří do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní Supabase bucket je operational konfigurace a Chat jej nesmí hádat.
+
+PostgreSQL slouží jako queryable operational index/state/provenance vrstva; primární JSON body zůstává ve Storage. Dedicated page-ingest tabulka se nesmí z Chatu improvizovat, pokud ještě není implementovaná.
 
 ## Assembler
 Input: Page JSONy jednoho edition/source.
