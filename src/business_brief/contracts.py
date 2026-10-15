@@ -95,6 +95,28 @@ class RelevanceAssessment:
 
 
 @dataclass(frozen=True)
+class PerspectiveEvidence:
+    author_question: str | None = None
+    framing: str | None = None
+    central_argument: str | None = None
+    distinctive_angle: str | None = None
+    tensions_or_counterarguments: tuple[str, ...] = ()
+    open_questions: tuple[str, ...] = ()
+    observed_on_page: tuple[str, ...] = ()
+    interpreted_from_page: tuple[str, ...] = ()
+    unresolved_until_assembly: tuple[str, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        d = asdict(self)
+        d["tensions_or_counterarguments"] = list(self.tensions_or_counterarguments)
+        d["open_questions"] = list(self.open_questions)
+        d["observed_on_page"] = list(self.observed_on_page)
+        d["interpreted_from_page"] = list(self.interpreted_from_page)
+        d["unresolved_until_assembly"] = list(self.unresolved_until_assembly)
+        return d
+
+
+@dataclass(frozen=True)
 class ContinuationEvidence:
     starts_here: bool
     continued_from_previous_page: bool
@@ -131,12 +153,14 @@ class PageItem:
     byline: str | None
     text_on_page: str | None
     relevance: RelevanceAssessment
+    perspective: PerspectiveEvidence
     continuation: ContinuationEvidence
     verification: Verification
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["relevance"] = asdict(self.relevance)
+        d["perspective"] = self.perspective.to_dict()
         d["continuation"] = asdict(self.continuation)
         d["verification"] = self.verification.to_dict()
         return d
