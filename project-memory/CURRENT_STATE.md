@@ -1,6 +1,6 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-14  
+**Last consolidated:** 2026-10-15  
 **Runtime must be re-verified in Supabase/Railway before operational claims.**
 
 ## Current phase
@@ -33,7 +33,9 @@ Pracuje:
 
 Po každé stránce se zastaví. Další stránku zpracuje až na pokyn uživatele.
 
-Přesný machine contract Page JSON zatím není frozen; má navázat na existující contracts.py, nikoli vytvořit paralelní contract system.
+Machine contract Page JSON je definován v `src/business_brief/contracts.py` jako `page-ingest-v2`, včetně page-level `PerspectiveEvidence`.
+
+Canonical Page JSON se po validaci ukládá do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní bucket je operational konfigurace. Page pass není dokončen, dokud durable write není ověřen.
 
 ## Technician
 Produkční runtime je stále na Technician v4.2. PR #3 připravuje novější technickou přípravu s lepším page evidence/OCR validation, ale není mergnutý a práce na něm je dočasně pozastavena kvůli Usage.
@@ -51,9 +53,9 @@ Následující nejsou current production path:
 Neodstraňovat jejich historii z FAILURES/HISTORY; nevracet je do current architecture bez nové ověřené skutečnosti.
 
 ## Next steps
-1. Dokončit a otestovat docs/INGESTOR.md na reálné stránce WSJ 2026-10-14.
-2. Navrhnout a zmrazit page-ingest JSON contract v návaznosti na src/business_brief/contracts.py.
-3. Ověřit Ingestor v2.0 ručně na několika různých stránkách a publikacích.
+1. Otestovat docs/INGESTOR.md a `page-ingest-v2` na reálné stránce WSJ 2026-10-14 včetně durable Storage persistence.
+2. Ověřit Ingestor v2.0 ručně na několika různých stránkách a publikacích.
+3. Rozhodnout a implementovat dedicated operational index/table pro Page JSONy pouze pokud acceptance test ukáže, že je potřeba.
 4. Teprve poté implementovat Assembler nad Page JSONy a uložit canonical Article Records do Supabase Storage + Postgres.
 5. Později navázat Composerem, Translator API workflow a stávajícím Editorial Workflow.
 
