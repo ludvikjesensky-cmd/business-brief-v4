@@ -130,9 +130,12 @@ class Database:
         except Failure: raise
         except psycopg.errors.LockNotAvailable: raise Failure('WRITE_IN_PROGRESS',503) from None
         except psycopg.Error: raise Failure('UPSTREAM_UNAVAILABLE',503) from None
-    def row(self,c,sid,allowed,lock=True):
+    def authorize(self,c,sid,allowed):
         r=c.execute(JOIN,(sid,)).fetchone()
         if not r or r['publication_id'] not in allowed: raise Failure('SOURCE_NOT_FOUND',404)
+        return r
+    def row(self,c,sid,allowed,lock=True):
+        r=self.authorize(c,sid,allowed)
         if lock:
             # Same edition -> source order as finalize_technician_source. Re-read after waiting.
             for table, ident in [('editions',r['edition_id']),('sources',sid),('source_blobs',r['blob_id']),('publications',r['publication_uuid'])]:

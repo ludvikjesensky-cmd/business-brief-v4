@@ -68,7 +68,7 @@ class Application:
                 try: uuid(src['source_id'])
                 except Failure: pass
                 else:
-                    with self.bridge.db.connection() as c: self.bridge.db.row(c,src['source_id'],allowed,lock=False)
+                    with self.bridge.db.connection() as c: self.bridge.db.authorize(c,src['source_id'],allowed)
         fields(body,'contract_version source_bundle_sha256 page')
         require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400); sha(body['source_bundle_sha256']); page_schema(body['page'])
         return self.bridge.post(body,key,p['id'],allowed)

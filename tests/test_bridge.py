@@ -116,6 +116,9 @@ class DB:
     @contextmanager
     def connection(self):
         with self.lock:yield Connection(self)
+    def authorize(self,c,sid,allowed):
+        if 'paper' not in allowed:raise Failure('SOURCE_NOT_FOUND',404)
+        return self.rowdata
     def row(self,c,sid,allowed,lock=True):
         if 'paper' not in allowed:raise Failure('SOURCE_NOT_FOUND',404)
         if self.rowdata['status']!='READY_FOR_INGESTOR':raise Failure('SOURCE_NOT_READY',409)
@@ -254,3 +257,29 @@ def test_same_key_different_target(bridge,page):
 def test_needs_review_receipt(bridge,page):
     page['page_status']='NEEDS_REVIEW';page['page_notes']=['review']
     _,r=bridge.post(wrapper(page),KEY,'test',['paper']);assert r['usable_for_assembly'] is False and r['page_status']=='NEEDS_REVIEW'
+
+@pytest.mark.parametrize('error',[{'statusCode':'409','error':'Duplicate'},{'error':'Duplicate'}])
+def test_create_if_absent_adapter(error):
+    import httpx
+    from bridge.core import Storage
+    requests=[]
+    def handle(req):requests.append(req);return httpx.Response(400,json=error)
+    s=Storage('https://storage.test','secret');s.client=httpx.Client(transport=httpx.MockTransport(handle))
+    assert s.create('bucket','key',b'{}') is False
+    assert requests[0].method=='POST' and requests[0].headers['x-upsert']=='false'
+
+
+def test_http_response_redaction(app):
+    import httpx
+    from http.server import ThreadingHTTPServer
+    from bridge.server import Handler
+    class Bound(Handler):pass
+    Bound.app=app
+    server=ThreadingHTTPServer(('127.0.0.1',0),Bound)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    try:
+        r=httpx.get('http://127.0.0.1:'+str(server.server_port)+'/health',headers={'X-Forwarded-Proto':'https','Authorization':'Bearer SUPER_SECRET_TOKEN'})
+        assert r.status_code==401 and r.json()['error']['code']=='UNAUTHENTICATED'
+        assert 'SUPER_SECRET_TOKEN' not in r.text
+        assert r.headers['Cache-Control']=='no-store' and r.headers['X-Request-ID']==r.json()['request_id']
+    finally:server.shutdown();server.server_close();thread.join()
