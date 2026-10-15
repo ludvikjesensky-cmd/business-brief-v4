@@ -65,7 +65,7 @@ def bundle_validate(m, row):
         for part in m['parts']:
             require(1 <= part['page_start'] <= part['page_end'] <= m['page_count'] and part['part_no'] > 0 and part['byte_size'] > 0, 'BUNDLE_INVALID', 409)
             sha(part['sha256']); ranges.extend(range(part['page_start'],part['page_end']+1))
-        require(ranges == list(range(1,m['page_count']+1)), 'BUNDLE_INVALID', 409)
+        require(len({part['part_no'] for part in m['parts']})==len(m['parts']), 'BUNDLE_INVALID', 409)
         prefix = row['source_bundle_path'].rsplit('/',1)[0]+'/'
         paths = [m['original_path'],m['prepared_pdf_path']] + [i['path'] for i in m['page_images']+m['parts']]
         for key in paths:
@@ -145,11 +145,13 @@ class Database:
         return r
     def current(self,c,pub,allowed):
         if pub not in allowed: raise Failure('SOURCE_NOT_FOUND',404)
-        rows=c.execute('''select e.active_source_id from public.editions e join public.publications p on p.id=e.publication_id
+        rows=c.execute('''select e.id,e.active_source_id from public.editions e join public.publications p on p.id=e.publication_id
          where p.publication_id=%s and e.active_source_id is not null and e.edition_date=(select max(e2.edition_date) from public.editions e2 where e2.publication_id=p.id and e2.active_source_id is not null)''',(pub,)).fetchall()
         if not rows: raise Failure('SOURCE_NOT_FOUND',404)
         require(len(rows)==1,'SOURCE_AMBIGUOUS',409)
-        return self.row(c,rows[0]['active_source_id'],allowed)
+        row=self.row(c,rows[0]['active_source_id'],allowed)
+        require(row['edition_id']==rows[0]['id'] and row['publication_id']==pub,'SOURCE_CHANGED',409)
+        return row
 
 class Bridge:
     def __init__(self, db, storage, source_bucket, output_bucket):

@@ -203,3 +203,54 @@ def test_latest_does_not_fallback():
     def row(*args):raise Failure('SOURCE_NOT_READY',409)
     db.row=row
     assert_failure('SOURCE_NOT_READY',lambda:db.current(CurrentConnection([{'active_source_id':SID}]),'paper',['paper']))
+
+def test_unsplit_bundle(manifest):
+    manifest['parts']=[];bundle_validate(manifest,ROW)
+
+def test_latest_inconsistent_mapping():
+    db=Database('unused','unused'); db.row=lambda *args:ROW
+    assert_failure('SOURCE_CHANGED',lambda:db.current(CurrentConnection([{'id':UUID(BID),'active_source_id':SID}]),'paper',['paper']))
+
+@pytest.mark.parametrize('result,expected',[(b'content','ARTIFACT_HASH_MISMATCH'),(b'','ARTIFACT_MISSING')])
+def test_storage_corrupt_or_empty(result,expected):
+    import httpx
+    from bridge.core import Storage
+    s=Storage('https://storage.test','secret')
+    s.client=httpx.Client(transport=httpx.MockTransport(lambda req:httpx.Response(200,content=result)))
+    assert_failure(expected,lambda:s.access('bucket','key','image/png','a'*64))
+
+def test_storage_missing():
+    import httpx
+    from bridge.core import Storage
+    s=Storage('https://storage.test','secret')
+    s.client=httpx.Client(transport=httpx.MockTransport(lambda req:httpx.Response(404,json={})))
+    assert_failure('ARTIFACT_MISSING',lambda:s.download('bucket','key'))
+
+def test_signed_url_ttl():
+    import httpx
+    from datetime import datetime,timezone
+    from bridge.core import Storage
+    captured=[]
+    def handler(req):
+        captured.append(req)
+        return httpx.Response(200,json={'signedURL':'/object/sign/bucket/key?token=REDACTED'}) if req.method=='POST' else httpx.Response(200,content=b'data')
+    s=Storage('https://storage.test','secret');s.client=httpx.Client(transport=httpx.MockTransport(handler))
+    a=s.access('bucket','key','application/pdf',digest(b'data'))
+    assert json.loads(captured[-1].content)=={'expiresIn':300}
+    assert 298 <= (datetime.fromisoformat(a['expires_at'].replace('Z','+00:00'))-datetime.now(timezone.utc)).total_seconds() <=300
+    assert a['url'].startswith('https://storage.test/storage/v1/object/sign/')
+
+def test_bucket_public_rejected():
+    import httpx
+    from bridge.core import Storage
+    s=Storage('https://storage.test','secret');s.client=httpx.Client(transport=httpx.MockTransport(lambda req:httpx.Response(200,json={'public':True})))
+    assert_failure('CONFIGURATION_MISSING',lambda:s.private('bucket'))
+
+def test_same_key_different_target(bridge,page):
+    bridge.post(wrapper(page),KEY,'test',['paper'])
+    page['publication']['page_no']=2;bridge.db.rowdata['page_count']=2
+    assert_failure('IDEMPOTENCY_CONFLICT',lambda:bridge.post(wrapper(page),KEY,'test',['paper']))
+
+def test_needs_review_receipt(bridge,page):
+    page['page_status']='NEEDS_REVIEW';page['page_notes']=['review']
+    _,r=bridge.post(wrapper(page),KEY,'test',['paper']);assert r['usable_for_assembly'] is False and r['page_status']=='NEEDS_REVIEW'
