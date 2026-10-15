@@ -58,3 +58,14 @@ Relevantní principy, decisions, failures a lessons se přenášejí do v4 Proje
 **Decision:** Assembler spojuje page-level části článků napříč stranami a vytváří canonical Article Records. Ukládá article artefakty do Supabase Storage a strukturovanou identitu/provenance/state do PostgreSQL.  
 **Reason:** Page interpretation a cross-page assembly jsou odlišné odpovědnosti.  
 **Consequences:** Assembler nesmí znovu hádat page semantics, pokud jsou Page JSONy nejisté; takový případ jde do review.
+
+
+## D016 — ACTIVE — Ingestor zachovává perspective value konzervativně a page-level
+**Date:** 2026-10-15.  
+**Decision:** Ingestor v2.0 nefiltruje pouze podle event importance nebo tématu. Při nejistotě preferuje recall před agresivním vyřazením a zachovává kandidátní text pro downstream review.
+
+U relevantních textů zachycuje page-level perspective evidence: autorskou otázku, framing, argument, distinctive angle, napětí/protiargumenty a otevřené otázky pouze v rozsahu, který podporuje aktuální stránka. Musí rozlišit observed_on_page, interpreted_from_page a unresolved_until_assembly.
+
+Jasně nerelevantní položky zůstávají minimálně inventarizované kvůli completeness auditu.  
+**Reason:** Business Brief nesmí ztratit texty, jejichž hodnota spočívá v perspektivě, a zároveň nesmí z jedné continuation stránky vyrábět definitivní interpretaci celého článku.  
+**Consequences:** page-ingest-v2 nese explicitní PerspectiveEvidence; article-level perspective vzniká až po assembly a musí zachovat provenance/uncertainty.
