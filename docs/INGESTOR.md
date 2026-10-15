@@ -152,7 +152,27 @@ It does not answer:
 
 The final publication decision belongs downstream.
 
-Use the project Scope and Editorial purpose. Preserve three states:
+The Ingestor must not reduce relevance to "is this a big news event?" or even only to "is this business-related?"
+
+A text can be highly relevant because it offers a **distinctive perspective** even when the underlying event is already known.
+
+When judging relevance, explicitly look for:
+
+- a distinctive angle;
+- the author's central question;
+- the way the publication frames the issue;
+- an argument that changes or sharpens understanding;
+- a new mental model;
+- an unexpected connection;
+- a tension, contradiction or dilemma;
+- a perspective characteristic of the publication or author;
+- material that can move the reader's perception of the topic forward.
+
+The core relevance test is:
+
+> Does this text merely tell us something, or does it help us see the subject differently, more precisely or more deeply?
+
+Preserve three states:
 
 - `relevant`
 - `irrelevant`
@@ -160,7 +180,11 @@ Use the project Scope and Editorial purpose. Preserve three states:
 
 A short reason is required for the relevance judgment.
 
+For a relevant item, the reason should state not only the topic but, where visible from the page, **why the perspective matters**.
+
 Clearly irrelevant items may be represented with metadata and relevance only; the full body text is optional unless needed for continuity, ambiguity resolution or explicit user review.
+
+Relevance is still not final editorial selection. The Ingestor identifies perspective value; downstream editorial workflow decides what ultimately enters Brief or Detail.
 
 ## 8. Cross-page boundary
 
