@@ -283,3 +283,7 @@ def test_http_response_redaction(app):
         assert 'SUPER_SECRET_TOKEN' not in r.text
         assert r.headers['Cache-Control']=='no-store' and r.headers['X-Request-ID']==r.json()['request_id']
     finally:server.shutdown();server.server_close();thread.join()
+
+
+def test_invalid_unicode_credential(app):
+    assert_failure('UNAUTHENTICATED',lambda:app.auth('Bearer \u0100',False))

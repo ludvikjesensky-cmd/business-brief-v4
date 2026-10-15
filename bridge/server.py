@@ -21,7 +21,7 @@ class Application:
         if header and header.startswith('Bearer '):
             token=header[7:]
             for p in self.principals:
-                if hmac.compare_digest(token,p['token']): principal=p
+                if hmac.compare_digest(token.encode('utf-8'),p['token'].encode('utf-8')): principal=p
         if not principal: raise Failure('UNAUTHENTICATED',401)
         scopes={'source:read','page:write'} if write else {'source:read'}
         require(scopes.issubset(set(principal['scopes'])),'FORBIDDEN',403)
