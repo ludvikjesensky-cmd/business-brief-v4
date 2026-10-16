@@ -202,3 +202,34 @@ class PageIngest:
             "page_status": self.page_status,
             "page_notes": list(self.page_notes),
         }
+
+
+# v2 remains immutable for existing artifacts and clients.
+PAGE_INGEST_V3_SCHEMA = "page-ingest-v3"
+
+
+@dataclass(frozen=True)
+class PageItemV3:
+    page_item_id: str
+    item_type: str
+    title: str | None
+    subtitle: str | None
+    kicker: str | None
+    byline: str | None
+    text_on_page: str | None
+    relevance: RelevanceAssessment
+    continuation: ContinuationEvidence
+    verification: Verification
+
+    def to_dict(self) -> dict[str, Any]:
+        d = asdict(self)
+        d["verification"] = self.verification.to_dict()
+        return d
+
+
+@dataclass(frozen=True)
+class PageIngestV3(PageIngest):
+    items: tuple[PageItemV3, ...]
+    ingestor_version: str = "ingestor-v2.1-chat"
+    instruction_version: str = "2.1"
+    schema_version: str = PAGE_INGEST_V3_SCHEMA

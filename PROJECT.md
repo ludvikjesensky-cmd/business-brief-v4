@@ -25,7 +25,7 @@ Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/ING
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura
-- docs/INGESTOR.md — kanonické pracovní instrukce Ingestoru v2.0
+- docs/INGESTOR.md — kanonické pracovní instrukce Ingestoru, v2.1 / page-ingest-v3 s rollout gate
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
@@ -44,4 +44,4 @@ Před návrhem starého přístupu čti FAILURES. Nezaměňuj extraction complet
 
 Business Brief nesmí redukovat zdrojový text na „co se stalo“. Musí zachovat mediální a autorskou perspektivu, otázku, rámování a argumentaci, pokud právě v nich spočívá hodnota textu.
 
-Technician připravuje technickou evidenci. Ingestor v2.0 je živá Chat role, zpracovává jednu stránku po druhé a vytváří ověřený JSON pro každou stránku. Ingestor v1.1 / Physical Map production path je superseded a neaktivní. Staré v1–v3 Projects jsou historické zdroje znalosti, ne current code dependencies.
+Technician připravuje technickou evidenci. Ingestor (ordinary Chat) je živá Chat role, zpracovává jednu stránku po druhé a vytváří ověřený JSON pro každou stránku. Ingestor v1.1 / Physical Map production path je superseded a neaktivní. Staré v1–v3 Projects jsou historické zdroje znalosti, ne current code dependencies.
