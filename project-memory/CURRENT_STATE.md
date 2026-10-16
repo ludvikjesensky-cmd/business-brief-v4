@@ -17,14 +17,18 @@ The first production v2 page-1 persist passed CREATED, VERIFIED readback and usa
 These Site/ordinary Chat/persist milestones are user-supplied acceptance evidence consolidated here, not newly executed production checks. Live jobs, health and deployments remain authoritative in operational systems.
 
 ## Repository and rollout boundary
-Verified on 2026-10-16: default main is 0c3164f3092c14d017285dca68bbfb122bc30de6. PR #4 is open, targets main, head 85b83088f71af1638b4a2416829eb3090c74bd13. PR #5 is open/draft, stacked on #4, head 311a865854a33472b0e78a70b1ee4eae5084cc96. This consolidation is stacked on #5; neither PR has been merged. Their earlier PR descriptions predate subsequent acceptance.
+Verified on 2026-10-16: default main is 0c3164f3092c14d017285dca68bbfb122bc30de6. PR dependency chain remains open: #4 → main, #5 → #4, #6 → #5. Ancestor checks pass; all three have no submitted reviews or inline review threads. No PR was merged during rollout. Deploying only the bridge from a pinned reviewed/tested commit avoids triggering unrelated main-linked Railway services, including the historical ingestor cron.
 
-This branch implements page-ingest-v3 / ingestor-v2.1-chat / instruction 2.1 with a separate ingestor-v2.1 canonical namespace. Legacy v2 serialization and storage remain compatible. New bridge/plugin generation support is not yet deployed or production-accepted. No production ingest/persist/deployment is performed by this consolidation.
+Bridge commit 1442da050a0b3dcb4a5de9a11611a2b5ec9084c9 is deployed and pinned on Railway: deployment 7d1fa8aa-401d-4a2c-8fe0-5a4804eeb029, SUCCESS/Online, 1/1 replica. It accepts page-ingest-v3 / ingestor-v2.1-chat / instruction 2.1 in ingestor-v2.1, preserving v2. Site v4 required no change: its generic body transport already supports v3, verified with a mocked write-transport check and the real receipt. Site remains owner-only, source 5ad1e400d4a8b2a47f73e60de4b98a33a087dd81, deployment appgdep_6ad25784d0308191bc1dcdb6869c7145.
+
+Post-deploy connected-plugin resolve and page-1 image/OCR passed for the pinned WSJ 2026-10-14 source. Six visually checked article starts were persisted once: STORED/CREATED, VERIFIED_WITH_NOTES, 14,568 JCS bytes, SHA bc287714ea5a290833976b7dfec6caf56f09a668e2c0d401c9e317ac246055e6, ingestor-v2.1/page-0001.json. Download readback matched SHA and identity; usable_for_assembly=true. Notes preserve unfinished page-boundary sentences/words, not unresolved source uncertainty. No page 2, assembly, v2 overwrite/deletion or migration. Full canonical key is in HISTORY. Tests: 138 passed; diff check clean.
+
+Daily ordinary Chat workflow is technically ready through the existing plugin with current PROJECT/SCOPE/CURRENT_STATE/INGESTOR context. This rollout acceptance ran in Codex through the same connected MCP tools; it is not a newly observed separate ordinary-Chat session. Earlier ordinary Chat image/OCR acceptance remains distinct evidence.
 
 The standalone Railway bridge has scoped auth, private buckets, direct verified-TLS PostgreSQL sessions, row/session locks, durable PENDING claims and identity guards, create-if-absent and exact JCS readback. See bridge/README.md for recovery. Source Bundle remains source-bundle-v4. The recorded WSJ edition has 10 pages and was prepared by Technician v4.2; this consolidation does not assert new live Technician status.
 
 ## Next gates
-1. Review/merge the stacked changes in dependency order and deploy bridge + plugin v3 validation/instructions together.
+1. Review/merge #4 → #5 → #6 in dependency order after considering main-linked service auto-deploy effects. Bridge remains pinned; documentation-only pushes do not redeploy it.
 2. On explicit user instruction, accept the simplified content model on real pages (including continuation and a different publication); preserve v2 and select only an explicitly accepted generation downstream.
 3. Resolve Assembler review/identity policy, then implement downstream assembly. A dedicated Page JSON index remains conditional on demonstrated need.
 
