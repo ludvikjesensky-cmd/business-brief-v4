@@ -30,11 +30,17 @@ Zdrojové acquisition a downstream processing jsou oddělené problémy. Nespole
 ## L010
 Jedna redakční pravda umožňuje konzistentní web, e-mail a audio bez paralelních obsahových realit.
 
-## L011 — Sémantický úsudek a geometrické vykonání mají odlišný vstup
+## L011 — HISTORICAL / SUPERSEDED experiment — Sémantický úsudek a geometrické vykonání mají odlišný vstup
 **Origin:** WSJ 2026-10-12, strany 5 a 2. Člověku podobné čtení layoutu může určit vision model z low-res obrázku; textovou věrnost a provedení mapy zajišťuje Physical Map + Python. Explicitní BODY_FLOW/reading order odstraňuje potřebu znovu odhadovat tok v kódu. Nezaměňovat tento princip za ověřenou generalizaci na celé vydání.
 
 ## L012 — Hranice objektu je součást kontraktu
-**Origin:** strana 2. Graf zahrnuje i osy, legendu a poznámky; fotografie vyžaduje skutečný bbox overlap, jinak mohou mizet sousední řádky. Správná identifikace článku nezaručuje úplné a čisté tělo. Detail a navržený, zatím neověřený threshold jsou v docs/SYSTEM.md.
+**Origin:** strana 2. Graf zahrnuje i osy, legendu a poznámky; fotografie vyžaduje skutečný bbox overlap, jinak mohou mizet sousední řádky. Správná identifikace článku nezaručuje úplné a čisté tělo. Tento bbox experiment je historical/superseded (F008); nejde o současný production threshold.
 
 ## L013 — Ověřuj jednotlivé stupně a nevoď cenu z velikosti JPEG
 **Origin:** low-res a full-issue experiment. Layout lze zkoušet bez OCR body textu a bez placeného API; rendering, semantic mapping, assembly a editorial quality jsou samostatné úrovně ověření. Malý obraz může pomoci ekonomice, skutečnou cenu však určí zvolený model a měření. Velké binární/base64 výstupy nepatří do logového transportu a paralelní deploye znejasňují experiment.
+
+## L014 — Transport acceptance and content acceptance are separate
+Valid schema, stored bytes and identity readback prove persistence, not faithful prose or useful selection. Ordinary Chat integration must be tested in ordinary Chat; Codex HTTPS alone was insufficient. The ordinary Chat read gate is now closed, while simplified-content acceptance remains open.
+
+## L015 — Minimal extraction preserves editorial value
+Carry source-faithful, visually checked text forward and interpret the full article downstream. Mandatory interpretation and rejected-item inventories can obscure the useful handoff. An immutable contract correction needs a new generation, not a silent rewrite.

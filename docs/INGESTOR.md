@@ -1,4 +1,4 @@
-# Ingestor v2.0
+# Ingestor v2.1
 
 **Status:** CANONICAL COMPONENT DEFINITION  
 **Execution model:** live Chat, human-supervised  
@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-Ingestor v2.0 turns one technically prepared publication page into a structured, source-faithful Page JSON.
+Ingestor v2.1 turns one technically prepared publication page into a structured, source-faithful Page JSON.
 
 It exists because reliable page semantics require repeated inspection and correction. It is therefore a live conversational role, not an autonomous API batch worker.
 
@@ -56,7 +56,7 @@ Evidence priority:
 1. visible source page;
 2. Technician page image / technical evidence;
 3. prepared text or OCR;
-4. previous Chat interpretation.
+Previous Chat interpretation is excluded from evidence.
 
 Previous model output is never source evidence.
 
@@ -72,12 +72,12 @@ For each requested page:
 
 1. Confirm source, publication, edition and page number.
 2. Inspect the complete page before extracting individual items.
-3. Build a complete inventory of editorial and non-editorial regions.
+3. Orient over all editorial and non-editorial regions; this working inventory is not a required persisted audit.
 4. Identify each editorial item independently and determine ownership/reading order.
 5. Judge Business Brief relevance and perspective value for each item.
 6. For each relevant item, reconstruct **all source text belonging to that item that is physically present on the current page**.
-7. For clearly irrelevant items, preserve the minimum audit inventory required by section 7; full body text is optional.
-8. Record page-level perspective evidence only to the extent supported by this page.
+7. Omit clearly irrelevant items unless needed for continuity, ambiguity resolution or explicit review (section 7).
+8. Record a short relevance reason; preserve perspective through source text rather than mandatory interpretation fields.
 9. Record continuation evidence without assembling other pages.
 10. Verify boundaries, reading order, text completeness and uncertainty.
 11. Emit exactly one Page JSON matching the current machine contract.
@@ -142,11 +142,11 @@ Do not:
 - infer missing endings;
 - complete wording from memory or web knowledge.
 
-OCR may be corrected only when the correction is supported by the visible source.
+OCR is a proposal/supporting evidence; visually validate it against the page image, the primary authority. Technical normalization may join words split across layout lines, remove layout line breaks and excess whitespace, and correct obvious OCR errors only when the image confirms them. Preserve paragraphs and source meaning.
 
 Line-break hyphenation may be normalized only when visually supported.
 
-If a word or passage cannot be verified, preserve the uncertainty in the Page JSON.
+If a word or passage cannot be verified, localize the uncertainty in verification notes and use NEEDS_REVIEW (or BLOCKED if extraction cannot proceed). Never label unresolved source text VERIFIED or hide it in VERIFIED_WITH_NOTES.
 
 ## 7. Relevance
 
@@ -198,50 +198,19 @@ If an item has plausible business, economic, technological, managerial, geopolit
 
 Use `uncertain` when the current page is insufficient to make a safe decision.
 
-### Minimum inventory for irrelevant items
+### Relevant-item selection
 
-A clearly irrelevant item must still remain auditable. Preserve at minimum, when visible:
+Identify articles/editorial items across the whole page, but persist primarily relevant articles. Preserve uncertain candidates for review. Clearly irrelevant items are optional and belong in JSON only when needed for continuity, ambiguity resolution or explicit review; explain that exception in the relevance reason. There is no mandatory audit inventory of rejected items.
 
-- `page_item_id`;
-- `item_type`;
-- title;
-- byline;
-- relevance state and reason;
-- continuation evidence;
-- verification notes where needed.
+What's News digests are navigation/selection evidence, not automatically separate article records. Preserve a digest only when it independently meets relevance or an explicit review need; do not substitute it for the referenced article's body.
 
-Full `text_on_page` is optional for clearly irrelevant items unless required for continuity, ambiguity resolution or explicit user review.
+## 8. Perspective boundary
 
-Relevance is still not final editorial selection. The Ingestor identifies perspective value; downstream editorial workflow decides what ultimately enters Brief or Detail.
-
-## 8. Page-level perspective evidence
-
-For relevant items, the Ingestor should capture perspective metadata when the current page supports it.
-
-Possible fields include:
-
-- `author_question`;
-- `framing`;
-- `central_argument`;
-- `distinctive_angle`;
-- `tensions_or_counterarguments`;
-- `open_questions`.
-
-These fields are **page-level evidence**, not a definitive interpretation of the full article.
-
-The Ingestor must distinguish three epistemic layers:
-
-1. **observed_on_page** — directly supported by wording or visible structure on this page;
-2. **interpreted_from_page** — a reasonable interpretation of this page, but not a direct quotation or explicit statement;
-3. **unresolved_until_assembly** — cannot be determined safely from this page alone and must wait for other article parts.
-
-If a continuation page lacks the headline, opening argument or enough context, do not invent an author question or central argument. Record the perspective as unresolved until assembly.
-
-The Assembler may later combine page-level perspective evidence into article-level perspective metadata, but it must preserve provenance and uncertainty.
+Relevance supports selection and requires a short reason. The new minimal contract does not require or serialize PerspectiveEvidence. Preserve the author's argument through faithful source text; article-level interpretation belongs downstream after assembly. The legacy v2 structure remains readable for compatibility only.
 
 ## 9. Cross-page boundary
 
-Ingestor v2.0 never assembles multi-page articles.
+Ingestor v2.1 never assembles multi-page articles.
 
 It records only evidence visible on the current page, including:
 
@@ -280,9 +249,7 @@ The machine contract is defined in:
 
 The Markdown defines how the role works. The Python contract defines the exact output structure.
 
-The current schema identifier is:
-
-`page-ingest-v2`
+The new schema identifier is `page-ingest-v3`, serialized by `PageIngestV3` / `PageItemV3`. Its producer is `ingestor-v2.1-chat` and instruction version `2.1`. Deployment/plugin support for this generation must be confirmed before a new pass; v2 remains a compatibility contract.
 
 Do not invent additional fields outside the contract unless the contract is being deliberately revised.
 
@@ -295,18 +262,18 @@ The canonical Page JSON artifact belongs in Supabase Storage.
 Canonical logical object key:
 
 ```
-page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json
+page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.1/page-<NNNN>.json
 ```
 
 Example:
 
 ```
-page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.0/page-0001.json
+page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.1/page-0001.json
 ```
 
 The exact Supabase bucket name is operational configuration. The bridge resolves the configured artifact bucket server-side and returns it in the verified receipt; Chat must not invent a bucket name. The normative bridge contract is section 19; implementation/runtime notes are in `bridge/README.md`.
 
-The stored file contains the validated `page-ingest-v2` payload for exactly one source page.
+The stored file contains the validated `page-ingest-v3` payload for exactly one source page.
 
 For the same source SHA, Ingestor generation and page number, persistence must be deterministic. A rerun must not silently create a second competing canonical artifact.
 
@@ -318,7 +285,7 @@ A successful page pass ends as:
 
 ```
 interpret page
-→ build page-ingest-v2
+→ build page-ingest-v3
 → validate structure
 → persist JSON to Supabase Storage
 → verify durable write
@@ -344,7 +311,7 @@ It should not rediscover page layout.
 
 ## 14. Non-goals
 
-Ingestor v2.0 is not:
+Ingestor v2.1 is not:
 
 - Technician;
 - OCR preparation;
@@ -366,14 +333,14 @@ Physical Map, Visual Page Map, BODY_FLOW, bbox/overlap matching and block-ID exp
 
 ## 16. Success criterion
 
-Ingestor v2.0 succeeds when:
+Ingestor v2.1 succeeds when:
 
 - the source page has been inspected as a whole;
 - relevant editorial items are faithfully represented;
 - text is verified against source evidence;
 - uncertainty is explicit;
 - continuation evidence is preserved;
-- output matches `page-ingest-v2`;
+- output matches `page-ingest-v3`;
 - Assembler can proceed without reinterpreting page layout.
 
 
@@ -392,7 +359,7 @@ Bootstrap sequence:
 7. Confirm that the selected source is authorized for ingestion and locate its Technician Source Bundle.
 8. Resolve the requested page image and supporting prepared text/OCR evidence.
 9. Run exactly one page pass according to the rules above.
-10. Validate the resulting `page-ingest-v2` payload.
+10. Validate the resulting `page-ingest-v3` payload.
 11. Persist it according to section 12.
 12. Confirm the durable Storage object key and page status.
 13. State any unresolved uncertainty briefly and stop.
@@ -400,13 +367,13 @@ Bootstrap sequence:
 A convenient user invocation is:
 
 ```
-INGESTOR v2.0: process page <N> of <publication/edition>.
+INGESTOR v2.1: process page <N> of <publication/edition>.
 ```
 
 For example:
 
 ```
-INGESTOR v2.0: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
+INGESTOR v2.1: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
 ```
 
 That short invocation does not replace the bootstrap sequence. It merely selects the source page to process.
@@ -429,7 +396,7 @@ If the edition, bundle or page cannot be resolved safely, the run is BLOCKED. Do
 
 ## 19. Ingestor Access Bridge — normative HTTP contract v1
 
-**Status (2026-10-15): accepted contract; implementation deployed, technical page-1 read acceptance passed from Codex. Production page submission and a separate ChatGPT connector remain unverified.** This section is the single authority for the bridge wire contract. `contracts.py` remains the authority for the Page JSON body. The original contract decision was documentation-only; the subsequent standalone implementation is documented in `bridge/README.md`.
+**Status (2026-10-16): v1 transport deployed; ordinary Chat image + inline OCR read acceptance and first v2 persistence passed. The v3 body/generation extension in this branch is not yet deployed or accepted in production.** This section is the single authority for the bridge wire contract. `contracts.py` remains the authority for the Page JSON body. The original contract decision was documentation-only; the subsequent standalone implementation is documented in `bridge/README.md`.
 
 The bridge resolves operational identity, authorizes artifact access, validates one submitted Page JSON and persists it. It performs **no editorial interpretation**, OCR, text repair, relevance judgment, page assembly, model calls or automatic next-page processing. `STORED` attests persistence, not independent verification of editorial truth.
 
@@ -501,9 +468,11 @@ Required header: `Idempotency-Key: <UUID>`, newly generated per intended submiss
 
 The wrapper is transport metadata and is never stored in the canonical artifact. The manifest hash must match the pinned current archived bundle; mismatch is 409 `SOURCE_CHANGED`. `page.source.source_id` selects the exact database source. Apply 19.2 again and require all Page JSON source/publication/date/variant/name/page identity to match, with page within range. The caller cannot set the persistence key or producer generation directory.
 
-Strict Page JSON validation is a bridge requirement, **not an existing dataclass runtime validator**. `PageIngest.to_dict()` defines the field names and nesting, not the Python constructor names: top-level fields are exactly `schema_version`, `producer`, `instruction_version`, `source`, `publication`, `items`, `page_status`, `page_notes`. Require `page-ingest-v2`, `ingestor-v2.0-chat`, `2.0` respectively. `source` is exactly `{source_id:UUID, source_sha256:SHA}`; `publication` is exactly `{publication_id:string, canonical_name:string, edition_date:Date, edition_variant:string, page_no:integer}`.
+Strict Page JSON validation is a bridge requirement, **not an existing dataclass runtime validator**. `PageIngest.to_dict()` defines the field names and nesting, not the Python constructor names: top-level fields are exactly `schema_version`, `producer`, `instruction_version`, `source`, `publication`, `items`, `page_status`, `page_notes`. Accept exactly one generation tuple: (`page-ingest-v2`, `ingestor-v2.0-chat`, `2.0`) or (`page-ingest-v3`, `ingestor-v2.1-chat`, `2.1`). Mixed tuples are invalid. `source` is exactly `{source_id:UUID, source_sha256:SHA}`; `publication` is exactly `{publication_id:string, canonical_name:string, edition_date:Date, edition_variant:string, page_no:integer}`.
 
-Every item has exactly the fields/types serialized by `PageItem.to_dict()`: nonempty unique `page_item_id` and nonempty `item_type`; nullable strings `title`, `subtitle`, `kicker`, `byline`, `text_on_page`; required `relevance`, `perspective`, `continuation`, `verification`. Arrays are JSON arrays, never Python tuples. `relevance` requires state `relevant|irrelevant|uncertain` and a nonempty reason. `perspective` requires all nullable scalar fields, list fields and epistemic arrays defined in `PerspectiveEvidence`; specifically `author_question`, `framing`, `central_argument`, `distinctive_angle` are string|null, and `tensions_or_counterarguments`, `open_questions`, `observed_on_page`, `interpreted_from_page`, `unresolved_until_assembly` are string arrays. `continuation` requires three booleans and nullable strings `continuation_marker` and `continuation_target` exactly as `ContinuationEvidence`. `verification` requires `status`, the boolean fields `visual_checked`, `text_layer_checked`, `title_verified`, `boundaries_verified`, `reading_order_verified`, `text_on_page_complete`, plus `byline_verified:boolean|null`, and `notes:string[]`. No omitted defaults or extra fields at any level. `page_notes` is a string array; `items` may be empty for an explicitly verified page with no editorial items, with explanatory page notes.
+Legacy v2 items have exactly the fields/types serialized by `PageItem.to_dict()`: nonempty unique `page_item_id` and nonempty `item_type`; nullable strings `title`, `subtitle`, `kicker`, `byline`, `text_on_page`; required `relevance`, `perspective`, `continuation`, `verification`. Arrays are JSON arrays, never Python tuples. `relevance` requires state `relevant|irrelevant|uncertain` and a nonempty reason. `perspective` requires all nullable scalar fields, list fields and epistemic arrays defined in `PerspectiveEvidence`; specifically `author_question`, `framing`, `central_argument`, `distinctive_angle` are string|null, and `tensions_or_counterarguments`, `open_questions`, `observed_on_page`, `interpreted_from_page`, `unresolved_until_assembly` are string arrays. `continuation` requires three booleans and nullable strings `continuation_marker` and `continuation_target` exactly as `ContinuationEvidence`. `verification` requires `status`, the boolean fields `visual_checked`, `text_layer_checked`, `title_verified`, `boundaries_verified`, `reading_order_verified`, `text_on_page_complete`, plus `byline_verified:boolean|null`, and `notes:string[]`. No omitted defaults or extra fields at any level within the selected generation. `page_notes` is a string array; `items` may be empty for an explicitly verified page with no editorial items, with explanatory page notes.
+
+For v3, `PageItemV3.to_dict()` has the same fields except `perspective` is absent (and rejected as an extra field). All identity, relevance, continuation and verification checks remain unchanged. `subtitle` carries dek/subtitle/perex; absent source metadata is null, never invented. Empty selected-item pages require explanatory page notes. Omitted irrelevant items do not make selected-article text incomplete.
 
 All integers in this contract reject booleans and fractional values. Validation order is authentication/scope/resource authorization, syntax/shape, live source and bundle identity, page verification consistency, idempotency binding and canonical write. Identity mismatch is 409 `IDENTITY_MISMATCH`; invalid Page JSON types/enums/fields are 422 `PAGE_SCHEMA_INVALID`.
 
@@ -517,7 +486,7 @@ Serialize the validated `page` only using RFC 8785 JSON Canonicalization Scheme 
 page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json
 ```
 
-`NNNN` is zero-padded to four digits. Slugs/date/SHA are validated identity values, not raw path input. The directory `ingestor-v2.0` deliberately differs from producer `ingestor-v2.0-chat`. No variant component is added; if the same key would represent different variant/source UUID identity, refuse with 409 rather than changing this canonical path.
+`NNNN` is zero-padded to four digits. Slugs/date/SHA are validated identity values, not raw path input. The server maps v2 to directory `ingestor-v2.0` and v3 to `ingestor-v2.1`; callers cannot choose arbitrary directories. The example above is the legacy v2 key. New v3 keys use `ingestor-v2.1` in the same position. Both generations use the same fencing, create-if-absent, hashing, binding and readback algorithm. No variant component is added; if the same key would represent different variant/source UUID identity, refuse with 409 rather than changing this canonical path.
 
 - Atomically create-if-absent, content type `application/json`; never blind upsert/overwrite. Concurrent losers read and compare the winning object. Same canonical bytes/identity → safe replay; different content/identity → 409 `CANONICAL_CONFLICT`, preserving existing bytes. Different idempotency keys cannot bypass this rule. Revised editorial output needs a separately authorized future revision protocol; v1 provides none.
 - Durably bind `(principal, Idempotency-Key)` to SHA-256 of JCS of the whole request wrapper and target key, atomically claiming it before mutation. Reuse for a different wrapper/target is 409 `IDEMPOTENCY_CONFLICT`. Keep binding for the lifetime of the canonical artifact; do not allow short TTL eviction to permit key reuse. This requires durable operational storage chosen during implementation, not a new table improvised by Chat. Concurrent identical requests may wait or return retryable 503 `WRITE_IN_PROGRESS`.
@@ -570,3 +539,18 @@ Only RATE_LIMITED, UPSTREAM_UNAVAILABLE, WRITE_IN_PROGRESS and PERSISTENCE_UNVER
 ### 19.8 Implementation acceptance gate
 
 Before enabling the first real page, prove authenticated access from the actual Chat integration, private artifact downloads and hash checks, UUID/hash manifest mapping, latest-edition and variant ambiguity behavior, stale/non-ready source rejection and fenced state changes, strict body validation, missing/corrupt evidence handling, identical replay, different-content conflict, concurrent create, reused-key conflict, and recovery after upload/readback timeout. Confirm credentials/URLs are redacted and canonical bytes are re-downloadable. Use one requested page only and STOP; no paid editorial batch, legacy Ingestor resurrection or Assembler implementation is implied.
+
+
+## 20. Ordinary Chat evidence adapter and rollout
+
+Daily ingestion runs in ordinary Chat through the Business Brief Ingestor plugin:
+`resolve_current_source` → `get_page_evidence` (image + OCR) → visually validated relevant-article extraction → validate → persist → STOP.
+Codex is for programming, system changes and debugging. It is not the daily ingest execution surface.
+
+The private/only-me Site v4 is https://business-brief-ingestor.satinyloom128.chatgpt.site/ . This adapter is distinct from the Railway HTTP bridge and its signed-artifact wire responses (§19); signed URLs/tokens stay server-side and never reach the model.
+
+Site v3 added server-side page PNG fetch, SHA/identity validation and MCP image content. Site v4 added extraction from the prepared OCR PDF with `unpdf 1.9.0` / PDF.js `6.4.299`, only the requested `pdf_page_no`, PDF limit 24 MiB and extracted text limit 256 KiB, secret sanitization and provenance metadata. Its reported tests cover page isolation, UTF-8, failure, mismatch and no secret leakage. Site adapter source/tests are external to this repository; these are acceptance facts supplied for consolidation, not tests rerun here.
+
+Ordinary Chat read acceptance returned WSJ 2026-10-14 page 1 image 1190×1684 and OCR 14,349 UTF-8 bytes, no warnings or URLs/tokens. Read evidence is therefore verified in ordinary Chat, beyond the earlier Codex HTTPS test. Technical v2 production persistence also passed; its content is superseded (canonical acceptance identity in HISTORY).
+
+Before using v3, deploy the bridge extension, update the plugin's validator/producer instructions together, then explicitly authorize a separate content acceptance pass. Do not silently convert/rewrite v2 or reuse its idempotency key. Start a fresh submission/key in the new generation; preserve all v2 bytes/bindings. Downstream must select an explicit accepted generation, never mix or automatically fall back to the superseded page. This consolidation performs no production ingest, persist or deployment.

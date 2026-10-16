@@ -52,3 +52,11 @@
 **Lesson:** page semantics je potřeba řešit v live conversation nad source evidence. Previous model output nesmí být evidence; každá oprava se musí vracet k source page.  
 **Decision:** D014.  
 **Retry only if:** nový přístup prokáže na reálném corpus srovnatelnou iterativní spolehlivost, auditovatelnost a výrazně lepší ekonomiku.
+
+## F009 — Valid persistence with an overgrown content contract
+**Date:** consolidated 2026-10-16.
+**Goal:** faithful relevant article extraction on WSJ page 1.
+**Tried/result:** v2 production persistence technically passed, but mandatory irrelevant inventory, separate What's News digests and large perspective objects overgrew the intended page handoff.
+**Risk:** a VERIFIED readback/usable_for_assembly flag could be mistaken for product acceptance.
+**Resolution:** retain the object as superseded acceptance evidence; D019/D020 simplify content in a new namespace.
+**Retry only if:** an explicit downstream use requires richer metadata and separately validates its value; never overwrite the existing object.

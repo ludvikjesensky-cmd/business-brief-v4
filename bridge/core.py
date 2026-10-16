@@ -187,8 +187,10 @@ class Bridge:
             return result
     def post(self,wrapper,key,principal,allowed):
         p=wrapper['page']; sid=p['source']['source_id']; no=p['publication']['page_no']
+        page_schema(p)
+        generation = {'page-ingest-v2': 'ingestor-v2.0', 'page-ingest-v3': 'ingestor-v2.1'}[p['schema_version']]
         canonical=jcs(p); request_hash=digest(jcs(wrapper)); artifact_hash=digest(canonical)
-        target=f"page-ingest/{p['publication']['publication_id']}/{p['publication']['edition_date']}/{p['source']['source_sha256']}/ingestor-v2.0/page-{no:04d}.json"
+        target=f"page-ingest/{p['publication']['publication_id']}/{p['publication']['edition_date']}/{p['source']['source_sha256']}/{generation}/page-{no:04d}.json"
         def eligible(c):
             r=self.db.row(c,sid,allowed); m,h=self.bundle(r)
             require(h==wrapper['source_bundle_sha256'],'SOURCE_CHANGED',409)

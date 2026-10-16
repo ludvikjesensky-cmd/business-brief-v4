@@ -35,3 +35,6 @@ Primární publikum: český manažer, podnikatel, investor, odborník a profesn
 Business Brief není obecný news feed ani překladač. Nesmí redukovat kvalitní text na několik faktů tak, že z něj zmizí autorova otázka, argument nebo perspektiva.
 
 Otevřené zůstávají pricing, free/paid hranice, finální brand, B2B balíčky a přesná forma některých kanálů.
+
+## Ingest boundary
+Page ingestion selects relevant articles and preserves visually verified source wording. Completeness means complete text of selected items on that page, without a mandatory rejected-item audit inventory. Perspective value guides relevance; interpretation of an assembled article remains downstream. This does not promise an implemented full-edition coverage product.

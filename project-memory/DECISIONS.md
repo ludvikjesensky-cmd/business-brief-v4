@@ -60,7 +60,7 @@ Relevantní principy, decisions, failures a lessons se přenášejí do v4 Proje
 **Consequences:** Assembler nesmí znovu hádat page semantics, pokud jsou Page JSONy nejisté; takový případ jde do review.
 
 
-## D016 — ACTIVE — Ingestor zachovává perspective value konzervativně a page-level
+## D016 — SUPERSEDED by D019 — Ingestor zachovává perspective value konzervativně a page-level
 **Date:** 2026-10-15.
 **Decision:** Ingestor v2.0 nefiltruje pouze podle event importance nebo tématu. Při nejistotě preferuje recall před agresivním vyřazením a zachovává kandidátní text pro downstream review.
 
@@ -91,3 +91,21 @@ PostgreSQL slouží jako operational index/state/provenance vrstva. Dedicated pa
 **Consequences:** D017 canonical path zůstává beze změny. UUID source v DB/API se explicitně mapuje na SHA identitu Technician manifestu. Server-side credential/scopes/publication allowlist a 300s signed URLs chrání privátní bucket; Supabase secret se Chatu neposkytuje. Zápis je create-if-absent nad RFC8785 JCS bytes, s SHA-256/readback identity verification a durable idempotency binding. Odlišný obsah/identita na stejném klíči je 409, nikoli overwrite; BLOCKED se canonical neukládá, NEEDS_REVIEW lze uložit bez assembly eligibility. Implementace musí zajistit fencing vůči změnám readiness/active source/bundle mapping.
 
 Preferujeme budoucí malou samostatnou Railway HTTP službu. Toto rozhodnutí nepředstavuje implementaci, deploy, nový DB schema ani obnovení legacy Ingestoru. Přesná schémata a error model se neduplikují do dalších dokumentů. Acceptance gate je v §19.8; první skutečný page pass zůstává ruční, jedna strana a STOP.
+
+## D019 — ACTIVE — Relevant source-faithful page extraction
+**Date:** 2026-10-16.
+**Decision:** Supersedes D016's mandatory irrelevant inventory and perspective expansion. Identify items over the whole page, persist primarily relevant articles plus uncertain candidates; include irrelevant items only for continuity, ambiguity resolution or explicit review. Preserve title, subtitle/dek/perex, byline, text_on_page and continuation with technical identity/verification. Relevance needs a short reason, not mandatory PerspectiveEvidence. What's News is not automatically a separate article.
+**Reason:** Page truth must serve downstream reading/assembly, without unnecessary interpretation. OCR proposes; the image verifies. Only technical layout/hyphenation/spacing normalization and visually confirmed OCR corrections are allowed. No summary, paraphrase, translation, stylistic rewrite or invented text. Unverifiable text requires localized uncertainty and NEEDS_REVIEW/BLOCKED.
+**Consequences:** Perspective value remains editorial purpose; faithful text carries it into downstream interpretation. Completeness concerns selected article text, not mandatory inventory of every rejected item.
+
+## D020 — ACTIVE — New generation without overwriting v2
+**Date:** 2026-10-16.
+**Decision:** Extend the existing contract system with PageItemV3/PageIngestV3: page-ingest-v3, ingestor-v2.1-chat, instruction 2.1. Preserve v2 classes and strict validation. Derive v3 Storage keys with ingestor-v2.1 in place of ingestor-v2.0. The first v2 page remains a superseded technical acceptance artifact, never silently rewritten. D017 remains active for durable storage, with its path retained for v2 and extended here for v3.
+**Reason:** Existing canonical create-if-absent forbids content replacement; schema, instructions and producer must move together.
+**Consequences:** Same auth/fencing/JCS/hash/idempotency/readback/conflict semantics and HTTP endpoints. New generation requires a new intended-submission idempotency key. No automatic migration, deletion, v2 fallback or mixing generations in assembly. Deploy bridge/plugin support together and accept new content separately; this decision is implemented locally, not proof of production rollout.
+
+## D021 — ACTIVE — Ordinary Chat daily ingest; Codex system work
+**Date:** 2026-10-16.
+**Decision:** Daily workflow is resolve_current_source → get_page_evidence (image + inline OCR) → visually validated relevant-article extraction → validate → persist → STOP in ordinary Chat through the plugin. Codex handles programming, system changes and debugging.
+**Reason:** Ordinary Chat evidence acceptance now passed; earlier Codex-only integration limitation is closed.
+**Consequences:** Technical persistence acceptance is distinct from source-content approval. Site URLs/tokens are fetched server-side and never returned to the model. One accepted page does not establish full-corpus quality.

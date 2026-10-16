@@ -24,10 +24,8 @@ Jaký minimální schema/retrieval model poskytne kontinuitu bez toho, aby star�
 ## Q008 — OPEN — Audio
 Kdy a jak zavést stabilní hlasovou identitu a audio adaptaci, aniž by předběhla ověřený textový produkt?
 
-## Q009 — OPEN — Page Ingest contract v2
-Jak přesně vypadá machine contract jednoho Page JSONu: required metadata, article/item identity, relevance, continuation evidence, source-faithful text, verification state, uncertainty a provenance?
-
-Contract má navázat na existující src/business_brief/contracts.py. Nemá vzniknout paralelní contract system.
+## Q009 — RESOLVED — Minimal Page Ingest contract
+D019/D020 define page-ingest-v3 in the existing contracts.py and a new canonical generation. Required perspective expansion and irrelevant inventory are removed. Deployment and corpus acceptance remain Q010, not an undecided schema question.
 
 ## Q010 — OPEN — Ingestor v2 acceptance
 Jaké minimum reálných stránek a publikací musí Chat Ingestor v2.0 úspěšně zpracovat, než bude Page JSON contract frozen a Assembler implementován?

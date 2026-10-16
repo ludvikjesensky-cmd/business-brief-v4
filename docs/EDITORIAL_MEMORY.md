@@ -15,3 +15,6 @@ Její role:
 Princip v4: dnešní vydání je primární; Memory jej podporuje, ne přebíjí. Retrieval má být selektivní a provenance-preserving.
 
 Dlouhodobý technický směr může kombinovat relační metadata, full-text a vector retrieval, ale konkrétní schema se nemá zmrazit před ověřením skutečných editorial use cases.
+
+
+Only explicitly content-accepted generations should feed future article retrieval. Technical persistence flags do not approve source content; the first v2 page-1 object is superseded acceptance evidence (HISTORY/D020).

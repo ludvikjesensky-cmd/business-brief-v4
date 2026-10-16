@@ -24,3 +24,12 @@ Physical Map byla doplněna experimenty s vision layoutem, BODY_FLOW, geometry m
 Projekt přijal nový generační řez: Ingestor v1.1 / Physical Map production path je superseded. Ingestor v2.0 je živá Chat role nad Technician Source Bundle, pracuje jednu stránku po druhé a vytváří jeden ověřený Page JSON na stránku.
 
 Tím se page semantics přesouvá tam, kde lze opakovaně kontrolovat source image, textovou evidence a vlastní předchozí hypotézy. Automatizace se vrací až za stabilní Page JSON contract: Assembler skládá články, Composer seskupuje témata napříč zdroji, Translator je kandidát pro API transformaci a Editorial Workflow zůstává vrstvou redakčního judgmentu.
+
+## Ordinary Chat read and first write acceptance — consolidated 2026-10-16
+Site v3 added verified PNG MCP image delivery; private Site v4 added bounded page-isolated inline OCR extraction. Ordinary Chat then returned image + OCR successfully, closing the earlier separate-connector read gate (details in docs/INGESTOR.md §20).
+
+Acceptance source: UUID `603e8242-ffe8-4e1d-a5de-9adb3da4d188`, source SHA `2ee55f9d94af4389a6a9c20775ab2069cfe2b54f558acb19247b4c1d0672c37f`, source bundle SHA `e14e274810bbde45f738d94ca4a93f3eacefffb32bbb2221b259e2777a84e74d`, publication `the-wall-street-journal`, edition `2026-10-14`, variant `default`, 10 pages.
+
+First production page 1 persisted as VERIFIED / CREATED at `page-ingest/the-wall-street-journal/2026-10-14/2ee55f9d94af4389a6a9c20775ab2069cfe2b54f558acb19247b4c1d0672c37f/ingestor-v2.0/page-0001.json`, artifact SHA `f135489008902816526cd4d2b73710e18e4833931f8adcae47af5ab793741e97`, 42424 B, readback identity verified, usable_for_assembly=true.
+
+The object remains immutable technical acceptance evidence, product-superseded because it inventories irrelevant items, represents What's News digests separately and expands perspective metadata unnecessarily (F009). D019/D020 introduce relevant source-faithful extraction and a separate v3 generation; no v2 rewrite or new production pass occurred during consolidation. Acceptance facts were supplied by the user; raw runtime events stay in operational storage.
