@@ -50,3 +50,6 @@ F011 shows that SHA/readback proves byte identity, not completeness of the inten
 
 ## L017 — Preserve semantic structure without duplicating layout
 Reconstruct text; preserve visuals as crops. Pull quotes are presentation/layout, not new semantic content: do not duplicate them into prose, items or assets. A distinct boxed prose sidebar remains an editorial item. A visually verified ad-only page can canonically persist items:[] with explanatory notes and no article assets. Preserve source-visible internal article subheads in faithful prose when semantically part of the article. Reported coverage across generations and technical usable_for_assembly flags do not establish a homogeneous or fully visually accepted corpus.
+
+## L018 — Immutable history needs an explicit selection artifact
+Q014/Q015 acceptance separates historical ingest/revisions from what downstream actually uses. Readback verifies bytes and identity; a manifest records exact generation/key/SHA for every physical page. Never infer latest, rehabilitate a known defect from a historical usable flag, or require homogeneous generations when a verified mixed selection is explicit. Independent preview can reveal additional defects even in an unchanged asset; preserve prose and correct only what source evidence requires.
