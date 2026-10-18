@@ -57,21 +57,25 @@ STATUSES = ['VERIFIED', 'VERIFIED_WITH_NOTES', 'NEEDS_REVIEW', 'BLOCKED']
 
 def page_schema(p):
     fields(p, 'schema_version producer instruction_version source publication items page_status page_notes')
-    require((p['schema_version'], p['producer'], p['instruction_version']) == ('page-ingest-v2', 'ingestor-v2.0-chat', '2.0'))
+    generation = (p['schema_version'], p['producer'], p['instruction_version'])
+    require(generation in [('page-ingest-v2', 'ingestor-v2.0-chat', '2.0'),
+                           ('page-ingest-v3', 'ingestor-v2.1-chat', '2.1')])
+    legacy = p['schema_version'] == 'page-ingest-v2'
     fields(p['source'], 'source_id source_sha256'); uuid(p['source']['source_id']); sha(p['source']['source_sha256'])
     pub = p['publication']; fields(pub, 'publication_id canonical_name edition_date edition_variant page_no')
     slug(pub['publication_id']); string(pub['canonical_name'], True); day(pub['edition_date']); string(pub['edition_variant'], True); integer(pub['page_no'])
     strings(p['page_notes']); string(p['page_status']); require(p['page_status'] in STATUSES)
     require(type(p['items']) is list); seen = set()
     for item in p['items']:
-        fields(item, 'page_item_id item_type title subtitle kicker byline text_on_page relevance perspective continuation verification')
+        fields(item, 'page_item_id item_type title subtitle kicker byline text_on_page relevance continuation verification' + (' perspective' if legacy else ''))
         string(item['page_item_id'], True); string(item['item_type'], True)
         require(item['page_item_id'] not in seen); seen.add(item['page_item_id'])
         for k in ['title', 'subtitle', 'kicker', 'byline', 'text_on_page']: string(item[k], nullable=True)
         r = item['relevance']; fields(r, 'state reason'); string(r['state']); require(r['state'] in ['relevant', 'irrelevant', 'uncertain']); string(r['reason'], True)
-        pe = item['perspective']; fields(pe, 'author_question framing central_argument distinctive_angle tensions_or_counterarguments open_questions observed_on_page interpreted_from_page unresolved_until_assembly')
-        for k in ['author_question', 'framing', 'central_argument', 'distinctive_angle']: string(pe[k], nullable=True)
-        for k in ['tensions_or_counterarguments', 'open_questions', 'observed_on_page', 'interpreted_from_page', 'unresolved_until_assembly']: strings(pe[k])
+        if legacy:
+            pe = item['perspective']; fields(pe, 'author_question framing central_argument distinctive_angle tensions_or_counterarguments open_questions observed_on_page interpreted_from_page unresolved_until_assembly')
+            for k in ['author_question', 'framing', 'central_argument', 'distinctive_angle']: string(pe[k], nullable=True)
+            for k in ['tensions_or_counterarguments', 'open_questions', 'observed_on_page', 'interpreted_from_page', 'unresolved_until_assembly']: strings(pe[k])
         c = item['continuation']; fields(c, 'starts_here continued_from_previous_page continues_to_another_page continuation_marker continuation_target')
         for k in ['starts_here', 'continued_from_previous_page', 'continues_to_another_page']: require(type(c[k]) is bool)
         for k in ['continuation_marker', 'continuation_target']: string(c[k], nullable=True)

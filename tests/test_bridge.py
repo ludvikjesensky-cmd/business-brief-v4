@@ -287,3 +287,61 @@ def test_http_response_redaction(app):
 
 def test_invalid_unicode_credential(app):
     assert_failure('UNAUTHENTICATED',lambda:app.auth('Bearer \u0100',False))
+
+@pytest.fixture
+def page_v3(page):
+    page.update(schema_version='page-ingest-v3', producer='ingestor-v2.1-chat', instruction_version='2.1')
+    del page['items'][0]['perspective']
+    return page
+
+
+def test_v3_dataclass_serialization(page_v3):
+    from business_brief.contracts import PageItemV3, PageIngestV3
+    item = PageItemV3('p1-i1', 'article', 'Title', None, None, None,
+                     'Synthetic text', RelevanceAssessment('relevant', 'Synthetic reason'),
+                     ContinuationEvidence(True, False, False),
+                     Verification('VERIFIED', True, True, True, None, True, True, True))
+    serialized = PageIngestV3(SID, SHA, 'paper', 'Paper', '2026-10-14',
+                             'default', 1, (item,), 'VERIFIED').to_dict()
+    assert serialized == page_v3
+    page_schema(serialized)
+    verification(serialized)
+
+
+@pytest.mark.parametrize('field,value', [('producer', 'ingestor-v2.0-chat'),
+                                         ('instruction_version', '2.0'),
+                                         ('schema_version', 'page-ingest-v4')])
+def test_v3_mixed_generation_rejected(page_v3, field, value):
+    page_v3[field] = value
+    assert_failure('PAGE_SCHEMA_INVALID', lambda: page_schema(page_v3))
+
+
+def test_v3_no_perspective_or_missing_text_checks(page_v3):
+    page_v3['items'][0]['perspective'] = PerspectiveEvidence().to_dict()
+    assert_failure('PAGE_SCHEMA_INVALID', lambda: page_schema(page_v3))
+    del page_v3['items'][0]['perspective']
+    page_v3['items'][0]['verification']['text_on_page_complete'] = False
+    assert_failure('PAGE_VERIFICATION_INVALID', lambda: verification(page_v3))
+    page_v3['page_status'] = 'NEEDS_REVIEW'
+    page_v3['page_notes'] = ['Unverified passage']
+    page_v3['items'][0]['verification'].update(status='NEEDS_REVIEW', notes=['Unverified word at paragraph 1'])
+    page_schema(page_v3)
+    verification(page_v3)
+
+
+def test_v3_separate_namespace_and_no_overwrite(bridge, page, page_v3):
+    legacy = copy.deepcopy(page_v3)
+    legacy.update(schema_version='page-ingest-v2', producer='ingestor-v2.0-chat', instruction_version='2.0')
+    legacy['items'][0]['perspective'] = PerspectiveEvidence().to_dict()
+    _, old = bridge.post(wrapper(legacy), KEY, 'test', ['paper'])
+    original = dict(bridge.storage.data)
+    assert_failure('IDEMPOTENCY_CONFLICT', lambda: bridge.post(wrapper(page_v3), KEY, 'test', ['paper']))
+    new_key = str(UUID(int=99))
+    code, new = bridge.post(wrapper(page_v3), new_key, 'test', ['paper'])
+    assert code == 201
+    assert '/ingestor-v2.0/' in old['artifact']['storage_key']
+    assert '/ingestor-v2.1/' in new['artifact']['storage_key']
+    assert all(bridge.storage.data[k] == v for k, v in original.items())
+    assert bridge.post(wrapper(page_v3), new_key, 'test', ['paper'])[0] == 200
+    page_v3['page_notes'] = ['Revised content']
+    assert_failure('CANONICAL_CONFLICT', lambda: bridge.post(wrapper(page_v3), str(UUID(int=100)), 'test', ['paper']))

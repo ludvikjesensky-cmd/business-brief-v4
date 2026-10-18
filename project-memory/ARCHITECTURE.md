@@ -8,7 +8,7 @@ closed source edition
 → Technician  
 → validated Source Bundle  
 → Ingestor Access Bridge (authorized evidence access)
-→ **Ingestor v2.0 (live Chat)**  
+→ **Ingestor (ordinary Chat)**
 → Ingestor Access Bridge (validation + verified canonical persistence)
 → one verified Page JSON per source page  
 → Assembler  
@@ -25,8 +25,8 @@ Technician je technický gateway: identity, immutable original, SHA/provenance, 
 
 Jeho output je validovaný source-bundle-v4.
 
-## Ingestor v2.0
-Ingestor v2.0 je živá Chat role.
+## Ingestor (ordinary Chat)
+Ingestor (ordinary Chat) je živá Chat role.
 
 Jeho vstupem je Technician Source Bundle. Zpracovává vždy jednu stránku. Používá obraz stránky a připravenou textovou/evidence vrstvu iterativně a vytváří jeden ověřený Page JSON.
 
@@ -78,3 +78,10 @@ Physical Map může zůstat historický/debug artefakt nebo diagnostická eviden
 Visual Page Map, BODY_FLOW, bbox/overlap matching a block-ID assembly nejsou current architecture.
 
 Acquisition je upstream problém. Technician není downloader/crawler a odstraněný watcher není current komponenta.
+
+## Current extraction and generation boundary
+Ordinary Chat uses the private Site v4 adapter for server-side verified image and inline OCR evidence; URLs/tokens never reach the model. Codex is for system development/debugging. See docs/INGESTOR.md §20 for adapter versions, limits and acceptance provenance.
+
+Select primarily relevant articles, with uncertain candidates for review and exceptional irrelevant continuity/review evidence only. Preserve visually validated title/subtitle/byline/text_on_page/continuation; OCR supports the image. Normalize technical layout artifacts only. Do not summarize, paraphrase, translate or invent missing text. Perspective interpretation belongs downstream, not a required per-item object.
+
+New page-ingest-v3 uses producer ingestor-v2.1-chat, instruction 2.1 and directory ingestor-v2.1; v2 and its ingestor-v2.0 key remain immutable compatibility artifacts. Bridge validation and server-side generation mapping are deployed; connected-plugin page-1 content/persistence acceptance passed (CURRENT_STATE/HISTORY). Site v4 already transports the body unchanged and required no redeploy. Auth, JCS, durable binding/fencing, create-if-absent and readback semantics are retained. Assembler must select an explicitly accepted generation and exclude superseded acceptance content, regardless of historical usable_for_assembly=true.

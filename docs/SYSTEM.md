@@ -10,14 +10,14 @@ Output: validovaný source-bundle-v4.
 
 Odpovědnosti: identity, immutable original, SHA/provenance, container validation, OCR decision/derivative, page evidence, mechanical split, manifest, atomic handoff. Žádná editorial interpretace.
 
-## Ingestor v2.0
+## Ingestor (ordinary Chat)
 Input: Technician Source Bundle.
 
 Execution model: live Chat, human-supervised, page-by-page.
 
 Output: přesně jeden verified Page JSON pro každou dokončenou source page.
 
-Ingestor v2.0 používá:
+Ingestor (ordinary Chat) používá:
 - page image jako primární vizuální autoritu;
 - prepared text/OCR jako evidence;
 - metadata Source Bundle;
@@ -42,7 +42,7 @@ Přijatý kontrakt v1, implementovaný v `bridge/` a nasazený jako samostatná 
 
 Bridge neinterpretuje obsah, neposuzuje relevanci, neprovádí OCR ani assembly. Databázový source UUID se mapuje na manifest `sha256:<digest>` přes blob/edition vazby, nikoli rovností řetězců. Server odvozuje canonical klíč, zapisuje create-if-absent a ověřuje stažené JCS bytes přes SHA-256 a identitu. Shodný obsah je replay, odlišný obsah 409; žádný silent overwrite. `STORED` je potvrzení persistence, nikoli nezávislý editorial verdikt. NEEDS_REVIEW lze uložit bez assembly eligibility, BLOCKED se canonical neukládá. PostgreSQL index/receipt mechanismus a fencing musí být navrženy při implementaci; tento kontrakt nezavádí tabulku.
 
-Samostatná Railway služba `ingestor-access-bridge` prošla technickým page-1 evidence acceptance z Codex HTTPS klienta; Page JSON se v tomto testu neukládal. Samostatný ChatGPT connector zůstává neověřený. Pro deployment, durable fencing a recovery viz [bridge/README.md](../bridge/README.md). Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
+Samostatná Railway služba `ingestor-access-bridge` prošla technickým page-1 evidence acceptance z Codex HTTPS klienta; Page JSON se v tomto testu neukládal. Ordinary Chat image + inline OCR read acceptance subsequently passed through private Site v4 (docs/INGESTOR.md §20); the first v2 production persist also passed but its content is superseded (HISTORY, D019). Pro deployment, durable fencing a recovery viz [bridge/README.md](../bridge/README.md). Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
 
 ## Page JSON
 Page JSON je nový handoff artefakt mezi Ingestorem a Assemblerem.
@@ -57,9 +57,9 @@ Má reprezentovat:
 - verification a explicitní uncertainty;
 - provenance k Technician source.
 
-Machine schema je definováno v `src/business_brief/contracts.py` jako `page-ingest-v2`.
+Machine schema je definováno v `src/business_brief/contracts.py` jako legacy `page-ingest-v2` a nový `page-ingest-v3` (PageIngestV3).
 
-Canonical Page JSON body patří do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní Supabase bucket je operational konfigurace a Chat jej nesmí hádat.
+Legacy v2 canonical Page JSON body patří do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní Supabase bucket je operational konfigurace a Chat jej nesmí hádat.
 
 PostgreSQL slouží jako queryable operational index/state/provenance vrstva; primární JSON body zůstává ve Storage. Dedicated page-ingest tabulka se nesmí z Chatu improvizovat, pokud ještě není implementovaná.
 
@@ -105,3 +105,10 @@ ingestor-v4-physical-map-v1.1, physical-map.json jako povinný production handof
 Jejich kód může dočasně zůstat v repository kvůli historii, testům nebo diagnostice, ale nesmí být považován za current production architecture.
 
 Historické důvody a podmínky případného návratu jsou v project-memory/FAILURES.md a DECISIONS.md.
+
+## Current extraction and generation boundary
+Ordinary Chat uses the private Site v4 adapter for server-side verified image and inline OCR evidence; URLs/tokens never reach the model. Codex is for system development/debugging. See docs/INGESTOR.md §20 for adapter versions, limits and acceptance provenance.
+
+Select primarily relevant articles, with uncertain candidates for review and exceptional irrelevant continuity/review evidence only. Preserve visually validated title/subtitle/byline/text_on_page/continuation; OCR supports the image. Normalize technical layout artifacts only. Do not summarize, paraphrase, translate or invent missing text. Perspective interpretation belongs downstream, not a required per-item object.
+
+New page-ingest-v3 uses producer ingestor-v2.1-chat, instruction 2.1 and directory ingestor-v2.1; v2 and its ingestor-v2.0 key remain immutable compatibility artifacts. Bridge validation and server-side generation mapping are implemented in this branch; deployment/plugin rollout and content acceptance remain pending. Auth, JCS, durable binding/fencing, create-if-absent and readback semantics are retained. Assembler must select an explicitly accepted generation and exclude superseded acceptance content, regardless of historical usable_for_assembly=true.
