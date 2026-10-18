@@ -94,6 +94,14 @@ class Storage:
         if r.status_code in (400,404): raise Failure('ARTIFACT_MISSING',409)
         require(r.status_code == 200,'UPSTREAM_UNAVAILABLE',503)
         return r.content
+    def list(self,bucket,prefix):
+        entries=[]
+        for offset in range(0,10000,1000):
+            r=self.call('POST','/object/list/'+quote(bucket,safe=''),json={'prefix':prefix,'limit':1000,'offset':offset,'sortBy':{'column':'name','order':'asc'}})
+            require(r.status_code==200 and type(r.json()) is list,'UPSTREAM_UNAVAILABLE',503)
+            batch=r.json(); entries.extend(batch)
+            if len(batch)<1000: return entries
+        raise Failure('INDEX_LIMIT_EXCEEDED',409)
     def access(self,bucket,key,media,expected=None):
         data = self.download(bucket,key)
         require(len(data)>0,'ARTIFACT_MISSING',409)
@@ -200,18 +208,27 @@ class Bridge:
             # Manifest bytes are pinned again before access leaves the lock boundary.
             require(self.bundle(r)[1]==h,'SOURCE_CHANGED',409)
             return result
-    def post(self,wrapper,key,principal,allowed):
+    def post(self,wrapper,key,principal,allowed,revision=None):
         p=copy.deepcopy(wrapper['page']); sid=p['source']['source_id']; no=p['publication']['page_no']
-        page_schema(p, submission=True)
-        request_hash=digest(jcs(wrapper))
+        if revision:
+            from .selection import revision_schema
+            revision_schema({**revision,'page':p}, submission=True)
+        rid=revision['revision_id'] if revision else None
+        page_schema(p, submission=True, revision_id=rid)
+        request_hash=digest(jcs({**wrapper, **({'revision':revision} if revision else {})}))
         has_assets=any(i.get('assets') for i in p['items'])
         set_claim=p['schema_version']=='page-ingest-v4'
         target=f"{generation_prefix(p)}/page-{no:04d}.json"
+        if revision:
+            target=f"{generation_prefix(p)}/revisions/page-{no:04d}/{rid}/page.json"
         def eligible(c):
             r=self.db.row(c,sid,allowed); m,h=self.bundle(r)
             require(h==wrapper['source_bundle_sha256'],'SOURCE_CHANGED',409)
             ident=self.identity(r,h)
             require(p['source']['source_sha256']==r['sha256'] and all(p['publication'][k]==ident[k] for k in ['publication_id','canonical_name','edition_date','edition_variant']) and no<=r['page_count'],'IDENTITY_MISMATCH',409)
+            if revision:
+                from .selection import verify_supersedes
+                verify_supersedes(self, p, revision)
             verification(p)
             return r,ident,m
         # Session advisory lock covers both transactions; durable PENDING claim covers session loss.
@@ -234,9 +251,9 @@ class Bridge:
                 prepared=[]
                 if has_assets:
                     self.storage.private(self.output_bucket)
-                    prepared=prepare_assets(p,m,self.storage,self.source_bucket,self.output_bucket)
+                    prepared=prepare_assets(p,m,self.storage,self.source_bucket,self.output_bucket,rid)
                 if set_claim:
-                    set_hash=digest(jcs({'request':wrapper,'source':ident,
+                    set_hash=digest(jcs({'request':wrapper,**({'revision':revision} if revision else {}),'source':ident,
                         'artifacts':[a['artifact'] for a,_ in prepared]}))
                     c.execute('''insert into bridge_private.bindings(principal,idempotency_key,request_sha256,target_key,source_id,edition_id,blob_id,publication_id)
                     values(%s,%s,%s,%s,%s,%s,%s,%s) on conflict(principal,idempotency_key) do nothing''',
@@ -244,8 +261,12 @@ class Bridge:
                     binding=c.execute('select request_sha256,target_key from bridge_private.bindings where principal=%s and idempotency_key=%s for update',(set_principal,set_key)).fetchone()
                     require(binding['request_sha256']==set_hash and binding['target_key']==target,'ASSET_SET_CONFLICT',409)
                     c.execute("update bridge_private.bindings set state='PENDING' where principal=%s and idempotency_key=%s",(set_principal,set_key))
-                canonical=jcs(p); artifact_hash=digest(canonical)
-                page_schema(p)
+                document={**revision, 'page':p} if revision else p
+                if revision:
+                    from .selection import revision_schema
+                    revision_schema(document)
+                canonical=jcs(document); artifact_hash=digest(canonical)
+                page_schema(p, revision_id=rid)
                 c.commit()  # Both claims survive a crash, before the first crop mutation.
                 r,ident,m=eligible(c)
                 if has_assets:
@@ -274,7 +295,7 @@ class Bridge:
                     c.execute("update bridge_private.bindings set state='CONFLICT' where principal=%s and idempotency_key=%s",(principal,key)); c.commit()
                     raise Failure('CANONICAL_CONFLICT',409,'EXISTING_UNCHANGED')
                 try:
-                    page_schema(strict_json(stored))
+                    page_schema(strict_json(stored)['page'] if revision else strict_json(stored), revision_id=rid)
                     require(digest(stored)==artifact_hash,'PERSISTENCE_UNVERIFIED',503)
                     require(self.bundle(r)[1]==ident['source_bundle_sha256'],'SOURCE_CHANGED',409)
                 except Failure: raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN') from None

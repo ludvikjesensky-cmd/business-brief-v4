@@ -126,3 +126,6 @@ Current deployed v4 pin: `b6d465c49dbf546f0ea31876d218121428d495c8`, Railway `44
 
 ## Visual acceptance and immutable correction boundary
 D023 / INGESTOR §21.7 requires independent server-equivalent crop preview before visual_checked:true and persistence. Mechanical readback does not detect clipped visuals. Current bridge immutability provides no editorial revision protocol: retain defective originals, require Q014 for authorized corrections and explicit downstream supersession/selection. WSJ page 1 is evidenced as v2/v3, page 2 as v4; pages 3–10 are reported v4 with page-6 visual failure. No homogeneous all-v4 or fully visually accepted corpus is established.
+
+## Edition selection and immutable revisions (D024)
+Assembler accepts exactly one immutable edition-selection-v1 manifest ID + SHA through bridge.selection.assembly_input. It verifies every selected Page JSON and PNG and fails closed on missing/mismatched/unusable/known-defective input. No page-directory scan, latest-generation or latest-revision fallback. Mixed v3/v4/revision selections are explicit. Revision full snapshots use a separate page-revision-v1 wrapper; canonical v2/v3/v4 schemas and objects remain unchanged. INGESTOR §22 is normative. No assembly was run.

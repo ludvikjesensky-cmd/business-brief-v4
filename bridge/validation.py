@@ -56,7 +56,7 @@ def slug(v): require(type(v) is str and re.fullmatch('[a-z0-9]+(?:-[a-z0-9]+)*',
 
 STATUSES = ['VERIFIED', 'VERIFIED_WITH_NOTES', 'NEEDS_REVIEW', 'BLOCKED']
 
-def page_schema(p, *, submission=False):
+def page_schema(p, *, submission=False, revision_id=None):
     fields(p, 'schema_version producer instruction_version source publication items page_status page_notes')
     generation = (p['schema_version'], p['producer'], p['instruction_version'])
     require(generation in [('page-ingest-v2', 'ingestor-v2.0-chat', '2.0'),
@@ -81,7 +81,7 @@ def page_schema(p, *, submission=False):
         if p['schema_version'] == 'page-ingest-v4':
             require(type(item['assets']) is list)
             for asset in item['assets']:
-                asset_schema(asset, item, p, asset_ids, submission=submission)
+                asset_schema(asset, item, p, asset_ids, submission=submission, revision_id=revision_id)
         c = item['continuation']; fields(c, 'starts_here continued_from_previous_page continues_to_another_page continuation_marker continuation_target')
         for k in ['starts_here', 'continued_from_previous_page', 'continues_to_another_page']: require(type(c[k]) is bool)
         for k in ['continuation_marker', 'continuation_target']: string(c[k], nullable=True)
@@ -131,13 +131,16 @@ def generation_prefix(p):
     return f"page-ingest/{pub['publication_id']}/{pub['edition_date']}/{p['source']['source_sha256']}/{GENERATION_DIRECTORIES[p['schema_version']]}"
 
 
-def asset_key(p, asset_id):
+def asset_key(p, asset_id, revision_id=None):
     require(p['schema_version'] == 'page-ingest-v4')
     slug(asset_id); integer(p['publication']['page_no'])
+    if revision_id is not None:
+        slug(revision_id)
+        return f"{generation_prefix(p)}/revisions/page-{p['publication']['page_no']:04d}/{revision_id}/assets/{asset_id}.png"
     return f"{generation_prefix(p)}/assets/page-{p['publication']['page_no']:04d}/{asset_id}.png"
 
 
-def asset_schema(a, item, p, seen, *, submission=False):
+def asset_schema(a, item, p, seen, *, submission=False, revision_id=None):
     fields(a, 'asset_id asset_type page_item_id page_no page_anchor text_anchor title caption artifact verification')
     slug(a['asset_id']); require(a['asset_id'] not in seen); seen.add(a['asset_id'])
     string(a['asset_type']); require(a['asset_type'] in ['chart', 'table', 'photo', 'infographic', 'illustration', 'other'])
@@ -171,7 +174,7 @@ def asset_schema(a, item, p, seen, *, submission=False):
             require(anchor in paragraphs[ta['paragraph_index']])
     if not (submission and a['artifact'] is None):
         ar = a['artifact']; fields(ar, 'bucket key media_type sha256 byte_size width height')
-        string(ar['bucket'], True); require(ar['key'] == asset_key(p, a['asset_id']))
+        string(ar['bucket'], True); require(ar['key'] == asset_key(p, a['asset_id'], revision_id))
         require(ar['media_type'] == 'image/png'); sha(ar['sha256'])
         for k in ['byte_size', 'width', 'height']: integer(ar[k], 1, 2147483647)
         if px is not None: require(ar['width'] == px[2]-px[0] and ar['height'] == px[3]-px[1])

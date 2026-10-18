@@ -129,3 +129,9 @@ Each asset has a physical `page_anchor` (normalized bbox, source PNG SHA, option
 **Decision:** Each asset crop must be rendered from the authoritative page PNG with server-equivalent §21.2 geometry and independently previewed as its own image before visual_checked:true and page persistence. Inspect the full visual footprint and article ownership; full-page bbox inspection does not satisfy this gate.
 **Reason:** F011 exposed a clipped infographic despite successful technical readback.
 **Consequences:** INGESTOR §21.7 and OPERATIONS govern the manual acceptance gate. No preview endpoint or immutable revision protocol is implied by this decision; unavailable crop preview blocks visual acceptance. Existing defective immutable artifacts require Q014 resolution.
+
+## D024 — ACTIVE — Immutable full page revisions and explicit edition selection
+**Date:** 2026-10-18.
+**Decision:** Q014/Q015 mechanism uses page-revision-v1 wrappers around full v4 snapshots, with explicit canonical supersedes key/SHA, reason/author/time and crop preview hashes. Canonical objects remain immutable. Source-scoped readback verifies Page JSON and every PNG without signed capabilities. edition-selection-v1 records exactly one selected artifact for every physical page, including intentional heterogeneous generations. Assembler accepts one explicit manifest ID/SHA and independently verifies all selected bytes; no latest fallback. ACCEPTED_FOR_ASSEMBLY requires verified, usable, non-defective selections.
+**Reason:** Immutable ingest history and authoritative downstream selection have different responsibilities. Technical readback does not resolve visual defects.
+**Consequences:** INGESTOR §22 is normative. Same durable source fences/idempotency/no-overwrite apply. Protocol implementation alone does not close page-6 remediation or operational corpus acceptance; CURRENT_STATE records those gates. Q010/Q011 remain separate.

@@ -35,7 +35,7 @@ def verify_crop(data, artifact):
     require(image.size == (artifact['width'], artifact['height']), 'PERSISTENCE_UNVERIFIED', 503)
 
 
-def prepare_assets(page, manifest, storage, source_bucket, output_bucket):
+def prepare_assets(page, manifest, storage, source_bucket, output_bucket, revision_id=None):
     assets = [a for i in page['items'] for a in i.get('assets', [])]
     require(len(assets) <= MAX_ASSETS, 'ASSET_LIMIT_EXCEEDED', 422)
     require(output_bucket == 'page-ingest', 'CONFIGURATION_MISSING', 503)
@@ -55,7 +55,7 @@ def prepare_assets(page, manifest, storage, source_bucket, output_bucket):
         data = canonical_png(crop)
         total += len(data)
         require(len(data) <= MAX_BYTES and total <= MAX_SET_BYTES, 'ASSET_LIMIT_EXCEEDED', 422)
-        artifact = {'bucket':output_bucket, 'key':asset_key(page,a['asset_id']),
+        artifact = {'bucket':output_bucket, 'key':asset_key(page,a['asset_id'],revision_id),
                     'media_type':'image/png', 'sha256':hashlib.sha256(data).hexdigest(),
                     'byte_size':len(data), 'width':crop.width, 'height':crop.height}
         require(a['artifact'] is None or a['artifact'] == artifact, 'ASSET_ARTIFACT_MISMATCH', 409)

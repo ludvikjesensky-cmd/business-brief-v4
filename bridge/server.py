@@ -9,6 +9,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, parse_qsl
 from uuid import uuid4
 from .core import Bridge, Database, Storage, CONTRACT
+from .selection import get_artifact, list_artifacts, revision_schema, persist_manifest, assembly_input
 from .validation import Failure, require, uuid, sha, fields, page_schema, strict_json
 
 MAX_BODY=5*1024*1024
@@ -42,6 +43,20 @@ class Application:
             if url.path=='/ingestor-v2/source/current':
                 require(len(args)==1 and args[0][0]=='publication','INVALID_REQUEST',400)
                 return 200,self.bridge.current(args[0][1],allowed)
+            match=re.fullmatch('/ingestor-v2/source/([^/]+)/(artifacts|artifact|assembly-input)',url.path)
+            if match:
+                sid,operation=match.groups(); uuid(sid)
+                require(len(dict(args))==len(args),'INVALID_REQUEST',400)
+                query=dict(args)
+                if operation=='artifacts':
+                    require(not query,'INVALID_REQUEST',400)
+                    return 200,list_artifacts(self.bridge,sid,allowed)
+                if operation=='assembly-input':
+                    require(set(query)=={'manifest_id','sha256'},'INVALID_REQUEST',400)
+                    return 200,assembly_input(self.bridge,sid,query['manifest_id'],query['sha256'],allowed)
+                require(set(query) in ({'page_no','generation'},{'page_no','generation','revision_id'}),'INVALID_REQUEST',400)
+                require(bool(re.fullmatch('[1-9][0-9]{0,3}',query['page_no'])),'INVALID_REQUEST',400)
+                return 200,get_artifact(self.bridge,sid,int(query['page_no']),query['generation'],query.get('revision_id'),allowed)
             match=re.fullmatch('/ingestor-v2/source/([^/]+)/page/([^/]+)',url.path)
             require(bool(match) and not args,'INVALID_REQUEST',400)
             sid,no=match.groups()
@@ -49,7 +64,7 @@ class Application:
             except Failure: raise Failure('INVALID_REQUEST',400) from None
             require(bool(re.fullmatch('[1-9][0-9]{0,3}',no)),'INVALID_REQUEST',400)
             return 200,self.bridge.page(sid,int(no),allowed)
-        require(method=='POST' and url.path=='/ingestor-v2/page' and not args,'INVALID_REQUEST',400)
+        require(method=='POST' and url.path in ('/ingestor-v2/page','/ingestor-v2/revision','/ingestor-v2/edition-selection') and not args,'INVALID_REQUEST',400)
         require(headers.get('Content-Type','').lower()=='application/json' and headers.get('Content-Encoding','identity')=='identity','UNSUPPORTED_MEDIA_TYPE',415)
         require(not headers.get('Transfer-Encoding'),'INVALID_REQUEST',400)
         try: length=int(headers.get('Content-Length',''))
@@ -60,6 +75,16 @@ class Application:
         except Failure: raise Failure('INVALID_REQUEST',400) from None
         raw=read(length); require(len(raw)==length,'INVALID_JSON',400)
         body=strict_json(raw)
+        if url.path=='/ingestor-v2/edition-selection':
+            fields(body,'contract_version manifest')
+            require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400)
+            return persist_manifest(self.bridge,body['manifest'],key,p['id'],allowed)
+        revision=None
+        if url.path=='/ingestor-v2/revision':
+            fields(body,'contract_version source_bundle_sha256 revision')
+            revision_schema(body['revision'],submission=True)
+            revision={k:v for k,v in body['revision'].items() if k!='page'}
+            body={**{k:v for k,v in body.items() if k!='revision'},'page':body['revision']['page']}
         # Conceal unauthorized resources before detailed body validation whenever selectable.
         if type(body) is dict and type(body.get('page')) is dict:
             page=body['page']; pub=page.get('publication'); src=page.get('source')
@@ -70,8 +95,8 @@ class Application:
                 else:
                     with self.bridge.db.connection() as c: self.bridge.db.authorize(c,src['source_id'],allowed)
         fields(body,'contract_version source_bundle_sha256 page')
-        require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400); sha(body['source_bundle_sha256']); page_schema(body['page'], submission=True)
-        return self.bridge.post(body,key,p['id'],allowed)
+        require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400); sha(body['source_bundle_sha256']); page_schema(body['page'], submission=True, revision_id=revision['revision_id'] if revision else None)
+        return self.bridge.post(body,key,p['id'],allowed,revision=revision)
 
 class Handler(BaseHTTPRequestHandler):
     app=None
