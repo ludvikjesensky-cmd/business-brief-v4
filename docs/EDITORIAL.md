@@ -63,3 +63,8 @@ Konkrétní počet modelových passů není dogma. Role je odpovědnost, ne nutn
 Brief musí být hodnotný sám o sobě. Detail nesmí být financován zamlčením klíčové informace. Detail přidává mechanismus, argumentaci, evidence, nuance a kontinuitu.
 
 Před automatizací se workflow ověřuje na skutečných reference editions. Redakční kvalitu nelze odvodit pouze z unit testů nebo validního JSON.
+
+## Article assets and placement
+D022 preserves charts, tables, photos, infographics and other article visuals as crops of authoritative page PNGs, with article/page ownership and physical/text anchors. `text_on_page` contains visually verified prose, not visual OCR or an inferred interpretation. **Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.** Source-visible titles/captions may accompany the crop; internal OCR is optional noncanonical support.
+
+Assembler joins prose across pages and then re-anchors assets by unique surrounding `anchor_text`; page bbox remains provenance and paragraph index is auxiliary. Missing/ambiguous matches remain `placement_needs_review` / unplaced, never guessed into the article. Editorial decides whether to use, interpret or omit the preserved visual, distinguishing its interpretation from source evidence. Exact contract/storage and implementation gate: INGESTOR.md §21; v2/v3 objects are not rewritten.

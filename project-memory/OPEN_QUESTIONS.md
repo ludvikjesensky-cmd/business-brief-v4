@@ -34,3 +34,9 @@ Acceptance musí zahrnout komplexní novinovou stránku, continuation, grafiku/r
 
 ## Q011 — OPEN — Assembler review policy
 Kdy může Assembler spojit části článku deterministicky a kdy musí výsledek označit NEEDS_REVIEW místo pokusu o chytré domýšlení?
+
+## Q012 — RESOLVED — Article asset representation and physical storage
+D022 decides authoritative page-PNG crops, dual page/text anchors and existing private page-ingest bucket in a new v4/ingestor-v2.2 namespace. OCR inside visuals is optional noncanonical support. Missing/ambiguous placement is review/unplaced, never a guess. This is no longer an undecided bucket/schema question; the implementation gate is INGESTOR.md §21.5.
+
+## Q013 — OPEN — Article asset writer and acceptance
+Implement the fenced binary crop writer and adapter transport; prove source-PNG/crop identity, pixel rounding/bounds, immutable create/replay/conflict/concurrency/timeout recovery and set-wide Page JSON readback before any separately authorized rollout. The current code deliberately blocks nonempty-assets persistence. Define explicit ordering or review for multiple assets at the same text anchor; assembly must not invent it. Real visual/anchor acceptance remains distinct from schema tests. Q011 still covers broader cross-page assembly identity/review policy; D022 already resolves anchor ambiguity to review.

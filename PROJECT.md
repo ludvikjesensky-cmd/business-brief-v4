@@ -25,7 +25,7 @@ Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/ING
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura
-- docs/INGESTOR.md — kanonické pracovní instrukce Ingestoru, v2.1 / page-ingest-v3 s rollout gate
+- docs/INGESTOR.md — kanonické instrukce Ingestoru; §21 article assets / v4 kontrakt a rollout gate (D022)
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
@@ -45,3 +45,6 @@ Před návrhem starého přístupu čti FAILURES. Nezaměňuj extraction complet
 Business Brief nesmí redukovat zdrojový text na „co se stalo“. Musí zachovat mediální a autorskou perspektivu, otázku, rámování a argumentaci, pokud právě v nich spočívá hodnota textu.
 
 Technician připravuje technickou evidenci. Ingestor (ordinary Chat) je živá Chat role, zpracovává jednu stránku po druhé a vytváří ověřený JSON pro každou stránku. Ingestor v1.1 / Physical Map production path je superseded a neaktivní. Staré v1–v3 Projects jsou historické zdroje znalosti, ne current code dependencies.
+
+## Article assets bootstrap
+Read `project-memory/DECISIONS.md` D022 and `docs/INGESTOR.md` §21 for the accepted article-assets model, dual page/text anchors and private `page-ingest` crop layout. v4 is a new immutable generation; v2/v3 stay readable and untouched. Contract support is distinct from deployed runtime: binary asset writes remain gated. **Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.**

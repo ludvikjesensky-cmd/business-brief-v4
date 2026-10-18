@@ -1,11 +1,18 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-16
+**Last consolidated:** 2026-10-18
 
 ## Current direction
 Technician → Source Bundle → ordinary Chat Ingestor (one page, image + OCR) → validated canonical Page JSON → STOP. Assembler, Composer, Translator and Editorial follow only after content acceptance. Codex serves programming, system changes and debugging.
 
 The accepted product correction is relevant-article extraction with source-faithful, visually validated text. There is no mandatory irrelevant-item inventory or mandatory perspective expansion. See D019–D020 and docs/INGESTOR.md.
+
+## Article assets — accepted contract, not deployed capability
+D022 is the canonical article-assets decision; exact schema and storage/write gate are docs/INGESTOR.md §21. **Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.** Keep prose in text_on_page; preserve article-owned authoritative PNG crops separately with page bbox and logical text anchors. Reuse private page-ingest, keys under ingestor-v2.2/assets/page-NNNN/asset-id.png, alongside v4 Page JSON. No new bucket. Assembler joins prose, then re-anchors by unique anchor text; missing/ambiguous matches stay unplaced for review.
+
+New exact tuple: page-ingest-v4 / ingestor-v2.2-chat / instruction 2.2. This branch implements strict schema/anchor/verification and immutable path derivation plus empty-assets v4 persistence. Binary crop writer and adapter support remain a separate implementation gate; nonempty-assets writes fail closed before any claim/write. No deployment, production ingest/persist or artifact mutation was performed. Production remains the recorded v3 pin; v2/v3 bytes/keys stay unchanged. The user reports existing immutable production v3 pages 1 and 2; only page 1 has exact historical receipt evidence below. No live page-2 identity/receipt was inspected in this task.
+
+PR #4 → #5 → #6 remain open, verified against GitHub on 2026-10-18. The article-assets consolidation branches from #6 head 692e35ba2b22c422b0d34481fdca212bbe269827 and is stacked after #6, not main. Do not merge or trigger main-linked deployments as part of this task.
 
 ## Delivered and accepted
 The private/only-me Business Brief Ingestor Site v4 is deployed at https://business-brief-ingestor.satinyloom128.chatgpt.site/ . v3 delivered server-side PNG fetch, SHA/identity validation and MCP image content. v4 adds page-isolated inline OCR text from the prepared PDF, bounded extraction, sanitization and provenance; technical details are in docs/INGESTOR.md §20.
@@ -23,14 +30,17 @@ Bridge commit 1442da050a0b3dcb4a5de9a11611a2b5ec9084c9 is deployed and pinned on
 
 Post-deploy connected-plugin resolve and page-1 image/OCR passed for the pinned WSJ 2026-10-14 source. Six visually checked article starts were persisted once: STORED/CREATED, VERIFIED_WITH_NOTES, 14,568 JCS bytes, SHA bc287714ea5a290833976b7dfec6caf56f09a668e2c0d401c9e317ac246055e6, ingestor-v2.1/page-0001.json. Download readback matched SHA and identity; usable_for_assembly=true. Notes preserve unfinished page-boundary sentences/words, not unresolved source uncertainty. No page 2, assembly, v2 overwrite/deletion or migration. Full canonical key is in HISTORY. Tests: 138 passed; diff check clean.
 
-Daily ordinary Chat workflow is technically ready through the existing plugin with current PROJECT/SCOPE/CURRENT_STATE/INGESTOR context. This rollout acceptance ran in Codex through the same connected MCP tools; it is not a newly observed separate ordinary-Chat session. Earlier ordinary Chat image/OCR acceptance remains distinct evidence.
+The deployed v3 ordinary Chat workflow is technically ready through the existing plugin; confirm accepted v3/instruction 2.1 support and the §21.5 gate before any pass. The new instruction 2.2 contract does not enable asset writes. This rollout acceptance ran in Codex through the same connected MCP tools; it is not a newly observed separate ordinary-Chat session. Earlier ordinary Chat image/OCR acceptance remains distinct evidence.
 
 The standalone Railway bridge has scoped auth, private buckets, direct verified-TLS PostgreSQL sessions, row/session locks, durable PENDING claims and identity guards, create-if-absent and exact JCS readback. See bridge/README.md for recovery. Source Bundle remains source-bundle-v4. The recorded WSJ edition has 10 pages and was prepared by Technician v4.2; this consolidation does not assert new live Technician status.
 
 ## Next gates
-1. Review/merge #4 → #5 → #6 in dependency order after considering main-linked service auto-deploy effects. Bridge remains pinned; documentation-only pushes do not redeploy it.
+1. Review the stacked article-assets consolidation after #6; implement and locally prove the §21 asset writer/adapter gate before any separately authorized rollout. Review/merge #4 → #5 → #6 in dependency order after considering main-linked service auto-deploy effects. Bridge remains pinned; documentation-only pushes do not redeploy it.
 2. On explicit user instruction, accept the simplified content model on real pages (including continuation and a different publication); preserve v2 and select only an explicitly accepted generation downstream.
 3. Resolve Assembler review/identity policy, then implement downstream assembly. A dedicated Page JSON index remains conditional on demonstrated need.
 
 ## Inactive and unresolved
 Physical Map / Visual Page Map / BODY_FLOW / bbox and block-ID experiments and paid full-edition Fast Editorial remain historical/superseded. Acquisition is unresolved; the removed watcher is not current architecture. Preserve their history in FAILURES/HISTORY. Rights, publication gates and business model remain OPEN_QUESTIONS.
+
+## Local validation for D022
+191 tests passed (including 53 article-assets contract/isolation tests) with pinned bridge dependencies; git diff --check clean. Existing auth, idempotency, fencing adapters, JCS, concurrent create, conflict and readback recovery tests still pass. No production service was used. Binary crop persistence remains intentionally unimplemented and blocked; these tests do not claim its acceptance.
