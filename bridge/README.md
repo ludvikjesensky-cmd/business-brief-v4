@@ -8,7 +8,7 @@ Required server variables:
 
 - `BRIDGE_DATABASE_URL`: direct PostgreSQL connection; port 6543 transaction pooling is not supported. The runtime overrides TLS parameters with `verify-full` and the bundled official Supabase Root 2021 CA.
 - `SUPABASE_URL`, `SUPABASE_SECRET_KEY`: server only; Railway references the existing Technician variables.
-- `BRIDGE_SOURCE_BUCKET=source-archive`, `BRIDGE_PAGE_INGEST_BUCKET=page-ingest`: explicitly configured, private buckets. `python -m bridge.provision` creates the configured output bucket if absent and rejects public buckets.
+- `BRIDGE_SOURCE_BUCKET=source-archive`, `BRIDGE_PAGE_INGEST_BUCKET=page-ingest`: explicitly configured, private buckets. `python -m bridge.provision` creates the configured output bucket if absent, rejects public buckets, additively enables JSON/PNG and raises a smaller finite upload limit to 32 MiB (preserving unrestricted/higher limits and other MIME types), then verifies readback.
 - `BRIDGE_PRINCIPALS`: server-only JSON array of objects with exactly `id`, `token`, `scopes`, `publications`. Tokens must have at least 256 bits of randomness. Production principals authorize only `the-wall-street-journal`; the acceptance principal has only `source:read`, and the manual principal has both scopes. Revoke by removing its entry and redeploying. Never pass Supabase credentials to a client.
 - Railway provides `PORT` and terminates HTTPS. Public requests require `X-Forwarded-Proto: https`. `/health` and `/ready` require the same bridge bearer credential; readiness checks DB/migration and both private buckets. Railway's unauthenticated healthcheck must not be configured against these authenticated routes.
 
@@ -48,3 +48,6 @@ The server-side writer accepts artifact:null or complete exact expected metadata
 Both original-request and deterministic target/set claims stay PENDING across partial failures. Retry original payload/key; do not replace artifact:null with enriched output on retry. ASSET_SET_CONFLICT / ASSET_CONFLICT are explicit 409s and do not overwrite or clear fences automatically. A partial set cannot produce canonical successful JSON. Set identity includes source UUID/variant/bundle and exact final artifacts.
 
 Local validation: `PYTHONPATH=.:src python -m pytest -q`; deployment/acceptance evidence is in CURRENT_STATE/HISTORY. Keep Railway pinned to the tested runtime commit, preserving the open PR chain and unrelated main-linked services.
+
+## v4 rollout and acceptance — 2026-10-18
+Pinned runtime `b6d465c49dbf546f0ea31876d218121428d495c8`, deployment `4489131f-d578-4062-b88f-40adc3716932`, SUCCESS. 226 tests pass. Existing Site v4 transported text-only v4 submission/receipt without change or redeploy. Exactly WSJ 2026-10-14 page 2 was created with three source-PNG chart crops, all exact SHA/size/dimensions and page identity readback verified, both bindings VERIFIED, usable_for_assembly=true. Initial JSON-only bucket failure was reconciled using the original request/key after the additive provision fix. See CURRENT_STATE/HISTORY for canonical identities. No page 3, assembly, migration, merge or historical object mutation.

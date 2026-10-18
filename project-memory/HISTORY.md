@@ -45,3 +45,20 @@ D022 separates faithful continuous article prose from preserved visual evidence.
 Documentation and contracts consolidate the decision in existing canonical files, with strict schema/bounds/anchor checks and immutable path tests. Binary crop writer/adapter transport remains gated and nonempty-assets writes fail closed. Work starts from current #6 head, preserving the open #4 → #5 → #6 chain. No deployment, production ingest/persist, overwrite, deletion or assembly occurred in this consolidation.
 
 Local verification: 191 tests passed, including v2/v3 compatibility and 53 new article-assets tests; git diff --check clean. No new Markdown files were created.
+
+## Article asset persistence rollout and page-2 acceptance — 2026-10-18
+Bridge runtime is pinned to `b6d465c49dbf546f0ea31876d218121428d495c8`, Railway deployment `4489131f-d578-4062-b88f-40adc3716932` (SUCCESS, 1 replica, iad). PR #8 is stacked after #7; no merge or unrelated service deployment. Site v4 remains unchanged and owner-only. The existing generic tool transported artifact:null v4 JSON and the enriched receipt successfully; no raw image bytes or signed URLs were passed in the write request.
+
+Connected-plugin acceptance in Codex (ordinary-Chat-compatible transport, not a newly observed separate ordinary Chat session) completed exactly WSJ 2026-10-14 page 2: STORED/CREATED, VERIFIED_WITH_NOTES, identity_matches=true, usable_for_assembly=true. Three relevant articles and three chart PNGs (both requested banking charts plus the home-price chart) were visually checked before persistence. Bank continuation retains its visible opening fragment. All three text anchors are unique; no placement guess. Final Page JSON SHA `f271f52b378852b186ee919f39d48983db57d469891bd4fad437107efefed60f`, 17,165 RFC8785 bytes. Exact downloaded PNG SHA/size/dimensions match independent local source-derived expected bytes. Both original-request and deterministic set bindings are VERIFIED. Full canonical keys/crop identities are in HISTORY.
+
+The first attempt encountered the existing bucket's JSON-only MIME restriction, leaving PENDING claims and zero v4 objects. The tested deployment hook additively allowed image/png and raised the bucket limit from 5 to 32 MiB while retaining private access. Retrying the original wrapper and idempotency key completed the same intended write; no claim cleanup or object overwrite/delete. Supabase inspection verified four v4 objects and unchanged v2/v3 object IDs/ETags/sizes/updated_at, including v3 page 2. STOP after page 2: no page 3 or assembly.
+
+Source UUID/bundle remain the exact WSJ identity recorded above. New page key: `page-ingest/the-wall-street-journal/2026-10-14/2ee55f9d94af4389a6a9c20775ab2069cfe2b54f558acb19247b4c1d0672c37f/ingestor-v2.2/page-0002.json` in private bucket page-ingest. Its sibling crop directory is `.../ingestor-v2.2/assets/page-0002/`:
+
+| Asset ID / title | Pixel bbox | Dimensions | Bytes | SHA-256 |
+| --- | --- | --- | --- | --- |
+| p0002-a01-chart-01 / U.S. median existing-home price, change from a year earlier | [433,177,557,378] | 124×201 | 99970 | 82d6b4ba466e3867b4d5189927d6dbd3a80e8355ebfb582b96eb0c2d6f829a77 |
+| p0002-a02-chart-01 / Fixed-income, currencies and commodities revenue, by bank | [183,1130,367,1331] | 184×201 | 148215 | 558dc841db2aaef3ff67ba3e2515506afc6e3ffdf38556c12f228cf0fc285e5d |
+| p0002-a02-chart-02 / Third-quarter net profit | [374,1130,557,1331] | 183×201 | 147411 | fcc0a3729305845bfdecaf9a4cfaf0720046ae8095a68643ba16537ab2f74533 |
+
+Crop IDs map to owning p0002-a01/p0002-a02 items and `.png` filenames. No canonical chart/table OCR was stored. 226 tests pass; diff check clean. The first bridge runtime deployment was superseded by the tested additive bucket-capability fix; final runtime pin above includes both. Existing object bytes/paths were not modified.
