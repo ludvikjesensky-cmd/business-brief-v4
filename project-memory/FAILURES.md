@@ -60,3 +60,6 @@
 **Risk:** a VERIFIED readback/usable_for_assembly flag could be mistaken for product acceptance.
 **Resolution:** retain the object as superseded acceptance evidence; D019/D020 simplify content in a new namespace.
 **Retry only if:** an explicit downstream use requires richer metadata and separately validates its value; never overwrite the existing object.
+
+## F010 — JSON-only output bucket blocked first PNG acceptance
+**Date:** 2026-10-18. **Goal:** first v4 page-2 asset persistence. **Observed:** local writer tests passed, but the retained production bucket allowed only application/json (5 MiB), so first PNG create returned PERSISTENCE_UNVERIFIED/UNKNOWN. Both durable claims stayed PENDING; live inspection found zero v4 objects. **Resolution:** tested additive deployment hook allows image/png and a 32 MiB limit, preserves private access and existing MIME types/objects, verifies configuration readback. Original request/key retry completed STORED/CREATED with the full set verified. **Lesson:** include retained bucket capability/configuration in rollout tests, not just binary writer correctness; no overwrite/delete/claim expiry is a recovery strategy. **Status:** resolved.

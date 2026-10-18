@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import os
 import types
@@ -7,6 +8,8 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path, PurePosixPath
 from typing import get_args, get_origin, get_type_hints, Literal
 from urllib.parse import quote, urlsplit
+from uuid import uuid5, NAMESPACE_URL
+from .assets import prepare_assets, verify_crop
 
 import httpx
 import psycopg
@@ -102,9 +105,21 @@ class Storage:
         if url.startswith('/'): url=self.base+url
         require(urlsplit(url).scheme == 'https' and urlsplit(url).netloc == urlsplit(self.base).netloc,'UPSTREAM_UNAVAILABLE',503)
         return {'bucket':bucket,'storage_key':key,'media_type':media,'sha256':digest(data),'byte_size':len(data),'url':url,'expires_at':stamp(issued+timedelta(seconds=300))}
-    def create(self,bucket,key,data):
+    def download_bounded(self, bucket, key, limit):
+        try:
+            with self.client.stream('GET', self.base+'/object/authenticated'+self.path(bucket,key)) as response:
+                if response.status_code in (400,404): raise Failure('ARTIFACT_MISSING',409)
+                require(response.status_code == 200, 'UPSTREAM_UNAVAILABLE', 503)
+                chunks=[]; size=0
+                for chunk in response.iter_bytes():
+                    size += len(chunk)
+                    require(size <= limit, 'ASSET_LIMIT_EXCEEDED', 422)
+                    chunks.append(chunk)
+                return b''.join(chunks)
+        except httpx.HTTPError: raise Failure('UPSTREAM_UNAVAILABLE',503) from None
+    def create(self,bucket,key,data,media_type='application/json'):
         # Storage returns 400 Duplicate in some versions, 409 in others.
-        r=self.call('POST','/object'+self.path(bucket,key),content=data,headers={'Content-Type':'application/json','x-upsert':'false'})
+        r=self.call('POST','/object'+self.path(bucket,key),content=data,headers={'Content-Type':media_type,'x-upsert':'false'})
         if 200 <= r.status_code < 300: return True
         if r.status_code in (400,409) and (r.json().get('statusCode') in ('409',409) or r.json().get('error') in ('Duplicate','Asset Already Exists')): return False
         raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN')
@@ -186,9 +201,11 @@ class Bridge:
             require(self.bundle(r)[1]==h,'SOURCE_CHANGED',409)
             return result
     def post(self,wrapper,key,principal,allowed):
-        p=wrapper['page']; sid=p['source']['source_id']; no=p['publication']['page_no']
-        page_schema(p)
-        canonical=jcs(p); request_hash=digest(jcs(wrapper)); artifact_hash=digest(canonical)
+        p=copy.deepcopy(wrapper['page']); sid=p['source']['source_id']; no=p['publication']['page_no']
+        page_schema(p, submission=True)
+        request_hash=digest(jcs(wrapper))
+        has_assets=any(i.get('assets') for i in p['items'])
+        set_claim=p['schema_version']=='page-ingest-v4'
         target=f"{generation_prefix(p)}/page-{no:04d}.json"
         def eligible(c):
             r=self.db.row(c,sid,allowed); m,h=self.bundle(r)
@@ -196,15 +213,12 @@ class Bridge:
             ident=self.identity(r,h)
             require(p['source']['source_sha256']==r['sha256'] and all(p['publication'][k]==ident[k] for k in ['publication_id','canonical_name','edition_date','edition_variant']) and no<=r['page_count'],'IDENTITY_MISMATCH',409)
             verification(p)
-            # This consolidation defines v4, not a new binary upload protocol.
-            # Never store a page pointing to unverified/unfenced crops.
-            require(not any(i.get('assets') for i in p['items']), 'CONFIGURATION_MISSING', 503)
-            return r,ident
+            return r,ident,m
         # Session advisory lock covers both transactions; durable PENDING claim covers session loss.
         with self.db.connection() as c:
             c.execute('select pg_advisory_lock(hashtextextended(%s,0))',(target,))
             try:
-                r,ident=eligible(c)
+                r,ident,m=eligible(c)
                 old=c.execute('select request_sha256,target_key from bridge_private.bindings where principal=%s and idempotency_key=%s',(principal,key)).fetchone()
                 if old: require(old['request_sha256']==request_hash and old['target_key']==target,'IDEMPOTENCY_CONFLICT',409)
                 c.execute('''insert into bridge_private.bindings(principal,idempotency_key,request_sha256,target_key,source_id,edition_id,blob_id,publication_id)
@@ -213,8 +227,42 @@ class Bridge:
                 old=c.execute('select request_sha256,target_key from bridge_private.bindings where principal=%s and idempotency_key=%s for update',(principal,key)).fetchone()
                 require(old['request_sha256']==request_hash and old['target_key']==target,'IDEMPOTENCY_CONFLICT',409)
                 c.execute("update bridge_private.bindings set state='PENDING' where principal=%s and idempotency_key=%s",(principal,key))
-                c.commit()  # Claim survives a crash. No Storage mutation has started yet.
-                r,ident=eligible(c)
+                # A reserved, deterministic target claim also binds orphan crops to
+                # the complete request/source/variant across principals and retries.
+                set_key=str(uuid5(NAMESPACE_URL, 'business-brief:asset-set-v1:'+target))
+                set_principal='@asset-set-v4'
+                prepared=[]
+                if has_assets:
+                    self.storage.private(self.output_bucket)
+                    prepared=prepare_assets(p,m,self.storage,self.source_bucket,self.output_bucket)
+                if set_claim:
+                    set_hash=digest(jcs({'request':wrapper,'source':ident,
+                        'artifacts':[a['artifact'] for a,_ in prepared]}))
+                    c.execute('''insert into bridge_private.bindings(principal,idempotency_key,request_sha256,target_key,source_id,edition_id,blob_id,publication_id)
+                    values(%s,%s,%s,%s,%s,%s,%s,%s) on conflict(principal,idempotency_key) do nothing''',
+                        (set_principal,set_key,set_hash,target,r['id'],r['edition_id'],r['blob_id'],r['publication_uuid']))
+                    binding=c.execute('select request_sha256,target_key from bridge_private.bindings where principal=%s and idempotency_key=%s for update',(set_principal,set_key)).fetchone()
+                    require(binding['request_sha256']==set_hash and binding['target_key']==target,'ASSET_SET_CONFLICT',409)
+                    c.execute("update bridge_private.bindings set state='PENDING' where principal=%s and idempotency_key=%s",(set_principal,set_key))
+                canonical=jcs(p); artifact_hash=digest(canonical)
+                page_schema(p)
+                c.commit()  # Both claims survive a crash, before the first crop mutation.
+                r,ident,m=eligible(c)
+                if has_assets:
+                    for asset,data in prepared:
+                        ar=asset['artifact']
+                        try:
+                            made=self.storage.create(self.output_bucket,ar['key'],data,'image/png')
+                            stored_crop=self.storage.download_bounded(self.output_bucket,ar['key'],32*1024*1024)
+                        except Failure:
+                            raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN') from None
+                        if stored_crop != data:
+                            raise Failure('PERSISTENCE_UNVERIFIED' if made else 'ASSET_CONFLICT',503 if made else 409,'UNKNOWN' if made else 'EXISTING_UNCHANGED')
+                        verify_crop(stored_crop,ar)
+                    # Recheck bundle/readiness with row fences still held, before JSON.
+                    try: r,ident,m=eligible(c)
+                    except Failure as error:
+                        raise Failure(error.code,error.http,'UNKNOWN') from None
                 try:
                     created=self.storage.create(self.output_bucket,target,canonical)
                     stored=self.storage.download(self.output_bucket,target)
@@ -231,11 +279,13 @@ class Bridge:
                     require(self.bundle(r)[1]==ident['source_bundle_sha256'],'SOURCE_CHANGED',409)
                 except Failure: raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN') from None
                 c.execute("update bridge_private.bindings set state='VERIFIED',artifact_sha256=%s where principal=%s and idempotency_key=%s",(artifact_hash,principal,key))
+                if set_claim:
+                    c.execute("update bridge_private.bindings set state='VERIFIED',artifact_sha256=%s where principal=%s and idempotency_key=%s",(artifact_hash,set_principal,set_key))
                 try: c.commit()
                 except psycopg.Error: raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN') from None
                 return (201 if created else 200),{'status':'STORED','disposition':'CREATED' if created else 'REPLAYED','idempotency_key':key,'source':ident,'page_no':no,'page_status':p['page_status'],'usable_for_assembly':p['page_status'] in ['VERIFIED','VERIFIED_WITH_NOTES'],
                   'artifact':{'bucket':self.output_bucket,'storage_key':target,'media_type':'application/json','artifact_sha256':artifact_hash,'byte_size':len(stored),'serialization':'RFC8785-JCS'},
-                  'verification':{'status':'VERIFIED','method':'storage-download-sha256-and-identity','stored_sha256':digest(stored),'identity_matches':True,'verified_at':stamp()}}
+                  'verification':{'status':'VERIFIED','method':'storage-download-sha256-and-identity','stored_sha256':digest(stored),'identity_matches':True,'verified_at':stamp()}, **({'assets':[{'asset_id':a['asset_id'],'page_item_id':a['page_item_id'],**a['artifact'],'verification':'VERIFIED'} for a,_ in prepared]} if has_assets else {})}
             except psycopg.Error:
                 raise Failure('PERSISTENCE_UNVERIFIED',503,'UNKNOWN') from None
             finally:

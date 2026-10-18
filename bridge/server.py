@@ -70,7 +70,7 @@ class Application:
                 else:
                     with self.bridge.db.connection() as c: self.bridge.db.authorize(c,src['source_id'],allowed)
         fields(body,'contract_version source_bundle_sha256 page')
-        require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400); sha(body['source_bundle_sha256']); page_schema(body['page'])
+        require(body['contract_version']==CONTRACT,'INVALID_REQUEST',400); sha(body['source_bundle_sha256']); page_schema(body['page'], submission=True)
         return self.bridge.post(body,key,p['id'],allowed)
 
 class Handler(BaseHTTPRequestHandler):
@@ -107,6 +107,7 @@ def main():
     principals=strict_json(os.environ['BRIDGE_PRINCIPALS'].encode())
     require(type(principals) is list and bool(principals),'CONFIGURATION_MISSING',503)
     for p in principals:
+        require(type(p.get('id')) is str and not p['id'].startswith('@'), 'CONFIGURATION_MISSING', 503)
         require(set(p)=={'id','token','scopes','publications'} and type(p['token']) is str and len(p['token'])>=43 and bool(p['publications']),'CONFIGURATION_MISSING',503)
     db=Database(os.environ['BRIDGE_DATABASE_URL'],str(Path(__file__).with_name('supabase-ca.crt')))
     storage=Storage(os.environ['SUPABASE_URL'],os.environ['SUPABASE_SECRET_KEY'])

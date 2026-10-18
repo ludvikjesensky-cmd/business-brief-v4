@@ -137,7 +137,7 @@ def test_v2_v3_v4_isolated(bridge, page, page_v3, page_v4):
     assert len(original)==3
     assert_failure('IDEMPOTENCY_CONFLICT', lambda: bridge.post(wrapper(page_v4),str(UUID(int=20)),'test',['paper']))
     page_v4['page_notes']=['Changed']
-    assert_failure('CANONICAL_CONFLICT', lambda: bridge.post(wrapper(page_v4),str(UUID(int=40)),'test',['paper']))
+    assert_failure('ASSET_SET_CONFLICT', lambda: bridge.post(wrapper(page_v4),str(UUID(int=40)),'test',['paper']))
     for p in pages[:2]:
         p['items'][0]['assets']=[]
         assert_failure('PAGE_SCHEMA_INVALID', lambda: page_schema(p))
@@ -159,8 +159,10 @@ def test_v4_requires_assets_array_rejects_perspective(page_v4):
 
 def test_no_unverified_asset_reference_persist(bridge, asset_page):
     page_schema(asset_page); verification(asset_page)
+    # Fully supplied metadata remains an expectation, never proof of a crop.
+    bridge.storage.private=lambda b:None
     assert_failure('CONFIGURATION_MISSING', lambda: bridge.post(wrapper(asset_page),KEY,'test',['paper']))
-    assert not bridge.storage.data and not bridge.db.bindings
+    assert not bridge.storage.data
 
 
 @pytest.mark.parametrize('kind', ['chart','table','photo','infographic','illustration','other'])
