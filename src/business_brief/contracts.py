@@ -283,7 +283,7 @@ class ArticleAsset:
     page_no: int
     page_anchor: AssetPageAnchor
     text_anchor: AssetTextAnchor
-    artifact: AssetArtifact
+    artifact: AssetArtifact | None  # null only in client submission; persisted shape is strict
     verification: AssetVerification
     title: str | None = None
     caption: str | None = None
