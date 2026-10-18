@@ -61,7 +61,7 @@ Relevantní principy, decisions, failures a lessons se přenášejí do v4 Proje
 
 
 ## D016 — ACTIVE — Ingestor zachovává perspective value konzervativně a page-level
-**Date:** 2026-10-15.  
+**Date:** 2026-10-15.
 **Decision:** Ingestor v2.0 nefiltruje pouze podle event importance nebo tématu. Při nejistotě preferuje recall před agresivním vyřazením a zachovává kandidátní text pro downstream review.
 
 U relevantních textů zachycuje page-level perspective evidence: autorskou otázku, framing, argument, distinctive angle, napětí/protiargumenty a otevřené otázky pouze v rozsahu, který podporuje aktuální stránka. Musí rozlišit observed_on_page, interpreted_from_page a unresolved_until_assembly.
@@ -72,7 +72,7 @@ Jasně nerelevantní položky zůstávají minimálně inventarizované kvůli c
 
 
 ## D017 — ACTIVE — Page JSON je durable Storage artefakt; Chat output sám nestačí
-**Date:** 2026-10-15.  
+**Date:** 2026-10-15.
 **Decision:** Canonical `page-ingest-v2` body se ukládá do Supabase Storage. Logický object key je `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní bucket je operational konfigurace a nesmí být v Chatu hádán.
 
 Page pass je dokončen teprve po validaci JSONu, durable write a ověření identity uloženého objektu. Vypsání JSONu pouze do konverzace není canonical persistence.
@@ -80,3 +80,14 @@ Page pass je dokončen teprve po validaci JSONu, durable write a ověření iden
 PostgreSQL slouží jako operational index/state/provenance vrstva. Dedicated page-ingest tabulka se nemá improvizovat před implementací; do té doby je autoritativním artefaktem JSON ve Storage.  
 **Reason:** Assembler potřebuje stabilní, auditovatelný a znovu načitatelný handoff mezi Chat Ingestorem a downstream workflow.  
 **Consequences:** Ingestor musí po každé stránce reportovat Storage key a page status; při persistence failure se stránka nepovažuje za dokončenou a workflow se zastaví.
+
+
+## D018 — ACTIVE — Ingestor Access Bridge je úzký autorizovaný transport a persistence boundary
+**Date:** 2026-10-15.
+**Decision:** Přijímáme design kontraktu `ingestor-access-v1` v [docs/INGESTOR.md §19](../docs/INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1). Tři endpointy jsou `GET /ingestor-v2/source/current?publication=...`, `GET /ingestor-v2/source/<source_id>/page/<page_no>` a `POST /ingestor-v2/page`. Bridge rozlišuje jednoznačné nejnovější aktivní vydání bez fallbacku na starší READY source, autorizuje read-only evidence access a validuje/persistuje právě jeden `page-ingest-v2`. Nedělá editorial interpretaci, OCR, model calls ani assembly.
+
+**Reason:** Referencovaný první acceptance pokus narazil na chybějící Chat ↔ private Storage přístup. DB metadata nejsou přístup k obsahu ani potvrzení durable write.
+
+**Consequences:** D017 canonical path zůstává beze změny. UUID source v DB/API se explicitně mapuje na SHA identitu Technician manifestu. Server-side credential/scopes/publication allowlist a 300s signed URLs chrání privátní bucket; Supabase secret se Chatu neposkytuje. Zápis je create-if-absent nad RFC8785 JCS bytes, s SHA-256/readback identity verification a durable idempotency binding. Odlišný obsah/identita na stejném klíči je 409, nikoli overwrite; BLOCKED se canonical neukládá, NEEDS_REVIEW lze uložit bez assembly eligibility. Implementace musí zajistit fencing vůči změnám readiness/active source/bundle mapping.
+
+Preferujeme budoucí malou samostatnou Railway HTTP službu. Toto rozhodnutí nepředstavuje implementaci, deploy, nový DB schema ani obnovení legacy Ingestoru. Přesná schémata a error model se neduplikují do dalších dokumentů. Acceptance gate je v §19.8; první skutečný page pass zůstává ruční, jedna strana a STOP.
