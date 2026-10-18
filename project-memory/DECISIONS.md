@@ -123,3 +123,9 @@ Each asset has a physical `page_anchor` (normalized bbox, source PNG SHA, option
 **Reason:** Visual meaning depends on geometry, axes and relationships that OCR does not faithfully preserve; two anchors retain both source evidence and usable article placement without polluting prose.
 
 **Consequences / implementation boundary:** §21 of docs/INGESTOR.md is normative. The follow-up implementation adds bounded source-PNG cropping, deterministic PNG encoding, explicit artifact:null submission versus strict persisted metadata, reserved deterministic durable target/set binding, fenced asset+JSON create/readback and original-request reconciliation. No DB migration/new bucket or client binary transport is needed. Deployment and single-page acceptance are separate verified milestones in CURRENT_STATE/HISTORY; the original consolidation itself performed no production writes. Existing v2/v3 remain immutable.
+
+## D023 — ACTIVE — Independent crop preview before visual acceptance
+**Date:** 2026-10-18.
+**Decision:** Each asset crop must be rendered from the authoritative page PNG with server-equivalent §21.2 geometry and independently previewed as its own image before visual_checked:true and page persistence. Inspect the full visual footprint and article ownership; full-page bbox inspection does not satisfy this gate.
+**Reason:** F011 exposed a clipped infographic despite successful technical readback.
+**Consequences:** INGESTOR §21.7 and OPERATIONS govern the manual acceptance gate. No preview endpoint or immutable revision protocol is implied by this decision; unavailable crop preview blocks visual acceptance. Existing defective immutable artifacts require Q014 resolution.
