@@ -51,3 +51,8 @@ Local validation: `PYTHONPATH=.:src python -m pytest -q`; deployment/acceptance 
 
 ## v4 rollout and acceptance — 2026-10-18
 Pinned runtime `b6d465c49dbf546f0ea31876d218121428d495c8`, deployment `4489131f-d578-4062-b88f-40adc3716932`, SUCCESS. 226 tests pass. Existing Site v4 transported text-only v4 submission/receipt without change or redeploy. Exactly WSJ 2026-10-14 page 2 was created with three source-PNG chart crops, all exact SHA/size/dimensions and page identity readback verified, both bindings VERIFIED, usable_for_assembly=true. Initial JSON-only bucket failure was reconciled using the original request/key after the additive provision fix. See CURRENT_STATE/HISTORY for canonical identities. No page 3, assembly, migration, merge or historical object mutation.
+
+## Corpus and editorial acceptance boundary
+The page-2-only scope above describes that rollout acceptance. Subsequent ordinary-Chat pages 3–10 are reported in HISTORY, with no raw receipts or stored-object lookup available to this consolidation. The exposed source-page GET returns source evidence, not persisted ingest output. Do not use POST replay as a read/list substitute. Page 1 remains evidenced v2/v3; do not infer all-v4 coverage.
+
+Before visual_checked:true/persist, independently render and preview every crop from the authoritative PNG with writer-equivalent bbox rounding (INGESTOR §21.7, D023). Technical readback does not detect clipping. F011 records the page-6 About Face defect; its immutable originals remain untouched and corpus visual acceptance is incomplete. The bridge has no editorial revision endpoint/protocol; Q014 must resolve correction and supersession before an authorized production fix.
