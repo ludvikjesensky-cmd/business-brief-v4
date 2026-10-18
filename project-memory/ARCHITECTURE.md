@@ -7,9 +7,9 @@ Architektura odděluje technickou přípravu zdroje, page-level interpretaci, sk
 closed source edition  
 → Technician  
 → validated Source Bundle  
-→ Ingestor Access Bridge (authorized evidence access; contract only)
+→ Ingestor Access Bridge (authorized evidence access)
 → **Ingestor v2.0 (live Chat)**  
-→ Ingestor Access Bridge (validation + verified canonical persistence; contract only)
+→ Ingestor Access Bridge (validation + verified canonical persistence)
 → one verified Page JSON per source page  
 → Assembler  
 → canonical Article Records  
@@ -43,7 +43,7 @@ Nevytváří final multi-page Article Record a nespojuje zdroje.
 
 ## Ingestor Access Bridge
 
-D018 přijímá úzký HTTP kontrakt v1, zatím bez implementace nebo deploymentu. Jediná normativní wire specifikace je [docs/INGESTOR.md §19](../docs/INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1). Bridge bezpečně rozliší current active source, poskytne autorizovaný přístup k privátní evidenci a uloží právě jeden validovaný Page JSON. Preferovaný runtime je samostatná malá Railway HTTP služba, ne legacy Ingestor worker.
+D018 přijímá úzký HTTP kontrakt v1; samostatná implementace je v `bridge/`, nasazená na Railway a technicky ověřená pro page-1 evidence access z Codex HTTPS klienta. Jediná normativní wire specifikace je [docs/INGESTOR.md §19](../docs/INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1). Bridge bezpečně rozliší current active source, poskytne autorizovaný přístup k privátní evidenci a uloží právě jeden validovaný Page JSON. Runtime je samostatná Railway HTTP služba, oddělená od legacy workeru. PostgreSQL row/session locks doplňuje durable PENDING claim a invoker guards proti změně identity při ztrátě session; podrobnosti v [bridge/README.md](../bridge/README.md).
 
 Nedělá editorial interpretaci, OCR ani assembly. Source UUID v DB/API a SHA identita manifestu mají explicitní ověřenou vazbu. Zápis používá serverem odvozený D017 klíč, RFC8785 JCS/SHA-256, create-if-absent, durable idempotency binding a download verification. Rozdílný canonical obsah vrací 409 bez přepisu; nejistá persistence BLOCKED. Scopes/publication allowlist chrání každý endpoint, credentials zůstávají server-side a signed URLs mají 300 sekund. Kontrakt vyžaduje fencing vůči změnám source identity/readiness při zápisu; neurčuje novou DB tabulku.
 

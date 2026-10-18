@@ -304,7 +304,7 @@ Example:
 page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.0/page-0001.json
 ```
 
-The exact Supabase bucket name is operational configuration. The bridge resolves the configured artifact bucket server-side and returns it in the verified receipt; Chat must not invent a bucket name. The normative bridge contract is section 19, currently design-only.
+The exact Supabase bucket name is operational configuration. The bridge resolves the configured artifact bucket server-side and returns it in the verified receipt; Chat must not invent a bucket name. The normative bridge contract is section 19; implementation/runtime notes are in `bridge/README.md`.
 
 The stored file contains the validated `page-ingest-v2` payload for exactly one source page.
 
@@ -429,7 +429,7 @@ If the edition, bundle or page cannot be resolved safely, the run is BLOCKED. Do
 
 ## 19. Ingestor Access Bridge — normative HTTP contract v1
 
-**Status (2026-10-15): accepted design, not implemented or deployed.** This section is the single authority for the bridge wire contract. `contracts.py` remains the authority for the Page JSON body. No Python contract or service implementation is introduced by this decision.
+**Status (2026-10-15): accepted contract; implementation deployed, technical page-1 read acceptance passed from Codex. Production page submission and a separate ChatGPT connector remain unverified.** This section is the single authority for the bridge wire contract. `contracts.py` remains the authority for the Page JSON body. The original contract decision was documentation-only; the subsequent standalone implementation is documented in `bridge/README.md`.
 
 The bridge resolves operational identity, authorizes artifact access, validates one submitted Page JSON and persists it. It performs **no editorial interpretation**, OCR, text repair, relevance judgment, page assembly, model calls or automatic next-page processing. `STORED` attests persistence, not independent verification of editorial truth.
 
@@ -567,6 +567,6 @@ Every failure uses this exact envelope; no partial success or HTTP 200 BLOCKED:
 
 Only RATE_LIMITED, UPSTREAM_UNAVAILABLE, WRITE_IN_PROGRESS and PERSISTENCE_UNVERIFIED have `retryable:true`; return `Retry-After` seconds. All other codes have false. `persistence` is NOT_WRITTEN when this attempt definitively did not mutate canonical Storage, EXISTING_UNCHANGED for detected canonical conflicts/replays that fail eligibility, and UNKNOWN whenever write completion/readback cannot be established. Do not claim rollback on failure. Idempotency bindings may exist even when canonical persistence is NOT_WRITTEN. Transport failure without a response is treated as UNKNOWN by the client.
 
-### 19.8 Implementation acceptance gate (future work)
+### 19.8 Implementation acceptance gate
 
 Before enabling the first real page, prove authenticated access from the actual Chat integration, private artifact downloads and hash checks, UUID/hash manifest mapping, latest-edition and variant ambiguity behavior, stale/non-ready source rejection and fenced state changes, strict body validation, missing/corrupt evidence handling, identical replay, different-content conflict, concurrent create, reused-key conflict, and recovery after upload/readback timeout. Confirm credentials/URLs are redacted and canonical bytes are re-downloadable. Use one requested page only and STOP; no paid editorial batch, legacy Ingestor resurrection or Assembler implementation is implied.

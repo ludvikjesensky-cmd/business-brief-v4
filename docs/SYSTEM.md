@@ -34,7 +34,7 @@ Detail role je v docs/INGESTOR.md.
 
 ## Ingestor Access Bridge
 
-Přijatý kontrakt v1, zatím bez implementace/deploye: úzká autorizovaná HTTP vrstva mezi live Chat Ingestorem a privátním Supabase Storage. Normativní request/response schémata, validace a chyby jsou pouze v [INGESTOR.md §19](INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1).
+Přijatý kontrakt v1, implementovaný v `bridge/` a nasazený jako samostatná Railway HTTP služba: úzká autorizovaná HTTP vrstva mezi live Chat Ingestorem a privátním Supabase Storage. Normativní request/response schémata, validace a chyby jsou pouze v [INGESTOR.md §19](INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1).
 
 - `GET /ingestor-v2/source/current?publication=...` vybírá nejnovější dostupné aktivní vydání jednoznačně; při variantách nebo nepřipraveném zdroji blokuje místo fallbacku.
 - `GET /ingestor-v2/source/<source_id>/page/<page_no>` vrací ověřenou identitu a krátkodobé read-only signed URLs pro manifest, obraz, prepared/OCR PDF a originál.
@@ -42,7 +42,7 @@ Přijatý kontrakt v1, zatím bez implementace/deploye: úzká autorizovaná HTT
 
 Bridge neinterpretuje obsah, neposuzuje relevanci, neprovádí OCR ani assembly. Databázový source UUID se mapuje na manifest `sha256:<digest>` přes blob/edition vazby, nikoli rovností řetězců. Server odvozuje canonical klíč, zapisuje create-if-absent a ověřuje stažené JCS bytes přes SHA-256 a identitu. Shodný obsah je replay, odlišný obsah 409; žádný silent overwrite. `STORED` je potvrzení persistence, nikoli nezávislý editorial verdikt. NEEDS_REVIEW lze uložit bez assembly eligibility, BLOCKED se canonical neukládá. PostgreSQL index/receipt mechanismus a fencing musí být navrženy při implementaci; tento kontrakt nezavádí tabulku.
 
-Preferované budoucí umístění je malá samostatná Railway HTTP služba; deployment ani obnovení legacy Ingestor service tím nejsou schváleny jako hotová schopnost. Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
+Samostatná Railway služba `ingestor-access-bridge` prošla technickým page-1 evidence acceptance z Codex HTTPS klienta; Page JSON se v tomto testu neukládal. Samostatný ChatGPT connector zůstává neověřený. Pro deployment, durable fencing a recovery viz [bridge/README.md](../bridge/README.md). Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
 
 ## Page JSON
 Page JSON je nový handoff artefakt mezi Ingestorem a Assemblerem.

@@ -37,11 +37,13 @@ Machine contract Page JSON je definován v `src/business_brief/contracts.py` jak
 
 Canonical Page JSON se po validaci ukládá do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní bucket je operational konfigurace. Page pass není dokončen, dokud durable write není ověřen.
 
-## Ingestor Access Bridge — contract accepted, implementation pending
+## Ingestor Access Bridge — implemented; technical page-1 access verified
 
-K 2026-10-15 je přijat D018 a normativní [HTTP kontrakt v docs/INGESTOR.md §19](../docs/INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1). Tři endpointy řeší current source, evidence access a validaci/persistence jedné stránky. Bridge nedělá editorial interpretaci; preferovaným budoucím runtime je malá samostatná Railway HTTP služba.
+K 2026-10-15 je implementovaná samostatná Railway HTTP služba `ingestor-access-bridge` podle [INGESTOR.md §19](../docs/INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1), viz [PR #5](https://github.com/ludvikjesensky-cmd/business-brief-v4/pull/5), navazující na kontrakt PR #4. Direct PostgreSQL session funguje po zapnutí IPv6 egress a s oficiální Supabase CA (`verify-full`). Migrace `20261015184146_ingestor_bridge_bindings` poskytuje durable idempotency binding a pending-write guards; přímé row/session locks drží kritickou sekci přes Storage create a readback. Buckety `source-archive` a `page-ingest` jsou privátní.
 
-Tato změna je pouze dokumentace: služba, Chat connector, auth konfigurace, durable idempotency mechanismus a source-state fencing nejsou implementované ani provozně ověřené. Referencovaný první page-1 acceptance pokus hlásil BLOCKED kvůli chybějícímu přístupu k obsahu privátního Storage a zápisu canonical JSONu; nejde o nově ověřený live stav. Úspěšná persistence ani dokončení strany 1 se tímto kontraktem neprokazují.
+Autentizovaný technický acceptance z Codex HTTPS klienta ověřil health/readiness, WSJ 2026-10-14 `default`, source UUID `603e8242-ffe8-4e1d-a5de-9adb3da4d188`, manifest SHA a skutečné stažení/hash evidence pouze strany 1 včetně required PDF fallbacku. Samostatný ChatGPT connector nebyl vytvořen ani ověřen. Replay/concurrency/timeout recovery jsou pokryté kontrolovanými testy; live DB diagnostika ověřila row locks a pending guards s rollbackem. Nejde o real production write acceptance.
+
+Semantic ingestion, Page JSON persistence, editorial processing ani Assembler nebyly spuštěny. První ruční page pass a §19.8 gate pro konkrétní ChatGPT integraci zůstávají otevřené. Pro runtime proměnné, credential scopes a recovery viz [bridge/README.md](../bridge/README.md).
 
 ## Technician
 Produkční runtime je stále na Technician v4.2. PR #3 připravuje novější technickou přípravu s lepším page evidence/OCR validation, ale není mergnutý a práce na něm je dočasně pozastavena kvůli Usage.
@@ -59,7 +61,7 @@ Následující nejsou current production path:
 Neodstraňovat jejich historii z FAILURES/HISTORY; nevracet je do current architecture bez nové ověřené skutečnosti.
 
 ## Next steps
-1. Implementovat a ověřit Ingestor Access Bridge podle docs/INGESTOR.md §19 včetně skutečného přístupu z Chatu, autorizace, fencing, idempotency a readback recovery. Potom zopakovat pouze stranu 1 WSJ 2026-10-14 s revalidací live source a durable persistence; po stránce STOP.
+1. Provést uživatelem výslovně zahájený ruční pass pouze strany 1 WSJ 2026-10-14 s revalidací live source a verified persistence; po stránce STOP. Pro samostatný ChatGPT nejprve nakonfigurovat a ověřit jeho connector/auth. Technický read-only acceptance bridge z Codexu již prošel.
 2. Ověřit Ingestor v2.0 ručně na několika různých stránkách a publikacích.
 3. Rozhodnout a implementovat dedicated operational index/table pro Page JSONy pouze pokud acceptance test ukáže, že je potřeba.
 4. Teprve poté implementovat Assembler nad Page JSONy a uložit canonical Article Records do Supabase Storage + Postgres.
