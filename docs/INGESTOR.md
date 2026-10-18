@@ -1,4 +1,4 @@
-# Ingestor v2.1
+# Ingestor v2.2 — contract defined; asset writer gated
 
 **Status:** CANONICAL COMPONENT DEFINITION  
 **Execution model:** live Chat, human-supervised  
@@ -6,9 +6,11 @@
 **Downstream:** Assembler  
 **Primary output:** exactly one verified Page JSON per processed source page
 
+**Rollout boundary:** instruction 2.2 defines the new asset contract, not deployed capability. Confirm an accepted generation before a pass. The pinned production runtime remains v3/instruction 2.1; asset-bearing v4 writes are blocked pending §21.5.
+
 ## 1. Purpose
 
-Ingestor v2.1 turns one technically prepared publication page into a structured, source-faithful Page JSON.
+Ingestor v2.2 turns one technically prepared publication page into a structured, source-faithful Page JSON.
 
 It exists because reliable page semantics require repeated inspection and correction. It is therefore a live conversational role, not an autonomous API batch worker.
 
@@ -75,7 +77,7 @@ For each requested page:
 3. Orient over all editorial and non-editorial regions; this working inventory is not a required persisted audit.
 4. Identify each editorial item independently and determine ownership/reading order.
 5. Judge Business Brief relevance and perspective value for each item.
-6. For each relevant item, reconstruct **all source text belonging to that item that is physically present on the current page**.
+6. For each relevant item, reconstruct all continuous article prose physically present on this page; preserve associated visuals separately as article assets (§21), never canonical chart/table OCR.
 7. Omit clearly irrelevant items unless needed for continuity, ambiguity resolution or explicit review (section 7).
 8. Record a short relevance reason; preserve perspective through source text rather than mandatory interpretation fields.
 9. Record continuation evidence without assembling other pages.
@@ -129,7 +131,7 @@ Do not infer an article merely from spatial proximity. Ownership and reading ord
 
 For relevant items, reconstruct only the text physically present on the current page.
 
-Use `text_on_page`, not `full_article_text`.
+Use `text_on_page`, not `full_article_text`. Only continuous prose belongs here; preserve associated visuals as PNG assets under §21, without canonical chart/table OCR.
 
 Do not:
 
@@ -210,7 +212,7 @@ Relevance supports selection and requires a short reason. The new minimal contra
 
 ## 9. Cross-page boundary
 
-Ingestor v2.1 never assembles multi-page articles.
+Ingestor v2.2 never assembles multi-page articles.
 
 It records only evidence visible on the current page, including:
 
@@ -220,7 +222,7 @@ It records only evidence visible on the current page, including:
 - `continuation_marker`
 - `continuation_target`
 
-The Assembler resolves cross-page article identity and joins text.
+The Assembler resolves cross-page article identity and joins text, then re-anchors assets by unique anchor text (§21.3); ambiguous assets remain unplaced for review.
 
 ## 10. Verification
 
@@ -249,7 +251,7 @@ The machine contract is defined in:
 
 The Markdown defines how the role works. The Python contract defines the exact output structure.
 
-The new schema identifier is `page-ingest-v3`, serialized by `PageIngestV3` / `PageItemV3`. Its producer is `ingestor-v2.1-chat` and instruction version `2.1`. Deployment/plugin support for this generation must be confirmed before a new pass; v2 remains a compatibility contract.
+The new asset schema is `page-ingest-v4`, serialized by `PageIngestV4` / `PageItemV4`, producer `ingestor-v2.2-chat`, instruction `2.2` (§21). v2/v3 remain immutable compatibility contracts. Deployed runtime is still v3; asset-bearing v4 persistence is gated, not ready for a production pass.
 
 Do not invent additional fields outside the contract unless the contract is being deliberately revised.
 
@@ -262,18 +264,18 @@ The canonical Page JSON artifact belongs in Supabase Storage.
 Canonical logical object key:
 
 ```
-page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.1/page-<NNNN>.json
+page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.2/page-<NNNN>.json
 ```
 
 Example:
 
 ```
-page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.1/page-0001.json
+page-ingest/the-wall-street-journal/2026-10-14/<source_sha256>/ingestor-v2.2/page-0001.json
 ```
 
-The exact Supabase bucket name is operational configuration. The bridge resolves the configured artifact bucket server-side and returns it in the verified receipt; Chat must not invent a bucket name. The normative bridge contract is section 19; implementation/runtime notes are in `bridge/README.md`.
+The canonical architecture uses the existing private `page-ingest` bucket; runtime configuration must agree. The bridge resolves the configured artifact bucket server-side and returns it in the verified receipt; Chat must not invent a bucket name. The normative bridge contract is section 19; implementation/runtime notes are in `bridge/README.md`.
 
-The stored file contains the validated `page-ingest-v3` payload for exactly one source page.
+The stored file contains the validated `page-ingest-v4` payload for exactly one source page.
 
 For the same source SHA, Ingestor generation and page number, persistence must be deterministic. A rerun must not silently create a second competing canonical artifact.
 
@@ -285,8 +287,9 @@ A successful page pass ends as:
 
 ```
 interpret page
-→ build page-ingest-v3
+→ build page-ingest-v4
 → validate structure
+→ verify every asset crop through the gated writer (§21)
 → persist JSON to Supabase Storage
 → verify durable write
 → report Storage key and page status
@@ -311,7 +314,7 @@ It should not rediscover page layout.
 
 ## 14. Non-goals
 
-Ingestor v2.1 is not:
+Ingestor v2.2 is not:
 
 - Technician;
 - OCR preparation;
@@ -333,14 +336,14 @@ Physical Map, Visual Page Map, BODY_FLOW, bbox/overlap matching and block-ID exp
 
 ## 16. Success criterion
 
-Ingestor v2.1 succeeds when:
+Ingestor v2.2 succeeds when:
 
 - the source page has been inspected as a whole;
 - relevant editorial items are faithfully represented;
 - text is verified against source evidence;
 - uncertainty is explicit;
 - continuation evidence is preserved;
-- output matches `page-ingest-v3`;
+- output matches `page-ingest-v4`;
 - Assembler can proceed without reinterpreting page layout.
 
 
@@ -359,7 +362,7 @@ Bootstrap sequence:
 7. Confirm that the selected source is authorized for ingestion and locate its Technician Source Bundle.
 8. Resolve the requested page image and supporting prepared text/OCR evidence.
 9. Run exactly one page pass according to the rules above.
-10. Validate the resulting `page-ingest-v3` payload.
+10. Validate the resulting `page-ingest-v4` payload.
 11. Persist it according to section 12.
 12. Confirm the durable Storage object key and page status.
 13. State any unresolved uncertainty briefly and stop.
@@ -367,13 +370,13 @@ Bootstrap sequence:
 A convenient user invocation is:
 
 ```
-INGESTOR v2.1: process page <N> of <publication/edition>.
+INGESTOR v2.2: process page <N> of <publication/edition>.
 ```
 
 For example:
 
 ```
-INGESTOR v2.1: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
+INGESTOR v2.2: process page 1 of the current READY_FOR_INGESTOR WSJ edition.
 ```
 
 That short invocation does not replace the bootstrap sequence. It merely selects the source page to process.
@@ -468,11 +471,11 @@ Required header: `Idempotency-Key: <UUID>`, newly generated per intended submiss
 
 The wrapper is transport metadata and is never stored in the canonical artifact. The manifest hash must match the pinned current archived bundle; mismatch is 409 `SOURCE_CHANGED`. `page.source.source_id` selects the exact database source. Apply 19.2 again and require all Page JSON source/publication/date/variant/name/page identity to match, with page within range. The caller cannot set the persistence key or producer generation directory.
 
-Strict Page JSON validation is a bridge requirement, **not an existing dataclass runtime validator**. `PageIngest.to_dict()` defines the field names and nesting, not the Python constructor names: top-level fields are exactly `schema_version`, `producer`, `instruction_version`, `source`, `publication`, `items`, `page_status`, `page_notes`. Accept exactly one generation tuple: (`page-ingest-v2`, `ingestor-v2.0-chat`, `2.0`) or (`page-ingest-v3`, `ingestor-v2.1-chat`, `2.1`). Mixed tuples are invalid. `source` is exactly `{source_id:UUID, source_sha256:SHA}`; `publication` is exactly `{publication_id:string, canonical_name:string, edition_date:Date, edition_variant:string, page_no:integer}`.
+Strict Page JSON validation is a bridge requirement, **not an existing dataclass runtime validator**. `PageIngest.to_dict()` defines the field names and nesting, not the Python constructor names: top-level fields are exactly `schema_version`, `producer`, `instruction_version`, `source`, `publication`, `items`, `page_status`, `page_notes`. Accept exactly one generation tuple: (`page-ingest-v2`, `ingestor-v2.0-chat`, `2.0`) or (`page-ingest-v3`, `ingestor-v2.1-chat`, `2.1`) or (`page-ingest-v4`, `ingestor-v2.2-chat`, `2.2`). Mixed tuples are invalid. `source` is exactly `{source_id:UUID, source_sha256:SHA}`; `publication` is exactly `{publication_id:string, canonical_name:string, edition_date:Date, edition_variant:string, page_no:integer}`.
 
 Legacy v2 items have exactly the fields/types serialized by `PageItem.to_dict()`: nonempty unique `page_item_id` and nonempty `item_type`; nullable strings `title`, `subtitle`, `kicker`, `byline`, `text_on_page`; required `relevance`, `perspective`, `continuation`, `verification`. Arrays are JSON arrays, never Python tuples. `relevance` requires state `relevant|irrelevant|uncertain` and a nonempty reason. `perspective` requires all nullable scalar fields, list fields and epistemic arrays defined in `PerspectiveEvidence`; specifically `author_question`, `framing`, `central_argument`, `distinctive_angle` are string|null, and `tensions_or_counterarguments`, `open_questions`, `observed_on_page`, `interpreted_from_page`, `unresolved_until_assembly` are string arrays. `continuation` requires three booleans and nullable strings `continuation_marker` and `continuation_target` exactly as `ContinuationEvidence`. `verification` requires `status`, the boolean fields `visual_checked`, `text_layer_checked`, `title_verified`, `boundaries_verified`, `reading_order_verified`, `text_on_page_complete`, plus `byline_verified:boolean|null`, and `notes:string[]`. No omitted defaults or extra fields at any level within the selected generation. `page_notes` is a string array; `items` may be empty for an explicitly verified page with no editorial items, with explanatory page notes.
 
-For v3, `PageItemV3.to_dict()` has the same fields except `perspective` is absent (and rejected as an extra field). All identity, relevance, continuation and verification checks remain unchanged. `subtitle` carries dek/subtitle/perex; absent source metadata is null, never invented. Empty selected-item pages require explanatory page notes. Omitted irrelevant items do not make selected-article text incomplete.
+For v4, the same minimal fields plus required `assets` are specified in §21; nonempty-assets writes remain gated there. For v3, `PageItemV3.to_dict()` has the same fields except `perspective` is absent (and rejected as an extra field). All identity, relevance, continuation and verification checks remain unchanged. `subtitle` carries dek/subtitle/perex; absent source metadata is null, never invented. Empty selected-item pages require explanatory page notes. Omitted irrelevant items do not make selected-article text incomplete.
 
 All integers in this contract reject booleans and fractional values. Validation order is authentication/scope/resource authorization, syntax/shape, live source and bundle identity, page verification consistency, idempotency binding and canonical write. Identity mismatch is 409 `IDENTITY_MISMATCH`; invalid Page JSON types/enums/fields are 422 `PAGE_SCHEMA_INVALID`.
 
@@ -486,7 +489,7 @@ Serialize the validated `page` only using RFC 8785 JSON Canonicalization Scheme 
 page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json
 ```
 
-`NNNN` is zero-padded to four digits. Slugs/date/SHA are validated identity values, not raw path input. The server maps v2 to directory `ingestor-v2.0` and v3 to `ingestor-v2.1`; callers cannot choose arbitrary directories. The example above is the legacy v2 key. New v3 keys use `ingestor-v2.1` in the same position. Both generations use the same fencing, create-if-absent, hashing, binding and readback algorithm. No variant component is added; if the same key would represent different variant/source UUID identity, refuse with 409 rather than changing this canonical path.
+`NNNN` is zero-padded to four digits. Slugs/date/SHA are validated identity values, not raw path input. The server maps v2 to directory `ingestor-v2.0` and v3 to `ingestor-v2.1`, and v4 to `ingestor-v2.2`; callers cannot choose arbitrary directories. The example above is the legacy v2 key. New v3 keys use `ingestor-v2.1` in the same position. All supported page generations use the same fencing, create-if-absent, hashing, binding and readback algorithm. No variant component is added; if the same key would represent different variant/source UUID identity, refuse with 409 rather than changing this canonical path.
 
 - Atomically create-if-absent, content type `application/json`; never blind upsert/overwrite. Concurrent losers read and compare the winning object. Same canonical bytes/identity → safe replay; different content/identity → 409 `CANONICAL_CONFLICT`, preserving existing bytes. Different idempotency keys cannot bypass this rule. Revised editorial output needs a separately authorized future revision protocol; v1 provides none.
 - Durably bind `(principal, Idempotency-Key)` to SHA-256 of JCS of the whole request wrapper and target key, atomically claiming it before mutation. Reuse for a different wrapper/target is 409 `IDEMPOTENCY_CONFLICT`. Keep binding for the lifetime of the canonical artifact; do not allow short TTL eviction to permit key reuse. This requires durable operational storage chosen during implementation, not a new table improvised by Chat. Concurrent identical requests may wait or return retryable 503 `WRITE_IN_PROGRESS`.
@@ -558,3 +561,71 @@ Rollout completed on 2026-10-16: bridge commit `1442da050a0b3dcb4a5de9a11611a2b5
 After deployment the connected plugin resolved the exact WSJ 2026-10-14 source and returned page 1 PNG + OCR (14,349 UTF-8 bytes, no warnings). Six relevant article starts were visually compared, locally validated and submitted once with a fresh UUID. Result: STORED/CREATED, VERIFIED_WITH_NOTES, `ingestor-v2.1/page-0001.json`, SHA `bc287714ea5a290833976b7dfec6caf56f09a668e2c0d401c9e317ac246055e6`, 14,568 B, downloaded SHA/identity match, usable_for_assembly=true. Notes preserve visible page-boundary fragments; no off-page text was supplied. Full identity/key is in HISTORY. This pass used Codex's connected MCP plugin, the ordinary-Chat-compatible path; it does not claim a newly observed separate ordinary Chat session. Earlier ordinary Chat read acceptance remains valid historical evidence. Current role instructions are this document plus PROJECT/SCOPE/CURRENT_STATE; the Site performs transport only.
 
 Do not silently convert/rewrite v2 or reuse its idempotency key. Start a fresh submission/key in the new generation; preserve all v2 bytes/bindings. Downstream must select an explicit accepted generation, never mix or automatically fall back to the superseded page. STOP after page 1 was observed; no page 2 or assembly. Full suite: 138 passed; bridge tests: 88 passed. Railway health overview reported Online, no failures or pending work; authenticated resolve/evidence succeeded. The authenticated /health and /ready diagnostic endpoints were not independently called in this rollout.
+
+## 21. Article assets — instruction 2.2 / page-ingest-v4 (D022)
+
+**Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.**
+
+This section extends §19 for the exact tuple `page-ingest-v4` / `ingestor-v2.2-chat` / `2.2`, with server-selected directory `ingestor-v2.2`. v2 and v3 field sets, bytes and keys remain unchanged and readable. Never add assets to existing immutable v3 objects, including production pages 1 and 2. Use a fresh intended-submission key in v4 after a separately authorized rollout. Do not infer rollout readiness from this document or a valid schema.
+
+### 21.1 Prose and visual evidence
+
+`PageItemV4` retains the minimal v3 fields (title, subtitle/dek/perex, kicker, byline, source-faithful `text_on_page`, relevance reason, continuation, verification) and adds required `assets: ArticleAsset[]`, empty when no associated visuals exist. There is no PerspectiveEvidence field and no mandatory inventory of irrelevant items. `text_on_page` is continuous article prose, visually checked against the authoritative page. Do not insert chart/table OCR, axis labels, legends, synthesized descriptions, image placeholders or captions into canonical prose. Preserve paragraphs as `\n\n` boundaries. Source-visible visual titles/captions belong on the asset. A separately selected prose sidebar remains an editorial item; do not misclassify prose as a visual merely to avoid reconstructing it.
+
+An asset is primarily a PNG crop of the exact authoritative Technician page PNG, including the visual's axes/legend/source notes where applicable and excluding neighboring article prose. Never redraw, resample or reconstruct the visual from extracted numbers. Internal OCR may be an optional future derivative, never required, authoritative, or a substitute for the crop. No OCR field is required in this contract.
+
+### 21.2 Exact asset shape and validation
+
+`ArticleAsset.to_dict()` defines all keys below. Optional title/caption/bbox/index/text are represented by null, not omitted; unknown keys are rejected. Asset IDs are lower-case hyphenated slugs, unique across the page and chosen with page/item context, for example `p0002-a02-chart-01`. They do not encode a new article identity.
+
+| Field | Contract |
+| --- | --- |
+| `asset_id` | Nonempty path-safe slug; no slash, dot, percent escape or traversal. |
+| `asset_type` | `chart`, `table`, `photo`, `infographic`, `illustration`, `other`. |
+| `page_item_id`, `page_no` | Exact owning enclosing item and source page; asset cannot point to another item/page. |
+| `page_anchor` | Exactly `bbox_norm`, `bbox_px`, `source_page_image_sha256`. |
+| `text_anchor` | Exactly `position`, `paragraph_index`, `anchor_text`, `status`. |
+| `title`, `caption` | Nullable strings, source-visible and visually verified; never inferred interpretations. |
+| `artifact` | Exactly `bucket`, `key`, `media_type`, `sha256`, `byte_size`, `width`, `height`. |
+| `verification` | Exactly `status`, `visual_checked`, `ownership_verified`, `page_anchor_verified`, `text_anchor_verified`, `notes`. |
+
+`bbox_norm = [x0,y0,x1,y1]` uses the full authoritative PNG, origin top-left, x right, y down. All numbers must be finite, not booleans, in 0..1, with x0<x1 and y0<y1. Optional `bbox_px` uses integer half-open crop bounds in the same unrotated PNG. At crop production the writer derives `[floor(x0*W),floor(y0*H),ceil(x1*W),ceil(y1*H)]`, verifies any supplied pixel bbox against it and source dimensions, and records exact crop width/height; no resizing. This rounding is the sole permitted geometric expansion. `source_page_image_sha256` binds the crop to the exact manifest-listed source PNG. Shape validation alone cannot prove a crop came from that PNG.
+
+`artifact.media_type` is `image/png`; SHA is lower-case 64-hex SHA-256 of exact crop bytes, size/width/height are positive integers. If pixel bbox is provided, its extent must equal artifact dimensions. `bucket` must equal the bridge's configured private `page-ingest` output bucket at write time; clients never select an alternative bucket. `key` must equal the canonical server derivation (§21.4), not an arbitrary reference or signed URL.
+
+`verification.status` uses the existing four PageStatus values. The four checks are booleans; notes are strings. VERIFIED / VERIFIED_WITH_NOTES requires all four checks true and anchored placement. A worse asset status must propagate through item and page status; non-VERIFIED states require localized nonempty notes. BLOCKED anywhere prevents canonical page persistence. A placement review requires asset NEEDS_REVIEW, `text_anchor_verified:false`, item/page NEEDS_REVIEW and explanatory notes, keeping `usable_for_assembly:false`. Never mark an unresolved anchor as VERIFIED_WITH_NOTES.
+
+### 21.3 Logical placement and assembly
+
+`position` is `before_paragraph`, `after_paragraph` or `inline_after_anchor`. For paragraph placement, `anchor_text` is an exact source substring within the target paragraph; for inline placement the insertion follows that substring. Paragraph indices are zero-based within the page item's double-newline-delimited `text_on_page`, optional and auxiliary. When supplied on an anchored page asset they must identify the paragraph containing the anchor. `anchor_text` is more authoritative and supports later re-anchoring; it is not an OCR string copied from inside the visual.
+
+`status` is `anchored` or `placement_needs_review`. Anchored placement requires nonempty anchor text occurring exactly once in current item prose. Missing or repeated matches, missing prose or cross-paragraph phrases cannot be silently accepted as anchored. In review state the index and anchor text may be null; keep the physical crop and ownership evidence without inventing a position. A repeated phrase may remain recorded for review.
+
+Assembler selects one explicitly accepted source/generation, joins article prose across pages and resolves continuation identity first. It then finds each asset's anchor in the assembled article; paragraph indices may have shifted. Only a unique supported text match yields placement. Missing or multiple matches remain `placement_needs_review` / unplaced, with original asset ID, ownership, anchor evidence, page bbox and PNG SHA retained. Neither geometric proximity, a stale index nor fuzzy matching may silently decide placement. Assembler does not rewrite source Page JSON or move/rename crops. Ordered assets sharing an insertion point require explicit ordering/review before placement; array order alone is not inferred source order.
+
+### 21.4 Canonical storage and required write semantics
+
+Use the **existing private bucket `page-ingest`**, with the same retention/lifecycle and authorization boundary as Page JSON. No new bucket is required: crops belong to the same immutable source/generation and must survive as long as any referencing Page JSON. The bucket name and the first key component happen to be equal; do not strip that prefix.
+
+```text
+bucket: page-ingest
+keys:
+  page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.2/page-<NNNN>.json
+  page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.2/assets/page-<NNNN>/<asset_id>.png
+```
+
+Before enabling asset persistence, the bridge writer must:
+
+1. Authenticate existing scopes/publication allowlist and pin source UUID/SHA, bundle SHA, readiness, page PNG SHA and dimensions. Derive bucket/key server-side from validated identity/generation/asset ID. Reject variant/UUID collisions with the existing no-variant namespace.
+2. Produce/verify the crop from manifest-listed authoritative PNG bytes, not an arbitrary client image. Verify normalized/pixel bounds, PNG media type, width/height, exact byte size and SHA. Keep visual ownership/meaning verification with Ingestor; server checks cannot establish editorial truth.
+3. Bind each intended write durably to request bytes, target and source identity before mutation. Apply the existing session/row fence and crash-surviving PENDING identity guards across create/readback. Binary bytes use direct SHA-256, not JCS; JSON metadata/requests retain RFC8785 JCS.
+4. Create-if-absent as `image/png` with no overwrite. Download exact bytes and compare SHA, size, dimensions and source binding on new write and replay. Same bytes/identity replay; different bytes/identity conflict (409). Never replace, delete or silently rename a conflicting crop.
+5. Verify every asset and recheck source eligibility through Page JSON commit. Persist Page JSON only after all referenced crops pass durable readback. Page-level STORED must cover the whole referenced set, not merely the JSON. No DB/Storage atomic transaction is assumed: a partial failure may leave immutable orphan crops. Return BLOCKED/UNKNOWN, preserve claims and reconcile with the original request/key; never delete artifacts or advance the page to recover.
+
+Reuse §19 auth, idempotency retention, source fencing, no-overwrite, logging/redaction and conflict/recovery rules. Do not introduce client-chosen paths, bucket credentials, public URLs or a direct Chat-to-Storage bypass. Audit asset ID, parent page/item, PNG SHA, bounds, derived key, byte SHA and readback outcome without source text or secrets. Corrections require a separately authorized future revision protocol, not mutable replacement under v4.
+
+### 21.5 Implementation and rollout gate
+
+This consolidation implements dataclasses, strict v4 schema/anchor/verification checks and immutable key derivation. Existing `POST /ingestor-v2/page` can validate v4 and persist pages with empty assets under the new namespace using unchanged JCS/fencing/replay semantics. **Binary crop creation/upload and its adapter transport are not implemented or deployed.** No new upload endpoint is asserted here. A valid v4 page with nonempty assets fails closed with `503 CONFIGURATION_MISSING`, persistence NOT_WRITTEN, before any idempotency claim or canonical mutation; arbitrary artifact references are never trusted. The deployed pinned bridge continues to support only its existing v2/v3 runtime.
+
+A separate implementation/rollout must prove all §21.4 guarantees with controlled binary write/replay/conflict/concurrency/timeout/corrupt-readback/source-change tests, bounded PNG processing, wrong-bucket/source/bounds rejection, adapter transport and actual Chat crop/anchor visual acceptance before asset-bearing production pages can be completed. Keep current v2/v3 objects and bindings untouched. No deployment or production persist is part of this documentation/contract consolidation.

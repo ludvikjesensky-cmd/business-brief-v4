@@ -57,7 +57,7 @@ Má reprezentovat:
 - verification a explicitní uncertainty;
 - provenance k Technician source.
 
-Machine schema je definováno v `src/business_brief/contracts.py` jako legacy `page-ingest-v2` a nový `page-ingest-v3` (PageIngestV3).
+Machine schema je definováno v `src/business_brief/contracts.py` jako legacy `page-ingest-v2`, kompatibilní `page-ingest-v3` (PageIngestV3) a nový `page-ingest-v4` (PageIngestV4; D022).
 
 Legacy v2 canonical Page JSON body patří do Supabase Storage pod logickým klíčem `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.0/page-<NNNN>.json`. Konkrétní Supabase bucket je operational konfigurace a Chat jej nesmí hádat.
 
@@ -111,4 +111,13 @@ Ordinary Chat uses the private Site v4 adapter for server-side verified image an
 
 Select primarily relevant articles, with uncertain candidates for review and exceptional irrelevant continuity/review evidence only. Preserve visually validated title/subtitle/byline/text_on_page/continuation; OCR supports the image. Normalize technical layout artifacts only. Do not summarize, paraphrase, translate or invent missing text. Perspective interpretation belongs downstream, not a required per-item object.
 
-New page-ingest-v3 uses producer ingestor-v2.1-chat, instruction 2.1 and directory ingestor-v2.1; v2 and its ingestor-v2.0 key remain immutable compatibility artifacts. Bridge validation and server-side generation mapping are implemented in this branch; deployment/plugin rollout and content acceptance remain pending. Auth, JCS, durable binding/fencing, create-if-absent and readback semantics are retained. Assembler must select an explicitly accepted generation and exclude superseded acceptance content, regardless of historical usable_for_assembly=true.
+New page-ingest-v3 uses producer ingestor-v2.1-chat, instruction 2.1 and directory ingestor-v2.1; v2 and its ingestor-v2.0 key remain immutable compatibility artifacts. Bridge v3 validation and server-side generation mapping were deployed and page-1 acceptance passed on 2026-10-16 (CURRENT_STATE/HISTORY); this does not establish v4 asset support. Auth, JCS, durable binding/fencing, create-if-absent and readback semantics are retained. Assembler must select an explicitly accepted generation and exclude superseded acceptance content, regardless of historical usable_for_assembly=true.
+
+## Article assets — canonical D022
+**Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.** `text_on_page` is visually verified continuous article prose. Charts, tables, photos, infographics, illustrations and other visuals are separate article-owned PNG crops, never canonical OCR transcripts. Minimal article fields remain; v4 adds `assets`, without required PerspectiveEvidence or rejected-item inventory.
+
+The new exact generation is `page-ingest-v4` / `ingestor-v2.2-chat` / instruction `2.2` / namespace `ingestor-v2.2`. Keep v2/v3 serialization, keys and production objects immutable. Reuse the existing private `page-ingest` bucket. Canonical key: `page-ingest/<publication_id>/<edition_date>/<source_sha256>/ingestor-v2.2/assets/page-<NNNN>/<asset_id>.png`; sibling Page JSON is `.../ingestor-v2.2/page-<NNNN>.json`. Page JSON carries exact bucket/key/SHA/size/dimensions; no new bucket or client-selected path.
+
+Assets bind ownership (`page_item_id`, page), physical page bbox and authoritative PNG SHA to a logical text anchor (position, auxiliary paragraph index, authoritative surrounding anchor text). Assembler joins prose across pages first, then re-anchors by unique anchor text. A missing/ambiguous match remains `placement_needs_review` / unplaced; never guess from geometry or a stale paragraph index. Physical bbox remains provenance. Editorial may use, interpret or omit visuals while retaining the evidence.
+
+The normative schema, bounds/anchor checks, storage rules and rollout gate are in docs/INGESTOR.md §21. Asset writes must retain auth, server-derived keys, SHA-256, create-if-absent, exact readback, durable binding/source fencing and no overwrite. This branch implements contract/path validation, not binary crop persistence: nonempty-assets writes fail closed before claims/mutation. No asset upload endpoint/adapter capability or deployment is implied; deployed runtime remains pinned v3. Enable only after the separate writer and acceptance gate pass.

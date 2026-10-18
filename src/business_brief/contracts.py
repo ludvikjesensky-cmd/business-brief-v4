@@ -233,3 +233,83 @@ class PageIngestV3(PageIngest):
     ingestor_version: str = "ingestor-v2.1-chat"
     instruction_version: str = "2.1"
     schema_version: str = PAGE_INGEST_V3_SCHEMA
+
+
+# v4 adds article assets; v2/v3 serialization stays unchanged.
+PAGE_INGEST_V4_SCHEMA = "page-ingest-v4"
+
+
+@dataclass(frozen=True)
+class AssetPageAnchor:
+    bbox_norm: tuple[float, float, float, float]
+    source_page_image_sha256: str
+    bbox_px: tuple[int, int, int, int] | None = None
+
+
+@dataclass(frozen=True)
+class AssetTextAnchor:
+    position: Literal["before_paragraph", "after_paragraph", "inline_after_anchor"]
+    paragraph_index: int | None
+    anchor_text: str | None
+    status: Literal["anchored", "placement_needs_review"]
+
+
+@dataclass(frozen=True)
+class AssetArtifact:
+    bucket: str
+    key: str
+    media_type: str
+    sha256: str
+    byte_size: int
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
+class AssetVerification:
+    status: PageStatus
+    visual_checked: bool
+    ownership_verified: bool
+    page_anchor_verified: bool
+    text_anchor_verified: bool
+    notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ArticleAsset:
+    asset_id: str
+    asset_type: Literal["chart", "table", "photo", "infographic", "illustration", "other"]
+    page_item_id: str
+    page_no: int
+    page_anchor: AssetPageAnchor
+    text_anchor: AssetTextAnchor
+    artifact: AssetArtifact
+    verification: AssetVerification
+    title: str | None = None
+    caption: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        d = asdict(self)
+        d["page_anchor"]["bbox_norm"] = list(self.page_anchor.bbox_norm)
+        if self.page_anchor.bbox_px is not None:
+            d["page_anchor"]["bbox_px"] = list(self.page_anchor.bbox_px)
+        d["verification"]["notes"] = list(self.verification.notes)
+        return d
+
+
+@dataclass(frozen=True)
+class PageItemV4(PageItemV3):
+    assets: tuple[ArticleAsset, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        d = super().to_dict()
+        d["assets"] = [asset.to_dict() for asset in self.assets]
+        return d
+
+
+@dataclass(frozen=True)
+class PageIngestV4(PageIngest):
+    items: tuple[PageItemV4, ...]
+    ingestor_version: str = "ingestor-v2.2-chat"
+    instruction_version: str = "2.2"
+    schema_version: str = PAGE_INGEST_V4_SCHEMA

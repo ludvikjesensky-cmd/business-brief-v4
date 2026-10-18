@@ -12,7 +12,7 @@ import httpx
 import psycopg
 from psycopg.rows import dict_row
 import rfc8785
-from .validation import Failure, require, strict_json, sha, slug, verification, page_schema
+from .validation import Failure, require, strict_json, sha, slug, verification, page_schema, generation_prefix
 try:
     from .contracts import SourceBundle
 except ImportError:
@@ -188,15 +188,17 @@ class Bridge:
     def post(self,wrapper,key,principal,allowed):
         p=wrapper['page']; sid=p['source']['source_id']; no=p['publication']['page_no']
         page_schema(p)
-        generation = {'page-ingest-v2': 'ingestor-v2.0', 'page-ingest-v3': 'ingestor-v2.1'}[p['schema_version']]
         canonical=jcs(p); request_hash=digest(jcs(wrapper)); artifact_hash=digest(canonical)
-        target=f"page-ingest/{p['publication']['publication_id']}/{p['publication']['edition_date']}/{p['source']['source_sha256']}/{generation}/page-{no:04d}.json"
+        target=f"{generation_prefix(p)}/page-{no:04d}.json"
         def eligible(c):
             r=self.db.row(c,sid,allowed); m,h=self.bundle(r)
             require(h==wrapper['source_bundle_sha256'],'SOURCE_CHANGED',409)
             ident=self.identity(r,h)
             require(p['source']['source_sha256']==r['sha256'] and all(p['publication'][k]==ident[k] for k in ['publication_id','canonical_name','edition_date','edition_variant']) and no<=r['page_count'],'IDENTITY_MISMATCH',409)
             verification(p)
+            # This consolidation defines v4, not a new binary upload protocol.
+            # Never store a page pointing to unverified/unfenced crops.
+            require(not any(i.get('assets') for i in p['items']), 'CONFIGURATION_MISSING', 503)
             return r,ident
         # Session advisory lock covers both transactions; durable PENDING claim covers session loss.
         with self.db.connection() as c:
