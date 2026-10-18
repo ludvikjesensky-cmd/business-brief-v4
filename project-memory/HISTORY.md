@@ -124,3 +124,8 @@ Every selected key below is relative to `page-ingest/the-wall-street-journal/202
 | 10 | `ingestor-v2.2/page-0010.json` | `91c26ea5ca98cf10b058b91f3957fda772b612654df8f5f8f5e4e0b9fceb894b` | VERIFIED_WITH_NOTES | 6 | 2026-10-18T20:04:31.207837Z |
 
 The edition selection is intentionally heterogeneous; technical acceptance does not close broader Q010 or Assembler policy Q011. Work stopped after manifest persistence. No assembly/composer/editorial, unrelated service deployment, schema migration or main merge. Stacked PR #10 preserves #4 → #5 → #6 → #7 → #8 → #9.
+
+## 2026-10-18 — Ingest handoff merged; runtime pins preserved
+GitHub verification confirms PRs #4–#10 merged/closed, ending at main `d35e963847721b49e5ef3aea71716ea0fb7b2825` (PR #10). This supersedes the pre-merge stack status in the acceptance entry above; PR #3 remains a separate open Draft. Q014/Q015 remain resolved and `wsj-2026-10-14-selection-r1` remains ACCEPTED_FOR_ASSEMBLY.
+
+Railway verification confirms bridge pin `388f2c879ae5d30b9544a08d95b7283a2f4c6fe6`, deployment `fdaf8dfa-5ec9-4706-a5ef-7e15a209610a` SUCCESS. The legacy `ingestor` cron was isolated before merge on `a8d6c26e8002c8a4dcad42fce7fa6c5763e65580`, redeploy `2e44c090-63b8-4b95-b5c6-8e263b14850e` SUCCESS; both pins remain configured. The next planned step is Assembler over the explicit Edition Selection Manifest, subject to Q011; no downstream run occurred in this cleanup.
