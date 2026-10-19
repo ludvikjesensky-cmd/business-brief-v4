@@ -170,9 +170,61 @@ article-record-v1
 
 `article_id` must be deterministic from stable source/selection/part identity, not generated randomly. `source_parts[]` are ordered and preserve exact provenance to selected page artifacts. Asset artifact identity is preserved rather than copied/reinterpreted.
 
-Article Record bytes are immutable artifacts in Supabase Storage. PostgreSQL stores queryable article identity, source-part relationships, manifest provenance and assembly state. Persistence details/physical keys are implementation work and must preserve create-if-absent + SHA/readback semantics.
+Article Record bytes are immutable artifacts in Supabase Storage. PostgreSQL stores queryable article identity, source-part relationships, manifest provenance and assembly state.
 
-This section freezes the policy and logical contract. It does not imply an Assembler deployment or production run.
+### Article Record persistence
+Use one dedicated private Supabase Storage bucket:
+
+```
+article-records
+```
+
+Canonical object key:
+
+```
+<publication_id>/<edition_date>/<source_sha256>/<manifest_id>/<article_id>.json
+```
+
+The bucket is the article-level canonical store. JSON is deterministically serialized, written create-if-absent, SHA-256 hashed and downloaded back for exact verification before the article is considered persisted. Same key + same bytes is an idempotent replay; same key + different bytes is a conflict and must not overwrite history.
+
+Article assets are not duplicated. The Article Record preserves the exact existing `page-ingest` bucket/key/SHA/size/dimensions and placement metadata for each asset.
+
+Minimal PostgreSQL operational index:
+
+```
+articles
+  article_id                 PK / deterministic
+  publication_id
+  edition_id
+  source_id
+  manifest_id
+  manifest_sha256
+  title
+  byline?
+  item_type
+  assembly_status
+  post_check_status
+  storage_bucket             = article-records
+  storage_key
+  artifact_sha256
+  artifact_byte_size
+  created_at
+
+article_source_parts
+  article_id                 FK -> articles.article_id
+  ordinal
+  page_no
+  page_item_id
+  page_artifact_key
+  page_artifact_sha256
+  text_sha256
+```
+
+`article_source_parts` has one row per ordered source part; `article_id + ordinal` is unique. The complete prose and complete canonical Article Record remain in Storage, not duplicated as the authoritative body in PostgreSQL.
+
+Chunking, full-text/vector search and embeddings are derived Indexer responsibilities after a persisted Article Record has `post_check = PASS` and an eligible assembly status. They are not required for Assembler success and can be rebuilt without mutating the canonical Article Record.
+
+This section freezes the policy, logical contract and persistence boundary. It does not imply an Assembler deployment, DB migration, bucket creation or production run.
 
 ## Composer
 Composer pracuje nad Article Records více zdrojů a vytváří topic groupings/dossiers pro články o společném tématu.
