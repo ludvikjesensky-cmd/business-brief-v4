@@ -1,9 +1,9 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-18
+**Last consolidated:** 2026-10-19
 
 ## Current direction
-Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No Assembler, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 (broader content/publication acceptance) and Q011 (Assembler review policy) remain open.
+Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No Assembler, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 (broader content/publication acceptance) remains open. Q011 is resolved by D025 with a deterministic Assembler policy and frozen logical `article-record-v1` contract.
 
 ## Q014/Q015 implemented, deployed and accepted
 D024 / INGESTOR §22 implements page-revision-v1 as a separate full-snapshot v4 wrapper, safe source-scoped readback and inventory, and immutable edition-selection-v1. Canonical v2/v3/v4 schemas, keys, request/claim hashes and historical objects remain unchanged. Revision and manifest writes use create-if-absent, exact SHA/readback, durable original-request/target claims and source fencing. Assembler input requires exactly one accepted manifest ID + SHA, re-verifies all selected JSON/PNGs and never scans latest pages.
@@ -35,4 +35,4 @@ GitHub confirms PRs #4–#10 are merged and closed. The ingest handoff is merged
 
 Railway confirms the bridge pin/deployment above remains SUCCESS. Before the merge, the unrelated legacy `ingestor` cron was pinned to `a8d6c26e8002c8a4dcad42fce7fa6c5763e65580`; its redeploy `2e44c090-63b8-4b95-b5c6-8e263b14850e` is SUCCESS. Both source pins remain configured; production has no staged changes.
 
-Next planned step: Assembler over the explicit Edition Selection Manifest ID + SHA, subject to Q011 review policy; no Assembler run is part of this documentation cleanup. Broader Q010/Q011, rights, acquisition and publication gates remain open. Legacy Physical Map, autonomous semantic ingest and paid full-edition Fast Editorial remain historical/superseded; see FAILURES/HISTORY.
+Q011 is now resolved by D025. The next planned implementation step is a deterministic Assembler over the explicit Edition Selection Manifest ID + SHA, producing immutable `article-record-v1` outputs; ambiguous joins or asset placement become review states rather than guesses. No Assembler implementation or run is part of this contract freeze. Broader Q010, rights, acquisition and publication gates remain open. Legacy Physical Map, autonomous semantic ingest and paid full-edition Fast Editorial remain historical/superseded; see FAILURES/HISTORY.
