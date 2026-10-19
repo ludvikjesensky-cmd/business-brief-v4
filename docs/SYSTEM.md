@@ -64,13 +64,80 @@ Legacy v2 canonical Page JSON body patří do Supabase Storage pod logickým kl�
 PostgreSQL slouží jako queryable operational index/state/provenance vrstva; primární JSON body zůstává ve Storage. Dedicated page-ingest tabulka se nesmí z Chatu improvizovat, pokud ještě není implementovaná.
 
 ## Assembler
-Input: Page JSONy jednoho edition/source.
+Input: exactly one immutable `edition-selection-v1` manifest identified by `manifest_id + sha256`, not a page directory or "latest" generation.
 
-Output: canonical Article Records.
+Output: immutable canonical `article-record-v1` Article Records.
 
-Assembler spojuje části článků napříč stránkami, ale nemá znovu interpretovat page layout. Nejasné případy musí být reviewable.
+Before assembly, Assembler independently verifies the manifest and every selected Page JSON / referenced PNG byte-for-byte. Missing, mismatched, unusable or known-defective selected input fails closed. Mixed page generations/revisions are valid only because the manifest selected them explicitly.
 
-Article artefakty patří do Supabase Storage; identity, vztahy, provenance a stav do PostgreSQL.
+### Deterministic joining policy (D025 / Q011)
+Assembler joins page-level parts automatically only when continuation evidence produces exactly one valid chain inside the selected edition. Explicit continuation markers/targets plus `starts_here`, `continued_from_previous_page` and `continues_to_another_page` are authoritative. Title/byline agreement and page ordering may corroborate a unique chain, but must not create a join on their own.
+
+If there are zero or multiple valid candidates, conflicting continuation evidence, or an input item already requires review, Assembler does not guess. The candidate/result is `NEEDS_REVIEW`. Broken selected bytes, blocked inputs or provenance mismatch are `BLOCKED`.
+
+Single-page articles with no continuation ambiguity may assemble directly.
+
+Assembler concatenates source-faithful prose in source order. It does not summarize, paraphrase, translate, fill missing text or reinterpret page layout.
+
+### Article assets
+After prose assembly, each v4 ArticleAsset is re-anchored using authoritative `text_anchor.anchor_text`. Exactly one occurrence permits placement. Zero or multiple occurrences leave the asset unplaced with `placement_needs_review`. `paragraph_index` and page geometry remain provenance/support only and never force placement.
+
+### Canonical Article Record v1
+Logical contract:
+
+```
+article-record-v1
+  article_id
+  publication
+    publication_id
+    canonical_name
+  edition
+    edition_date
+    edition_variant
+  source
+    source_id
+    source_sha256
+  selection
+    manifest_id
+    manifest_sha256
+
+  title
+  subtitle?
+  byline?
+  item_type
+
+  full_text
+
+  source_parts[]
+    page_no
+    page_item_id
+    page_artifact_key
+    page_artifact_sha256
+    text_sha256
+
+  assets[]
+    asset_id
+    source_page_no
+    source_page_item_id
+    artifact
+    placement
+      status: placed | placement_needs_review
+      position?
+      anchor_text
+    title?
+    caption?
+
+  assembly
+    status: VERIFIED | VERIFIED_WITH_NOTES | NEEDS_REVIEW | BLOCKED
+    method
+    notes[]
+```
+
+`article_id` must be deterministic from stable source/selection/part identity, not generated randomly. `source_parts[]` are ordered and preserve exact provenance to selected page artifacts. Asset artifact identity is preserved rather than copied/reinterpreted.
+
+Article Record bytes are immutable artifacts in Supabase Storage. PostgreSQL stores queryable article identity, source-part relationships, manifest provenance and assembly state. Persistence details/physical keys are implementation work and must preserve create-if-absent + SHA/readback semantics.
+
+This section freezes the policy and logical contract. It does not imply an Assembler deployment or production run.
 
 ## Composer
 Composer pracuje nad Article Records více zdrojů a vytváří topic groupings/dossiers pro články o společném tématu.
