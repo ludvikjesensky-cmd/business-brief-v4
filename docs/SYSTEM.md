@@ -79,6 +79,33 @@ Single-page articles with no continuation ambiguity may assemble directly.
 
 Assembler concatenates source-faithful prose in source order. It does not summarize, paraphrase, translate, fill missing text or reinterpret page layout.
 
+### Mandatory deterministic post-check
+Every assembled article must pass a mechanical post-check before it can be `VERIFIED` or `VERIFIED_WITH_NOTES`.
+
+The post-check independently:
+- reloads the exact selected Page JSON bytes identified by the manifest and verifies their SHA-256;
+- locates every declared `source_part` by `page_no + page_item_id`;
+- recomputes `text_sha256` from the exact source `text_on_page`;
+- requires every declared part exactly once, in the exact assembly order, with no duplicate or undeclared part;
+- reconstructs `expected_full_text` only by joining those exact `text_on_page` strings with the canonical separator `"\n\n"`;
+- requires stored `full_text` to be byte-for-byte UTF-8 equal to `expected_full_text`;
+- records both expected and actual full-text SHA-256 and requires equality;
+- for every asset marked `placed`, verifies that its authoritative `anchor_text` still has exactly one occurrence in `full_text`.
+
+A prose-integrity failure is deterministic corruption or an implementation defect, not an editorial ambiguity. Any missing/extra/reordered/duplicated source part, part-hash mismatch, full-text mismatch or invalid claimed asset placement makes the Article Record `BLOCKED`. An asset with zero/multiple anchor matches may instead remain unplaced as `placement_needs_review` when that state was declared before post-check.
+
+The Article Record carries a `post_check` object:
+```
+post_check
+  status: PASS | FAIL
+  separator: "\n\n"
+  part_count
+  expected_full_text_sha256
+  actual_full_text_sha256
+  checks[]
+```
+Only `post_check.status = PASS` is eligible for `assembly.status = VERIFIED | VERIFIED_WITH_NOTES`.
+
 ### Article assets
 After prose assembly, each v4 ArticleAsset is re-anchored using authoritative `text_anchor.anchor_text`. Exactly one occurrence permits placement. Zero or multiple occurrences leave the asset unplaced with `placement_needs_review`. `paragraph_index` and page geometry remain provenance/support only and never force placement.
 
@@ -126,6 +153,14 @@ article-record-v1
       anchor_text
     title?
     caption?
+
+  post_check
+    status: PASS | FAIL
+    separator
+    part_count
+    expected_full_text_sha256
+    actual_full_text_sha256
+    checks[]
 
   assembly
     status: VERIFIED | VERIFIED_WITH_NOTES | NEEDS_REVIEW | BLOCKED
