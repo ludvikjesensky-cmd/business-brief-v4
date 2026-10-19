@@ -32,8 +32,8 @@ Jaké minimum reálných stránek a publikací musí Chat Ingestor v2.0 úspěš
 
 Acceptance musí zahrnout komplexní novinovou stránku, continuation, grafiku/reklamu a alespoň jednu odlišnou publikaci; později i časopis.
 
-## Q011 — OPEN — Assembler review policy
-Kdy může Assembler spojit části článku deterministicky a kdy musí výsledek označit NEEDS_REVIEW místo pokusu o chytré domýšlení?
+## Q011 — RESOLVED — Assembler review policy
+D025 resolves the review boundary. Assembler consumes exactly one accepted manifest ID + SHA, independently verifies selected bytes and joins parts automatically only when continuation evidence yields exactly one valid chain. Similarity/title/byline may corroborate but never create a join. Zero/multiple candidates or ambiguous evidence become NEEDS_REVIEW; broken provenance/input becomes BLOCKED. Assets re-anchor only on one unique authoritative anchor_text match; otherwise they remain unplaced with placement_needs_review.
 
 ## Q012 — RESOLVED — Article asset representation and physical storage
 D022 decides authoritative page-PNG crops, dual page/text anchors and existing private page-ingest bucket in a new v4/ingestor-v2.2 namespace. OCR inside visuals is optional noncanonical support. Missing/ambiguous placement is review/unplaced, never a guess. This is no longer an undecided bucket/schema question; the implementation gate is INGESTOR.md §21.5.
