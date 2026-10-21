@@ -111,6 +111,8 @@ def verify_selected_page(selection: dict[str, Any], raw: bytes) -> SelectedPage:
     publication = page.get("publication") or {}
     if publication.get("page_no") != selection.get("page_no"):
         raise IntegrityError("selected page number mismatch")
+    if page.get("page_status") != selection.get("page_status"):
+        raise IntegrityError("selected page status mismatch")
     if page.get("page_status") not in ELIGIBLE_PAGE_STATUSES:
         raise IntegrityError("selected page is not assembly-eligible")
     if selection.get("usable_for_assembly") is not True:
