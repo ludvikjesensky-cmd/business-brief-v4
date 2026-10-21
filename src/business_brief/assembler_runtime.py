@@ -123,10 +123,12 @@ class SupabaseAssemblerStore:
             rows = self.client.storage.list_buckets()
         except Exception as exc:
             raise RuntimeErrorAssembler("cannot inspect Supabase buckets") from exc
-        match = next((row for row in rows if getattr(row, "id", None) == bucket or getattr(row, "name", None) == bucket), None)
+        def field(row: Any, name: str) -> Any:
+            return row.get(name) if isinstance(row, dict) else getattr(row, name, None)
+        match = next((row for row in rows if field(row, "id") == bucket or field(row, "name") == bucket), None)
         if match is None:
             raise RuntimeErrorAssembler(f"required bucket is missing: {bucket}")
-        public = getattr(match, "public", None)
+        public = field(match, "public")
         if public is True:
             raise RuntimeErrorAssembler(f"bucket must be private: {bucket}")
 
@@ -150,6 +152,8 @@ class SupabaseAssemblerStore:
         if not isinstance(bridge_pages, list):
             raise RuntimeErrorAssembler("assembly input has no selected pages")
         by_no = {int(row["page_no"]): row for row in bridge_pages}
+        if len(by_no) != len(bridge_pages):
+            raise IntegrityError("bridge returned duplicate selected page numbers")
         selected: list[SelectedPage] = []
 
         for selection in manifest["pages"]:
@@ -271,13 +275,14 @@ class SupabaseAssemblerStore:
             for ordinal, part in enumerate(record["source_parts"])
         ]
         current = self._existing_parts(article_id)
-        if not current:
+        existing_ordinals = {int(part["ordinal"]) for part in current}
+        missing_parts = [part for part in expected_parts if part["ordinal"] not in existing_ordinals]
+        if missing_parts:
             try:
-                self.client.table("article_source_parts").insert(expected_parts).execute()
+                self.client.table("article_source_parts").insert(missing_parts).execute()
             except Exception:
-                current = self._existing_parts(article_id)
-                if not current:
-                    raise
+                # A concurrent identical retry may have filled them; verify the final set below.
+                pass
         current = self._existing_parts(article_id)
         projection = [
             {
