@@ -17,6 +17,95 @@ KNOWLEDGE_LIFECYCLE = {"candidate", "accepted", "rejected", "retired"}
 class EnrichmentError(ValueError):
     pass
 
+def enrichment_json_schema() -> dict[str, Any]:
+    string_list = {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": True}
+    evidence = {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": True}
+    candidate = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["label", "relation", "evidence_refs"],
+        "properties": {
+            "label": {"type": "string", "minLength": 1},
+            "relation": {"type": "string", "minLength": 1},
+            "evidence_refs": evidence,
+            "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        },
+    }
+    signal = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["description", "polarity", "evidence_refs"],
+        "properties": {
+            "signal_id": {"type": ["string", "null"]},
+            "description": {"type": "string", "minLength": 1},
+            "polarity": {"type": "string", "enum": sorted(POLARITIES)},
+            "target_kind": {"type": ["string", "null"], "enum": ["story_thread", "trend", None]},
+            "target_ref_or_label": {"type": ["string", "null"]},
+            "evidence_refs": evidence,
+        },
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["schema_version", "profile", "producer", "articles"],
+        "properties": {
+            "schema_version": {"type": "string", "const": ENRICHMENT_SCHEMA},
+            "profile": {"type": "string", "const": ENRICHMENT_PROFILE},
+            "producer": {"type": "string", "minLength": 1},
+            "articles": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": [
+                        "article_id", "article_record_sha256", "category", "topics", "tags",
+                        "entities", "geographies", "industries", "story_thread_candidates",
+                        "trend_candidates", "signals",
+                    ],
+                    "properties": {
+                        "article_id": {"type": "string", "minLength": 1},
+                        "article_record_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
+                        "category": {"type": "string", "enum": list(CATEGORIES)},
+                        "topics": string_list,
+                        "tags": string_list,
+                        "entities": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": False,
+                                "required": ["name"],
+                                "properties": {
+                                    "name": {"type": "string", "minLength": 1},
+                                    "type": {"type": ["string", "null"]},
+                                },
+                            },
+                        },
+                        "geographies": string_list,
+                        "industries": string_list,
+                        "story_thread_candidates": {"type": "array", "items": candidate},
+                        "trend_candidates": {"type": "array", "items": candidate},
+                        "signals": {"type": "array", "items": signal},
+                    },
+                },
+            },
+        },
+    }
+
+def build_enrichment_evidence(article_records: Iterable[dict[str, Any]], max_chars: int = 12000) -> dict[str, Any]:
+    rows = []
+    for article in article_records:
+        rows.append({
+            "article_id": article["article_id"],
+            "article_record_sha256": article["article_record_sha256"],
+            "title": article.get("title"),
+            "subtitle": article.get("subtitle"),
+            "byline": article.get("byline"),
+            "item_type": article.get("item_type"),
+            "full_text_excerpt": str(article.get("full_text") or "")[:max_chars],
+        })
+    return {"profile": ENRICHMENT_PROFILE, "articles": rows}
+
+
 def stable_id(prefix: str, *parts: Any) -> str:
     raw = json.dumps(parts, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return f"{prefix}-" + hashlib.sha256(raw).hexdigest()[:24]
@@ -125,7 +214,22 @@ def validate_article_enrichment(payload: dict[str, Any], *, expected_articles: d
             _validate_signal(signal, aid, sha)
     if actual != set(expected_articles):
         missing = sorted(set(expected_articles) - actual)
-        raise EnrichmentError(f"article coverage mismatch missing={missing}")
+        extra = sorted(actual - set(expected_articles))
+        raise EnrichmentError(f"article coverage mismatch missing={missing} extra={extra}")
+
+def accepted_enrichment_rows(payload: dict[str, Any], *, expected_articles: dict[str, str]) -> list[dict[str, Any]]:
+    validate_article_enrichment(payload, expected_articles=expected_articles)
+    producer = payload["producer"]
+    out: list[dict[str, Any]] = []
+    for row in payload["articles"]:
+        out.append({
+            **row,
+            "schema_version": ENRICHMENT_SCHEMA,
+            "profile": ENRICHMENT_PROFILE,
+            "producer": producer,
+            "status": "VERIFIED",
+        })
+    return out
 
 def validate_trend_promotion(*, signal_rows: Iterable[dict[str, Any]], accepted_status: str = "accepted") -> None:
     rows = list(signal_rows)
