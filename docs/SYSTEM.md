@@ -1,7 +1,7 @@
 # System — Business Brief v4
 
 ## Boundary
-Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Editorial vrstva rozhoduje o významu a publikaci.
+Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
 
 ## Technician
 Input: uzavřené source edition.
@@ -232,14 +232,16 @@ Input: persisted immutable Article Records with assembly.status VERIFIED / VERIF
 Output: rebuildable article-level and chunk-level embeddings and PostgreSQL full-text projections. Canonical records and assets remain untouched. [INDEXER.md](INDEXER.md) is the single detailed contract for BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), pgvector vector(1024), derived tables, states and mandatory index post-check. Hybrid retrieval combines vector similarity, PostgreSQL full-text relevance and metadata filters; weighting remains open. Czech queries must be able to retrieve English/German source text without translating it before embedding.
 
 ## Manual handoff and future runner
-ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-check → verified immutable Article Record persistence → Indexer → index post-check → done. NEEDS_REVIEW returns to Chat source review/correction through immutable revisions and explicit selection, then rerun Assembler. BLOCKED integrity failures require repair before retry. No review state bypasses Indexer eligibility.
+ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-check → verified immutable Article Record persistence → Indexer → index post-check → Composer → topic post-check → Selective Deep Read → Editorial Workflow. Assembly NEEDS_REVIEW returns to Chat source review/correction through immutable revisions and explicit selection, then rerun Assembler. BLOCKED integrity failures require repair before retry. No review state bypasses Indexer eligibility.
 
-A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler and Indexer are accepted designs, not evidence of implementation or production execution. Composer and other editorial roles remain downstream consumers of canonical evidence; the index supports retrieval and does not replace that evidence.
+A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler, Indexer and Composer are accepted designs, not evidence of implementation or production execution. Composer NEEDS_REVIEW returns to Chat review against exact article evidence, explicit correction and Composer rerun with topic post-check. A runner must stop at semantic review gates. The index supports retrieval and does not replace canonical evidence.
 
-## Composer
-Composer pracuje nad Article Records více zdrojů a vytváří topic groupings/dossiers pro články o společném tématu.
+## Composer (D027)
+Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
 
-Composer není Assignment Editor a nerozhoduje sám o finálním Brief selection.
+Indexer article/chunk embeddings, PostgreSQL full-text and metadata/entities propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
+
+[COMPOSER.md](COMPOSER.md) owns deterministic topic identity, technical membership roles, exact article/index provenance, optional supported daily_delta, continuity, Deep Read recommendations, relational operational structures and the mandatory topic post-check. Composer does not perform Deep Read, final selection/importance ranking, Assignment roles, Story Editor framing or Brief writing. Preserve article individuality and importance ≠ reading value. This is D027 design only, not runtime acceptance.
 
 ## Translator
 Translator navazuje na sestavené spolehlivé články/topic material. Je vhodným kandidátem pro API automatizaci, protože pracuje s již známým textem.

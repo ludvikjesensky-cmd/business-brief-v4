@@ -27,6 +27,7 @@ Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/ING
 - docs/SYSTEM.md — technická architektura
 - docs/INGESTOR.md — kanonické instrukce Ingestoru; §21 article assets / v4 kontrakt a rollout gate (D022)
 - docs/INDEXER.md — kanonický design odvozeného search indexu, profily a post-check (D026); implementace zatím neproběhla
+- docs/COMPOSER.md — kanonický daily-topic-v1 / Cross-Paper Editor design, provenance a review gates (D027); implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory

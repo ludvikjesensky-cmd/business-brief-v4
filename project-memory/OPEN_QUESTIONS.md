@@ -19,7 +19,7 @@ Jaký konkrétní právní/licenční režim bude použit pro jednotlivé zdroje
 Finální pricing, free/paid hranice, B2B balíčky a role Detailu nejsou definitivně rozhodnuté.
 
 ## Q007 — OPEN — Editorial Memory implementation
-D026 / docs/INDEXER.md resolves the derived search foundation (Q016). Still open: how Editorial Memory uses retrieved evidence for continuity, recency and editorial selection without older material displacing today's edition; this is broader than index storage.
+D026 / docs/INDEXER.md resolves the derived search foundation (Q016). D027 / docs/COMPOSER.md now fixes the daily-topic continuity boundary: today's eligible groups first, then exact prior references; memory never substitutes for today's coverage. Still open: broader long-term story threads, recency policy, corrections and editorial use beyond Composer; implementation/calibration for Composer is Q018.
 
 ## Q008 — OPEN — Audio
 Kdy a jak zavést stabilní hlasovou identitu a audio adaptaci, aniž by předběhla ověřený textový produkt?
@@ -52,3 +52,6 @@ D026 / docs/INDEXER.md chooses derived article/chunk embeddings and full-text pr
 
 ## Q017 — OPEN — Indexer implementation details and retrieval calibration
 Before runtime implementation, fix tokenizer/version, paragraph segmentation and whitespace rules, long-paragraph splitting/overlap edge cases, deterministic ID encoding and article embedding serialization/oversized-input policy. Verify provider model availability/limits and 1024D profile support without silent truncation. Specify physical schema/constraints, full-text language configuration, atomic index publication, concurrency, retries and profile-aware retrieval. Evaluate Czech→English/German recall, latency and cost on a small acceptance set. Hybrid score fusion, weighting and thresholds remain deliberately unfrozen pending evidence.
+
+## Q018 — OPEN — Composer implementation and acceptance
+D027 / docs/COMPOSER.md fixes architecture, daily-topic-v1 logical handoff, daily-first memory boundary, role separation and review gates. Before runtime implementation, freeze editorial-day timezone/cutoffs and edition-selection closure policy, deterministic topic/corpus hash serialization and output revision identity, physical relational constraints, transactional run/output publication and supersession. Define exact candidate retrieval/fusion/threshold configuration (with Q017), entity annotation provenance, semantic method/model/prompt version and confidence scale, passage evidence encoding, bounded continuity retrieval and review correction protocol. Decide prior-topic indexing/storage details without treating today's article indexes as an implemented topic index. Measure multilingual grouping quality, false merges/splits, singleton and individual reading-value preservation, provenance, review load, latency and cost on a small real acceptance set under D007/D011. No model/provider call, migration or production run is authorized by this question.

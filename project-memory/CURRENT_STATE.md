@@ -43,3 +43,10 @@ The accepted downstream design is Assembler → mandatory assembly post-check �
 [docs/INDEXER.md](../docs/INDEXER.md) owns BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), article/chunk vectors in Supabase pgvector, derived tables, index states and hybrid multilingual retrieval. Canonical Article Records remain untouched. Ranking weights and implementation details remain Q017; broader Editorial Memory remains Q007. A pipeline runner is future orchestration.
 
 Actual acceptance still stops at the accepted WSJ manifest above: no Assembler or Indexer run is claimed. This consolidation adds no runtime code, migration, bucket, Cohere call or deployment. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
+
+## Composer design consolidated (D027; not implemented)
+[docs/COMPOSER.md](../docs/COMPOSER.md) now owns the successor to v3 Cross-Paper Editor: closed current-day eligible indexed Article Records → candidate graph → semantic grouping → daily-topic-v1 → mandatory topic post-check → Selective Deep Read → Editorial Workflow. Composer does not select the Brief, allocate editorial roles, perform Deep Read or finalize angle/framing. Article individuality and importance ≠ reading value remain explicit.
+
+Daily = delta. Memory = context: continuity retrieval follows today's grouping and cannot substitute older coverage. The contract defines exact article/index provenance, technical membership roles, deterministic day/member identity, single-source coverage, review statuses and minimal relational structures. NEEDS_REVIEW requires Chat review, recorded correction and Composer rerun; a future runner stops at semantic gates. Q018 owns implementation/calibration gates; Q007 remains broader Editorial Memory.
+
+Actual acceptance still stops at the immutable WSJ selection manifest above. No Assembler, Indexer, Composer, Deep Read or Editorial run is claimed. This update is documentation/contract work only: no runtime implementation, model API calls, migrations, deployments or production data writes.
