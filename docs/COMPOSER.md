@@ -21,7 +21,10 @@ Freeze an explicit editorial_day and the complete intended current-day corpus be
 Each member must have:
 - assembly.status = VERIFIED or VERIFIED_WITH_NOTES;
 - post_check.status = PASS and verified durable Article Record persistence;
+- a BB-ENRICHMENT-V1 sidecar with status VERIFIED or VERIFIED_WITH_NOTES for the exact article_id + article_record_sha256;
 - a successfully INDEXED set with a passing index post-check for the exact article_record_sha256 and compatible Indexer profiles.
+
+Enrichment and Indexer are both derived from the immutable Article Record and may be produced independently/parallel. Composer-ready completeness requires both exact-version outputs; neither may mutate or replace canonical source truth.
 
 Resolve article_id, publication_id, source_id, Storage bucket/key and article_record_sha256 (persisted artifact SHA, not full-text SHA), plus exact index_run_id and profile identities. Missing or failed indexes remain explicit exclusions/incomplete coverage; never silently call a partial intended corpus complete. An empty corpus produces an explicit empty report, never memory-generated topics.
 
