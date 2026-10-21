@@ -14,7 +14,8 @@ closed source edition
 → accepted Edition Selection Manifest (explicit ID + SHA)
 → Assembler + mandatory assembly post-check
 → immutable canonical Article Records in Storage
-→ Indexer + mandatory index post-check (derived search layer)
+→ BB-ENRICHMENT-V1 sidecars + knowledge candidates (derived; exact SHA-bound)
+→ Indexer + mandatory index post-check (derived search layer; enrichment-aware metadata filters)
 → Composer + mandatory topic post-check
 → daily-topic-v1 (current-day topics + explicit continuity refs)
 → Selective Deep Read (where recommended and accepted)
@@ -56,6 +57,15 @@ Spojuje části článků přes stránky, řeší continuations a vytváří can
 
 Assembler nemá znovu interpretovat původní layout stránky. Pokud Page JSON neposkytuje dostatečnou jistotu, výsledek musí jít do review místo hádání.
 
+## Enrichment and Editorial Knowledge (D028)
+The v4 enrichment layer is a rebuildable sidecar over immutable Article Records. [docs/ENRICHMENT.md](../docs/ENRICHMENT.md) carries forward the useful v3 category/topics/tags/entities/geographies/industries model and formalizes Story Thread, Signal and Trend semantics.
+
+Every enrichment binds to exact article_id + article_record_sha256, profile and producer/version. It may propose Story Thread/Trend candidates and evidence-bearing Signals; it never mutates canonical source text. Candidate knowledge is not accepted durable knowledge.
+
+Knowledge chain: Article/Event → Story Thread → Signal → Trend → Analysis/BI. A Trend is broad and long-term; one article or one daily topic cannot auto-promote it. Accepted Story Threads/Trends require explicit reviewed promotion with provenance. The repository contains additive derived schema + validators, but no production enrichment/model run or migration application is claimed.
+
+Editorial Memory is hybrid rather than vector-only: SQL metadata/relationships, full-text, multilingual vectors, time/provenance, entities, Story Threads, Signals, Trends and editorial history. Daily = delta. Memory = context; Trend/Analysis products use Memory as primary knowledge material.
+
 ## Indexer and review loop (D026)
 The accepted design adds a rebuildable search layer over persisted Article Records only. Eligibility requires assembly VERIFIED / VERIFIED_WITH_NOTES and post_check PASS; all derived rows bind to exact article_record_sha256. Canonical JSON/full_text and PNG assets remain immutable.
 
@@ -66,7 +76,7 @@ Manual workflow returns NEEDS_REVIEW to ordinary Chat source review/correction, 
 ## Composer (D027)
 Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
 
-Indexer article/chunk embeddings, PostgreSQL full-text and metadata/entities propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
+Indexer article/chunk embeddings, PostgreSQL full-text and compatible BB-ENRICHMENT-V1 metadata/accepted knowledge links propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings and broad shared Trend/Topic/Industry/Entity alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
 
 [docs/COMPOSER.md](../docs/COMPOSER.md) owns deterministic topic identity, technical membership roles, exact article/index provenance, optional supported daily_delta, continuity, Deep Read recommendations, relational operational structures and the mandatory topic post-check. Composer does not perform Deep Read, final selection/importance ranking, Assignment roles, Story Editor framing or Brief writing. Preserve article individuality and importance ≠ reading value. This is D027 design only, not runtime acceptance.
 
