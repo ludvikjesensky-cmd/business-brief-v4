@@ -76,6 +76,30 @@ daily-topic-v1
   daily_delta?                  # today's change, never unsupported synthesis
     description
     evidence_refs[]
+  knowledge_links
+    enrichment_profile = BB-ENRICHMENT-V1
+    topics[]
+    tags[]
+    entities[]
+    geographies[]
+    industries[]
+    story_thread_candidates[]
+      story_thread_id?
+      label
+      relation
+      evidence_refs[]
+      status: candidate | accepted
+    signals[]
+      signal_id
+      description
+      polarity: supports | weakens | contradicts | neutral
+      evidence_refs[]
+    trend_candidates[]
+      trend_id?
+      label
+      relation
+      evidence_refs[]
+      status: candidate | accepted
   deep_read
     recommendation: recommended | not_recommended | review_required
     reasons[]
@@ -108,6 +132,21 @@ topic_id is deterministic from editorial_day plus the sorted unique set of curre
 membership_reason and evidence_refs are mandatory even if confidence is supplied. role_in_topic is technical: primary anchors the group; same_event covers the same event; follow_up adds a today's development; background_today is a today's article explaining that story; adjacent is an explicitly justified closely related contribution. None means lead, coverage, curated, INCLUDE, RESERVE or EXCLUDE.
 
 coverage counts distinct source_id and publication_id among today's members only. cross_source is true only when both counts exceed one; single_source is true when publication_count = 1, including multiple articles/editions from one publication. Repeated articles from one publication never manufacture cross-paper coverage. Source count is not independent corroboration or importance.
+
+## Enrichment and long-term knowledge links
+Composer consumes exact BB-ENRICHMENT-V1 sidecars for current members when available and SHA-compatible, and emits topic-level knowledge_links with exact provenance. The canonical contract is [ENRICHMENT.md](ENRICHMENT.md).
+
+Carry forward the v3 distinctions:
+- topics/tags/entities/geographies/industries describe current material;
+- a Story Thread is one concrete continuing story, company action, policy or event lineage;
+- a Signal is today's evidence and may support, weaken, contradict or neutrally relate to a longer-running hypothesis;
+- a Trend is a broad long-term phenomenon built from repeated evidence over time.
+
+Composer may link to an already accepted Story Thread/Trend or propose a candidate. It must not silently promote a candidate into accepted durable knowledge. In particular, one article or one daily topic cannot establish a Trend automatically.
+
+Knowledge similarity is not topic identity. Shared broad topic, industry, geography, entity or Trend may propose retrieval candidates, but it must never force otherwise unrelated current-day articles into the same daily topic. Daily-topic membership still requires concrete same-event/same-story/same-problem evidence.
+
+A distinctive individual article remains individually addressable even when it contributes to a daily topic, Story Thread or Trend. This preserves the v3 separation between importance of event and reading value of article.
 
 ## Daily = delta. Memory = context.
 First form today's topics from today's eligible records. Then retrieve compatible prior indexed articles/topics, verify their exact identities and attach continuity/prior_topic_refs. Historical articles belong in memory references, never articles[]. Memory cannot substitute for missing current-day coverage or inflate coverage counts.
@@ -147,7 +186,10 @@ The deterministic structural check independently verifies:
 - topic IDs reproduce from exact day/member inputs; no duplicate membership;
 - coverage counts recompute from today's members; cross-source really spans more than one publication/source and single-source is explicit;
 - every membership has an explainable reason and resolvable evidence; every memory reference exists at its exact prior identity;
-- generated factual claims in identity/title/delta/continuity/reasons/notes carry article provenance; no unsupported model assertion is accepted.
+- generated factual claims in identity/title/delta/continuity/reasons/notes carry article provenance; no unsupported model assertion is accepted;
+- every knowledge_link is bound to an exact compatible enrichment/article SHA and resolvable evidence;
+- accepted Story Thread/Trend refs resolve to accepted knowledge objects; candidates remain visibly candidate;
+- broad shared metadata/Trend alone is never accepted as sufficient topic-membership evidence.
 
 A structural PASS proves integrity and presence of evidence, not semantic truth or entailment. Semantic grouping and claim support still require model/Chat judgment and review when uncertain. Similarity/confidence or source count never substitutes for that judgment.
 
@@ -174,6 +216,6 @@ Chat corrections record author/reason, exact evidence and superseded output/run;
 ## v3 inheritance and implementation boundary
 Historical sources: business-brief-v3 at commit 933b5c47fb96c97333ff24dda4e7e019486ebbfd, [EDITORIAL_PIPELINE §9](https://github.com/ludvikjesensky-cmd/business-brief-v3/blob/933b5c47fb96c97333ff24dda4e7e019486ebbfd/docs/EDITORIAL_PIPELINE.md#9-daily-editorial-layer), [EDITORIAL_WORKFLOW §§4–7](https://github.com/ludvikjesensky-cmd/business-brief-v3/blob/933b5c47fb96c97333ff24dda4e7e019486ebbfd/docs/EDITORIAL_WORKFLOW.md#4-kanonický-redakční-řetězec), and EDITORIAL_PLAYBOOK §6 in that same tree. Reuse Cross-Paper Editor, daily_topics, daily_delta, single-source vs cross-paper, Selective Deep Read, and the separation of importance and reading value. The old Fast Editorial INCLUDE/RESERVE/EXCLUDE stage is not a Composer selection power.
 
-v4 starts from verified assembled/indexed Article Records. Do not reintroduce Provisional Issue Maps, provisional discovery or a Memory-ready prerequisite as a required v4 layer. v3 is historical design evidence, not a code dependency.
+v4 starts from verified assembled/indexed Article Records plus derived BB-ENRICHMENT-V1 sidecars. Do not reintroduce Provisional Issue Maps, provisional discovery or a Czech-translation Memory-ready prerequisite as a required v4 layer. v3 is historical design evidence, not a code dependency. The retained enrichment/knowledge semantics are canonicalized in ENRICHMENT.md.
 
 Before implementation, resolve Q018 alongside Q017 and measure a small real multilingual acceptance set: same-event cross-paper matches, same-entity different events, transitive false merges, singletons, distinctive analyses, ambiguous identity, memory-only temptations and conflicting evidence. Fix review behavior and cost/quality under D007/D011 before automation. This consolidation makes no runtime changes, model calls, database migrations, deployments or production data writes.
