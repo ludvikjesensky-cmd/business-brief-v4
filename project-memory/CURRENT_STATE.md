@@ -53,6 +53,29 @@ GitHub Actions verification on head `a3d74adaf3275d2de4fdd0b0a0d06930a5cdfc45` p
 
 Review found and fixed two concrete issues before the green run: the initial CI environment omitted the repository root from PYTHONPATH for legacy bridge tests, and the first Assembler migration draft used a malformed dollar-quoted DO block. The migration now uses portable upsert semantics to ensure `article-records` is private; runtime bucket verification also fails closed unless privacy is explicitly false. A dedicated test now covers the exact accepted WSJ Page-One continuation title pairings for A2/A4/A6/A10. No production migration, runtime deployment or Article Record write occurred.
 
+## Q020 live read-only WSJ acceptance — 2026-10-21
+Using the exact accepted WSJ 2026-10-14 selection identities, the live immutable page artifacts were read back through the production read-only Ingestor access layer and exercised against the D029 deterministic continuation/asset rules without persistence or production writes.
+
+Selection used:
+- manifest_id: `wsj-2026-10-14-selection-r1`
+- manifest_sha256: `f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77`
+- pages 1–10 exactly as accepted: p1 ingestor-v2.1; p2–5/p7–10 ingestor-v2.2 canonical; p6 revision r1.
+
+Observed result:
+- 10 selected pages / 27 page items
+- 21 assembled article records
+- 16 VERIFIED
+- 5 VERIFIED_WITH_NOTES
+- 0 NEEDS_REVIEW
+- 0 BLOCKED
+- all 6 Page-One continuations resolved to the expected selected targets (A2, two A4, A6, two A10)
+- 24 ArticleAssets encountered; 24 had exactly one valid authoritative anchor_text placement; 0 placement reviews
+- every assembled record passed the mechanical source-order/full_text post-check in the read-only acceptance harness.
+
+No Supabase migration, article-records bucket creation, Article Record persistence, DB row write or deployment occurred.
+
+Important boundary: the available production read-only connector exposes exact immutable Page/Revision readback but does not expose the Bridge `assembly-input` endpoint itself. Therefore this proves live-source compatibility of the deterministic D029 assembly rules against the accepted artifacts, but does not yet prove the deployed `bb-assembler` runtime adapter's end-to-end Bridge/Supabase credential path. Q020 remains open for that final runtime + persistence acceptance.
+
 ## Indexer design consolidated (D026; not implemented)
 The accepted downstream design is Assembler → mandatory assembly post-check → immutable Article Record persistence → Indexer → index post-check. Eligibility requires VERIFIED / VERIFIED_WITH_NOTES plus post_check PASS. NEEDS_REVIEW returns to ordinary Chat source review/correction and Assembler rerun through explicit immutable selection.
 
