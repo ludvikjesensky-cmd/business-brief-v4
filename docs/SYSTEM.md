@@ -224,7 +224,16 @@ article_source_parts
 
 Chunking, full-text/vector search and embeddings are derived Indexer responsibilities after a persisted Article Record has `post_check = PASS` and an eligible assembly status. They are not required for Assembler success and can be rebuilt without mutating the canonical Article Record.
 
-This section freezes the policy, logical contract and persistence boundary. It does not imply an Assembler deployment, DB migration, bucket creation or production run.
+This section freezes the policy, logical contract and persistence boundary.
+
+### Repository implementation (D029)
+The deterministic core is implemented in `src/business_brief/assembler.py`; `src/business_brief/assembler_runtime.py` provides the explicit Bridge/Supabase runtime and `bb-assembler` CLI. The runtime accepts only an explicit source UUID + manifest ID + manifest SHA through the existing Bridge assembly-input endpoint, then independently downloads the exact manifest, selected Page JSON/revision wrappers and every referenced PNG from private Storage and verifies SHA/size/PNG dimensions before assembly.
+
+Continuation resolution is conservative. Explicit continuation flags plus a target/marker whose trailing page number identifies one selected physical page create the candidate set. If that page contains more than one incoming continuation, deterministic normalized title-token overlap may only corroborate one candidate already bounded by that explicit continuation evidence. Zero candidates, ties, missing/unresolvable targets, ineligible item verification or multi-origin conflicts produce NEEDS_REVIEW rather than a guessed join. This initial resolver intentionally fails closed for publication page-label schemes that cannot be mapped safely to selected physical page numbers; future support requires a versioned resolver, not publication-specific hidden heuristics.
+
+Article IDs are deterministic over source/manifest/ordered source-part identities. Prose uses the frozen `"\n\n"` separator and exact source `text_on_page`. Assets are placed only on one unique authoritative anchor_text occurrence; otherwise they remain `placement_needs_review` and the Article Record is VERIFIED_WITH_NOTES if prose integrity passes.
+
+The runtime persists only VERIFIED / VERIFIED_WITH_NOTES + post_check PASS records. It serializes deterministic JSON, writes create-if-absent to private `article-records`, performs exact download readback, and then registers the immutable artifact identity and ordered source parts in PostgreSQL. Same key/same bytes is replay; different bytes or DB provenance is conflict. Migration `20261021130000_add_assembler_articles.sql` creates the private bucket plus `articles` / `article_source_parts` operational tables with service-role-only insert/select. Repository implementation is not deployment or production acceptance; Q020 owns the first real-source runtime acceptance.
 
 ## Indexer (D026)
 Input: persisted immutable Article Records with assembly.status VERIFIED / VERIFIED_WITH_NOTES and post_check.status PASS. Verify exact Storage identity and article_record_sha256 (the persisted artifact SHA, not the full-text SHA).
@@ -234,7 +243,7 @@ Output: rebuildable article-level and chunk-level embeddings and PostgreSQL full
 ## Manual handoff and future runner
 ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-check → verified immutable Article Record persistence → Indexer → index post-check → Composer → topic post-check → Selective Deep Read → Editorial Workflow. Assembly NEEDS_REVIEW returns to Chat source review/correction through immutable revisions and explicit selection, then rerun Assembler. BLOCKED integrity failures require repair before retry. No review state bypasses Indexer eligibility.
 
-A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler, Indexer and Composer are accepted designs, not evidence of implementation or production execution. Composer NEEDS_REVIEW returns to Chat review against exact article evidence, explicit correction and Composer rerun with topic post-check. A runner must stop at semantic review gates. The index supports retrieval and does not replace canonical evidence.
+A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler is implemented in the repository but not yet deployed/accepted on production data; Indexer and Composer remain design/partial-foundation work, not production execution. Composer NEEDS_REVIEW returns to Chat review against exact article evidence, explicit correction and Composer rerun with topic post-check. A runner must stop at semantic review gates. The index supports retrieval and does not replace canonical evidence.
 
 ## Composer (D027)
 Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
