@@ -63,8 +63,10 @@ D029 now implements the canonical Assembler-side physical articles(article_id, a
 
 Real acceptance must assess source entailment, signal observation dates/independence, counterevidence, reviewed lifecycle changes, multilingual metadata/full-text/vector recall, false entity/cluster merges, latency/cost and review burden. Structural two-article/two-date minimum never replaces editorial trend judgment. Future Q017/Q018 adapters must compare typed snapshots to independently persisted identities; helpers do not approve model-supplied catalogs.
 
-## Q020 — OPEN — Assembler real-source acceptance and deployment
-D029 implements deterministic assembly core/runtime, bb-assembler, private article-records persistence schema and unit/schema tests. Before declaring Assembler operationally accepted:
+## Q020 — OPEN, READ-ONLY CORE ACCEPTANCE PASSED — Assembler real-source acceptance and deployment
+D029 implements deterministic assembly core/runtime, bb-assembler, private article-records persistence schema and unit/schema tests. Live read-only acceptance against the exact accepted WSJ 2026-10-14 selected artifacts passed on 2026-10-21: 10 pages / 27 page items → 21 Article Records, 16 VERIFIED + 5 VERIFIED_WITH_NOTES, all 6 Page-One continuations resolved, 24/24 asset anchors placed uniquely, 0 NEEDS_REVIEW, 0 BLOCKED. No writes occurred.
+
+The remaining gate is the actual deployed runtime/persistence path. Before declaring Assembler operationally accepted:
 - run the complete test suite and local PostgreSQL schema checks in a clean environment;
 - apply the additive Assembler migration deliberately to the v4 Supabase project and verify article-records is private;
 - run first read-only assembly against exact WSJ 2026-10-14 manifest wsj-2026-10-14-selection-r1 / f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77;
