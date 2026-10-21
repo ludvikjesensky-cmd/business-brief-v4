@@ -129,8 +129,8 @@ class SupabaseAssemblerStore:
         if match is None:
             raise RuntimeErrorAssembler(f"required bucket is missing: {bucket}")
         public = field(match, "public")
-        if public is True:
-            raise RuntimeErrorAssembler(f"bucket must be private: {bucket}")
+        if public is not False:
+            raise RuntimeErrorAssembler(f"bucket privacy cannot be verified as private: {bucket}")
 
     def load_verified_inputs(
         self,
