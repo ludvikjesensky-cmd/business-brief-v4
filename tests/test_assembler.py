@@ -359,3 +359,77 @@ def test_revision_wrapper_is_verified_without_mutating_page_contract():
     assert selection["kind"] == "revision"
     assert page.revision_id == "r1"
     assert page.page == doc
+
+def test_wsj_page_one_continuation_title_pairs_are_deterministically_resolvable():
+    origins = [
+        ("p1-banks", "Rates Threaten To Spoil The Party For Banks", "A2"),
+        ("p1-greece", "Trump’s Ambassador to Greece Resigns Amid Graft Allegations", "A4"),
+        ("p1-condo", "Beverly Hills Condo Borrows From Its Buyers", "A4"),
+        ("p1-china", "China’s Weakening Economy Is Creating a Lost Generation", "A10"),
+        ("p1-navy", "The Mystery of the Sailor Shaking Up the Navy", "A6"),
+        ("p1-park", "Car-Free Oasis Drives San Francisco Backlash", "A10"),
+    ]
+    destinations = {
+        2: [("p2-banks", "Banks Log Profits but Eye Rates")],
+        4: [
+            ("p4-greece", "Guilfoyle Resigns as Ambassador"),
+            ("p4-condo", "Condo Borrows From Buyers"),
+        ],
+        6: [("p6-navy", "Trump’s Mystery Sailor")],
+        10: [
+            ("p10-park", "Car-Free Park Drives Backlash"),
+            ("p10-china", "China’s Gen Z Is Losing Hope"),
+        ],
+    }
+
+    selections = []
+    pages = []
+    s1, p1 = selected(
+        1,
+        page_doc(
+            1,
+            [
+                item(item_id, title, f"start-{item_id}", to_another=True, target=target)
+                for item_id, title, target in origins
+            ],
+            schema="page-ingest-v3",
+        ),
+    )
+    selections.append(s1)
+    pages.append(p1)
+
+    for page_no in range(2, 11):
+        incoming = destinations.get(page_no, [])
+        doc_items = [
+            item(
+                item_id,
+                title,
+                f"end-{item_id}",
+                starts=False,
+                from_previous=True,
+                target="A1",
+            )
+            for item_id, title in incoming
+        ]
+        s, p = selected(page_no, page_doc(page_no, doc_items))
+        selections.append(s)
+        pages.append(p)
+
+    m, mh = manifest(selections)
+    report = assemble(manifest=m, manifest_sha256=mh, selected_pages=pages)
+
+    assert report["issues"] == []
+    assert len(report["records"]) == 6
+    chains = {
+        tuple(part["page_item_id"] for part in record["source_parts"])
+        for record in report["records"]
+    }
+    assert chains == {
+        ("p1-banks", "p2-banks"),
+        ("p1-greece", "p4-greece"),
+        ("p1-condo", "p4-condo"),
+        ("p1-china", "p10-china"),
+        ("p1-navy", "p6-navy"),
+        ("p1-park", "p10-park"),
+    }
+
