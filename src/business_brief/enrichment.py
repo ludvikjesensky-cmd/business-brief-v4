@@ -14,6 +14,16 @@ CATEGORIES = (
 POLARITIES = {"supports", "weakens", "contradicts", "neutral"}
 KNOWLEDGE_LIFECYCLE = {"candidate", "accepted", "rejected", "retired"}
 
+ENRICHMENT_SYSTEM_PROMPT = """You are the derived editorial enrichment layer for Business Brief v4.
+Ground all metadata in the supplied immutable Article Record evidence.
+Return one enrichment row for every supplied article and no others.
+Use the controlled category list. topics/tags/entities/geographies/industries describe the article.
+Story Thread candidates are concrete continuing stories, companies, policies or event lineages.
+Trend candidates are broad long-running developments; a trend is not a Story Thread.
+Signals are dated evidence, not final Trend conclusions, and require evidence refs.
+One article must never establish an accepted Trend.
+Do not summarize, translate or rewrite canonical source text."""
+
 class EnrichmentError(ValueError):
     pass
 
@@ -150,7 +160,7 @@ def _validate_signal(row: Any, article_id: str, article_sha: str) -> None:
     if row.get("polarity") not in POLARITIES:
         raise EnrichmentError("invalid signal polarity")
     refs = _evidence_refs(row.get("evidence_refs"), "signals.evidence_refs")
-    expected_id = stable_id("sig", article_id, article_sha, desc.strip(), row.get("polarity"), refs)
+    expected_id = stable_id("sig", article_id, article_sha, desc.strip(), row.get("polarity"), sorted(refs))
     supplied = row.get("signal_id")
     if supplied is not None and supplied != expected_id:
         raise EnrichmentError("signal_id is not deterministic for its evidence")
