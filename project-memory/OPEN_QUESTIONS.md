@@ -18,8 +18,10 @@ Jaký konkrétní právní/licenční režim bude použit pro jednotlivé zdroje
 ## Q006 — OPEN — Business model
 Finální pricing, free/paid hranice, B2B balíčky a role Detailu nejsou definitivně rozhodnuté.
 
-## Q007 — OPEN — Editorial Memory implementation
-D026 / docs/INDEXER.md resolves the derived search foundation (Q016). D027 / docs/COMPOSER.md now fixes the daily-topic continuity boundary: today's eligible groups first, then exact prior references; memory never substitutes for today's coverage. Still open: broader long-term story threads, recency policy, corrections and editorial use beyond Composer; implementation/calibration for Composer is Q018.
+## Q007 — RESOLVED AT ARCHITECTURE LEVEL — Editorial Memory model
+D026 / docs/INDEXER.md resolves the derived search foundation. D027 / docs/COMPOSER.md fixes the daily-topic continuity boundary. D028 / docs/ENRICHMENT.md now restores the v3 hybrid knowledge model as first-class v4 architecture: metadata + full-text + multilingual vectors + provenance/time + Story Threads + Signals + Trends + editorial history. Daily = delta. Memory = context; Trend/Analysis products use Memory as primary material.
+
+Runtime acceptance, promotion/review UX, correction/versioning behavior and real retrieval quality remain implementation work in Q017/Q018/Q019.
 
 ## Q008 — OPEN — Audio
 Kdy a jak zavést stabilní hlasovou identitu a audio adaptaci, aniž by předběhla ověřený textový produkt?
@@ -55,3 +57,8 @@ Before runtime implementation, fix tokenizer/version, paragraph segmentation and
 
 ## Q018 — OPEN — Composer implementation and acceptance
 D027 / docs/COMPOSER.md fixes architecture, daily-topic-v1 logical handoff, daily-first memory boundary, role separation and review gates. Before runtime implementation, freeze editorial-day timezone/cutoffs and edition-selection closure policy, deterministic topic/corpus hash serialization and output revision identity, physical relational constraints, transactional run/output publication and supersession. Define exact candidate retrieval/fusion/threshold configuration (with Q017), entity annotation provenance, semantic method/model/prompt version and confidence scale, passage evidence encoding, bounded continuity retrieval and review correction protocol. Decide prior-topic indexing/storage details without treating today's article indexes as an implemented topic index. Measure multilingual grouping quality, false merges/splits, singleton and individual reading-value preservation, provenance, review load, latency and cost on a small real acceptance set under D007/D011. No model/provider call, migration or production run is authorized by this question.
+
+## Q019 — OPEN — Enrichment and long-term knowledge acceptance
+D028 and docs/ENRICHMENT.md define BB-ENRICHMENT-V1, Story Thread / Signal / Trend semantics, candidate vs accepted lifecycle, repository validation and an additive derived schema. Before production use, define and measure: enrichment producer/model/prompt version, evidence-ref encoding against actual Article Records/chunks, entity normalization/alias policy, controlled-vocabulary governance, reviewed Story Thread/Trend promotion workflow, correction/supersession semantics, recency/retirement rules, duplicate candidate reconciliation, multilingual label strategy, and operator UX.
+
+Run a small real acceptance set proving: exact article SHA binding, complete input coverage, stable metadata quality across English/German source text, Story Thread continuity, signals with resolvable evidence, no one-article Trend promotion, accepted-vs-candidate separation, against-evidence/contradicting signals, and Composer resistance to false merges from shared broad Trend/Topic/Industry/Entity. The SQL migration is repository implementation only until applied deliberately after schema review; no production migration/model run is implied.
