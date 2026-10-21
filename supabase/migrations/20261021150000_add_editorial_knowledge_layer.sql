@@ -103,6 +103,10 @@ create table if not exists public.trend_signals (
   primary key(trend_id, signal_id)
 );
 
+create unique index if not exists article_enrichments_one_accepted_profile_idx
+  on public.article_enrichments(article_id, article_record_sha256, profile)
+  where status in ('VERIFIED','VERIFIED_WITH_NOTES');
+
 create index if not exists article_enrichments_topics_gin_idx on public.article_enrichments using gin(topics);
 create index if not exists article_enrichments_tags_gin_idx on public.article_enrichments using gin(tags);
 create index if not exists article_enrichments_entities_gin_idx on public.article_enrichments using gin(entities);
