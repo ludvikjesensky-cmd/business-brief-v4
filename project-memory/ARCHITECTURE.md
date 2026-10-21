@@ -12,8 +12,8 @@ closed source edition
 → Ingestor Access Bridge (validation + verified canonical persistence)
 → one verified Page JSON per source page  
 → accepted Edition Selection Manifest (explicit ID + SHA)
-→ Assembler + mandatory assembly post-check
-→ immutable canonical Article Records in Storage
+→ Assembler v1 + mandatory assembly post-check (repository implemented; Q020 production acceptance)
+→ immutable canonical Article Records in private article-records Storage + operational articles/source-parts index
 → Indexer + mandatory index post-check (derived search layer)
 → Composer + mandatory topic post-check
 → daily-topic-v1 (current-day topics + explicit continuity refs)
@@ -55,6 +55,13 @@ Assembler spotřebovává Page JSONy jednoho vydání.
 Spojuje části článků přes stránky, řeší continuations a vytváří canonical Article Records. Výsledné články ukládá do Supabase Storage a jejich identity, vztahy, stav a provenance do PostgreSQL.
 
 Assembler nemá znovu interpretovat původní layout stránky. Pokud Page JSON neposkytuje dostatečnou jistotu, výsledek musí jít do review místo hádání.
+
+## Assembler runtime (D029)
+The D025 contract now has repository code. `business_brief.assembler` is deterministic and source-faithful; `business_brief.assembler_runtime` loads one explicit accepted selection through the Bridge, independently verifies exact selected Storage bytes/assets, assembles, post-checks and optionally persists only eligible records. The CLI is read-only by default; `--persist` is explicit.
+
+Continuation edges require explicit flags plus a resolvable target. The initial implementation recognizes target/marker labels with a trailing numeric page identity mapped to the selected physical page; multiple incoming candidates on that already-bounded target page may be disambiguated only by deterministic title-token agreement. Unsupported labels/ambiguity fail to NEEDS_REVIEW. No semantic topic similarity or latest-page fallback is used.
+
+Persistence migration creates private `article-records`, `articles` and `article_source_parts`. Storage JSON is canonical authority; DB is an operational/query index. Q020 gates first WSJ read-only/persistent acceptance and any subsequent Indexer handoff.
 
 ## Indexer and review loop (D026)
 The accepted design adds a rebuildable search layer over persisted Article Records only. Eligibility requires assembly VERIFIED / VERIFIED_WITH_NOTES and post_check PASS; all derived rows bind to exact article_record_sha256. Canonical JSON/full_text and PNG assets remain immutable.
