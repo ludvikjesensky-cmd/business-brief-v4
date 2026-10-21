@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "business-brief-v4"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["PyMuPDF>=1.24,<2", "supabase>=2.20,<3", "ocrmypdf>=16,<17"]
+dependencies = ["PyMuPDF>=1.24,<2", "supabase>=2.20,<3", "ocrmypdf>=16,<17", "httpx>=0.27,<1", "rfc8785>=0.1,<1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
@@ -16,6 +16,7 @@ bb-technician = "business_brief.technician_cli:main"
 bb-technician-worker = "business_brief.technician_worker:main"
 bb-dashboard = "business_brief.dashboard:main"
 bb-ingestor-worker = "business_brief.ingestor_worker:main"
+bb-assembler = "business_brief.assembler_runtime:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
