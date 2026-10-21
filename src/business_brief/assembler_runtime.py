@@ -362,11 +362,24 @@ def run(
 
     envelope = bridge.assembly_input(source_id, manifest_id, manifest_sha256)
     manifest, pages = store.load_verified_inputs(envelope, manifest_sha256)
-    report = assemble(
+    first_pass = assemble(
         manifest=manifest,
         manifest_sha256=manifest_sha256,
         selected_pages=pages,
     )
+
+    # Mandatory independent post-check pass: re-download the exact selected
+    # manifest/Page JSON/revision/PNG bytes, rebuild chains and compare the
+    # deterministic result before anything can be persisted.
+    manifest_check, pages_check = store.load_verified_inputs(envelope, manifest_sha256)
+    second_pass = assemble(
+        manifest=manifest_check,
+        manifest_sha256=manifest_sha256,
+        selected_pages=pages_check,
+    )
+    if canonical_json(first_pass) != canonical_json(second_pass):
+        raise IntegrityError("independent assembly/post-check pass is not byte-deterministic")
+    report = second_pass
 
     receipts: list[dict[str, Any]] = []
     if persist:
