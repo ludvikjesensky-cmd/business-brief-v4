@@ -1,7 +1,7 @@
 # System — Business Brief v4
 
 ## Boundary
-Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
+Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Enrichment vytváří versioned derived metadata/knowledge candidates nad přesnou Article Record SHA. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics a připojuje evidence-bearing knowledge links před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
 
 ## Technician
 Input: uzavřené source edition.
@@ -236,10 +236,19 @@ ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-che
 
 A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler, Indexer and Composer are accepted designs, not evidence of implementation or production execution. Composer NEEDS_REVIEW returns to Chat review against exact article evidence, explicit correction and Composer rerun with topic post-check. A runner must stop at semantic review gates. The index supports retrieval and does not replace canonical evidence.
 
+## Enrichment and Editorial Knowledge (D028)
+[docs/ENRICHMENT.md](ENRICHMENT.md) owns BB-ENRICHMENT-V1 and the derived long-term knowledge model carried forward from v3. Canonical Article Record bytes remain immutable. Enrichment sidecars bind to exact article_id + article_record_sha256 and carry category, topics, tags, entities, geographies, industries, Story Thread candidates, Trend candidates and evidence-bearing Signals.
+
+Knowledge semantics are explicit: Story Thread = concrete continuing story; Signal = dated evidence; Trend = broad long-term phenomenon supported by repeated Signals over time. One article or one daily topic cannot automatically promote an accepted Trend. Candidate and accepted knowledge are different durable states.
+
+The repository includes additive derived tables for article_enrichment_runs, article_enrichments, story_threads, story_thread_articles, signals, trends and trend_signals plus deterministic validation helpers. These are not canonical prose stores and do not imply a production enrichment/model run.
+
+Editorial Memory is hybrid: SQL metadata/relationships + PostgreSQL full-text + multilingual vector retrieval + time/provenance + Story Threads/Signals/Trends + editorial history. **Daily = delta. Memory = context.** For Trend/Analysis products, Memory becomes primary knowledge material.
+
 ## Composer (D027)
 Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
 
-Indexer article/chunk embeddings, PostgreSQL full-text and metadata/entities propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
+Indexer article/chunk embeddings, PostgreSQL full-text and compatible BB-ENRICHMENT-V1 metadata/accepted knowledge links propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings or broad shared Trend/Topic/Industry/Entity alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
 
 [COMPOSER.md](COMPOSER.md) owns deterministic topic identity, technical membership roles, exact article/index provenance, optional supported daily_delta, continuity, Deep Read recommendations, relational operational structures and the mandatory topic post-check. Composer does not perform Deep Read, final selection/importance ranking, Assignment roles, Story Editor framing or Brief writing. Preserve article individuality and importance ≠ reading value. This is D027 design only, not runtime acceptance.
 
