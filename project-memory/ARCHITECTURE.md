@@ -11,8 +11,10 @@ closed source edition
 → **Ingestor (ordinary Chat)**
 → Ingestor Access Bridge (validation + verified canonical persistence)
 → one verified Page JSON per source page  
-→ Assembler  
-→ canonical Article Records  
+→ accepted Edition Selection Manifest (explicit ID + SHA)
+→ Assembler + mandatory assembly post-check
+→ immutable canonical Article Records in Storage
+→ Indexer + mandatory index post-check (derived search layer)
 → Composer  
 → Topic Dossiers / cross-source groupings  
 → Translator  
@@ -53,6 +55,13 @@ Assembler spotřebovává Page JSONy jednoho vydání.
 Spojuje části článků přes stránky, řeší continuations a vytváří canonical Article Records. Výsledné články ukládá do Supabase Storage a jejich identity, vztahy, stav a provenance do PostgreSQL.
 
 Assembler nemá znovu interpretovat původní layout stránky. Pokud Page JSON neposkytuje dostatečnou jistotu, výsledek musí jít do review místo hádání.
+
+## Indexer and review loop (D026)
+The accepted design adds a rebuildable search layer over persisted Article Records only. Eligibility requires assembly VERIFIED / VERIFIED_WITH_NOTES and post_check PASS; all derived rows bind to exact article_record_sha256. Canonical JSON/full_text and PNG assets remain immutable.
+
+[docs/INDEXER.md](../docs/INDEXER.md) owns paragraph-aware BB-CHUNKING-V1, versioned Cohere BB-EMBEDDING-V1 (embed-v5.0-pro, 1024D, document/query input types, cosine), article/chunk embeddings, pgvector storage, derived tables and index post-check. Hybrid retrieval uses vectors, PostgreSQL full-text relevance and metadata filters; weights remain open. A Czech query can retrieve original English/German evidence in one multilingual space.
+
+Manual workflow returns NEEDS_REVIEW to ordinary Chat source review/correction, explicit immutable revision/selection and Assembler rerun before indexing. A future pipeline runner orchestrates gates and review pauses. This is design, not a deployed Assembler/Indexer or a production run. [SYSTEM](../docs/SYSTEM.md#assembler) owns the D025 Assembler contract and persistence boundary.
 
 ## Composer
 Composer pracuje nad canonical Article Records více publikací. Seskupuje články, které se týkají společného tématu nebo příběhu, a vytváří topic dossier. Není to ještě finální editorial selection.

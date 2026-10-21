@@ -1,7 +1,7 @@
 # System — Business Brief v4
 
 ## Boundary
-Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá články. Editorial vrstva rozhoduje o významu a publikaci.
+Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Editorial vrstva rozhoduje o významu a publikaci.
 
 ## Technician
 Input: uzavřené source edition.
@@ -64,13 +64,177 @@ Legacy v2 canonical Page JSON body patří do Supabase Storage pod logickým kl�
 PostgreSQL slouží jako queryable operational index/state/provenance vrstva; primární JSON body zůstává ve Storage. Dedicated page-ingest tabulka se nesmí z Chatu improvizovat, pokud ještě není implementovaná.
 
 ## Assembler
-Input: Page JSONy jednoho edition/source.
+Input: exactly one immutable `edition-selection-v1` manifest identified by `manifest_id + sha256`, not a page directory or "latest" generation.
 
-Output: canonical Article Records.
+Output: immutable canonical `article-record-v1` Article Records.
 
-Assembler spojuje části článků napříč stránkami, ale nemá znovu interpretovat page layout. Nejasné případy musí být reviewable.
+Before assembly, Assembler independently verifies the manifest and every selected Page JSON / referenced PNG byte-for-byte. Missing, mismatched, unusable or known-defective selected input fails closed. Mixed page generations/revisions are valid only because the manifest selected them explicitly.
 
-Article artefakty patří do Supabase Storage; identity, vztahy, provenance a stav do PostgreSQL.
+### Deterministic joining policy (D025 / Q011)
+Assembler joins page-level parts automatically only when continuation evidence produces exactly one valid chain inside the selected edition. Explicit continuation markers/targets plus `starts_here`, `continued_from_previous_page` and `continues_to_another_page` are authoritative. Title/byline agreement and page ordering may corroborate a unique chain, but must not create a join on their own.
+
+If there are zero or multiple valid candidates, conflicting continuation evidence, or an input item already requires review, Assembler does not guess. The candidate/result is `NEEDS_REVIEW`. Broken selected bytes, blocked inputs or provenance mismatch are `BLOCKED`.
+
+Single-page articles with no continuation ambiguity may assemble directly.
+
+Assembler concatenates source-faithful prose in source order. It does not summarize, paraphrase, translate, fill missing text or reinterpret page layout.
+
+### Mandatory deterministic post-check
+Every assembled article must pass a mechanical post-check before it can be `VERIFIED` or `VERIFIED_WITH_NOTES`.
+
+The post-check independently:
+- reloads the exact selected Page JSON bytes identified by the manifest and verifies their SHA-256;
+- locates every declared `source_part` by `page_no + page_item_id`;
+- recomputes `text_sha256` from the exact source `text_on_page`;
+- requires every declared part exactly once, in the exact assembly order, with no duplicate or undeclared part;
+- reconstructs `expected_full_text` only by joining those exact `text_on_page` strings with the canonical separator `"\n\n"`;
+- requires stored `full_text` to be byte-for-byte UTF-8 equal to `expected_full_text`;
+- records both expected and actual full-text SHA-256 and requires equality;
+- for every asset marked `placed`, verifies that its authoritative `anchor_text` still has exactly one occurrence in `full_text`.
+
+A prose-integrity failure is deterministic corruption or an implementation defect, not an editorial ambiguity. Any missing/extra/reordered/duplicated source part, part-hash mismatch, full-text mismatch or invalid claimed asset placement makes the Article Record `BLOCKED`. An asset with zero/multiple anchor matches may instead remain unplaced as `placement_needs_review` when that state was declared before post-check.
+
+The Article Record carries a `post_check` object:
+```
+post_check
+  status: PASS | FAIL
+  separator: "\n\n"
+  part_count
+  expected_full_text_sha256
+  actual_full_text_sha256
+  checks[]
+```
+Only `post_check.status = PASS` is eligible for `assembly.status = VERIFIED | VERIFIED_WITH_NOTES`.
+
+### Article assets
+After prose assembly, each v4 ArticleAsset is re-anchored using authoritative `text_anchor.anchor_text`. Exactly one occurrence permits placement. Zero or multiple occurrences leave the asset unplaced with `placement_needs_review`. `paragraph_index` and page geometry remain provenance/support only and never force placement.
+
+### Canonical Article Record v1
+Logical contract:
+
+```
+article-record-v1
+  article_id
+  publication
+    publication_id
+    canonical_name
+  edition
+    edition_date
+    edition_variant
+  source
+    source_id
+    source_sha256
+  selection
+    manifest_id
+    manifest_sha256
+
+  title
+  subtitle?
+  byline?
+  item_type
+
+  full_text
+
+  source_parts[]
+    page_no
+    page_item_id
+    page_artifact_key
+    page_artifact_sha256
+    text_sha256
+
+  assets[]
+    asset_id
+    source_page_no
+    source_page_item_id
+    artifact
+    placement
+      status: placed | placement_needs_review
+      position?
+      anchor_text
+    title?
+    caption?
+
+  post_check
+    status: PASS | FAIL
+    separator
+    part_count
+    expected_full_text_sha256
+    actual_full_text_sha256
+    checks[]
+
+  assembly
+    status: VERIFIED | VERIFIED_WITH_NOTES | NEEDS_REVIEW | BLOCKED
+    method
+    notes[]
+```
+
+`article_id` must be deterministic from stable source/selection/part identity, not generated randomly. `source_parts[]` are ordered and preserve exact provenance to selected page artifacts. Asset artifact identity is preserved rather than copied/reinterpreted.
+
+Article Record bytes are immutable artifacts in Supabase Storage. PostgreSQL stores queryable article identity, source-part relationships, manifest provenance and assembly state.
+
+### Article Record persistence
+Use one dedicated private Supabase Storage bucket:
+
+```
+article-records
+```
+
+Canonical object key:
+
+```
+<publication_id>/<edition_date>/<source_sha256>/<manifest_id>/<article_id>.json
+```
+
+The bucket is the article-level canonical store. JSON is deterministically serialized, written create-if-absent, SHA-256 hashed and downloaded back for exact verification before the article is considered persisted. Same key + same bytes is an idempotent replay; same key + different bytes is a conflict and must not overwrite history.
+
+Article assets are not duplicated. The Article Record preserves the exact existing `page-ingest` bucket/key/SHA/size/dimensions and placement metadata for each asset.
+
+Minimal PostgreSQL operational index:
+
+```
+articles
+  article_id                 PK / deterministic
+  publication_id
+  edition_id
+  source_id
+  manifest_id
+  manifest_sha256
+  title
+  byline?
+  item_type
+  assembly_status
+  post_check_status
+  storage_bucket             = article-records
+  storage_key
+  artifact_sha256
+  artifact_byte_size
+  created_at
+
+article_source_parts
+  article_id                 FK -> articles.article_id
+  ordinal
+  page_no
+  page_item_id
+  page_artifact_key
+  page_artifact_sha256
+  text_sha256
+```
+
+`article_source_parts` has one row per ordered source part; `article_id + ordinal` is unique. The complete prose and complete canonical Article Record remain in Storage, not duplicated as the authoritative body in PostgreSQL.
+
+Chunking, full-text/vector search and embeddings are derived Indexer responsibilities after a persisted Article Record has `post_check = PASS` and an eligible assembly status. They are not required for Assembler success and can be rebuilt without mutating the canonical Article Record.
+
+This section freezes the policy, logical contract and persistence boundary. It does not imply an Assembler deployment, DB migration, bucket creation or production run.
+
+## Indexer (D026)
+Input: persisted immutable Article Records with assembly.status VERIFIED / VERIFIED_WITH_NOTES and post_check.status PASS. Verify exact Storage identity and article_record_sha256 (the persisted artifact SHA, not the full-text SHA).
+
+Output: rebuildable article-level and chunk-level embeddings and PostgreSQL full-text projections. Canonical records and assets remain untouched. [INDEXER.md](INDEXER.md) is the single detailed contract for BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), pgvector vector(1024), derived tables, states and mandatory index post-check. Hybrid retrieval combines vector similarity, PostgreSQL full-text relevance and metadata filters; weighting remains open. Czech queries must be able to retrieve English/German source text without translating it before embedding.
+
+## Manual handoff and future runner
+ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-check → verified immutable Article Record persistence → Indexer → index post-check → done. NEEDS_REVIEW returns to Chat source review/correction through immutable revisions and explicit selection, then rerun Assembler. BLOCKED integrity failures require repair before retry. No review state bypasses Indexer eligibility.
+
+A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler and Indexer are accepted designs, not evidence of implementation or production execution. Composer and other editorial roles remain downstream consumers of canonical evidence; the index supports retrieval and does not replace that evidence.
 
 ## Composer
 Composer pracuje nad Article Records více zdrojů a vytváří topic groupings/dossiers pro články o společném tématu.
