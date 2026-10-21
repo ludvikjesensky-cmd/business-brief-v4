@@ -115,3 +115,10 @@ A future pipeline runner may orchestrate these explicit handoffs, retries, repor
 
 ## Implementation boundary
 No Indexer runtime, database migration, bucket creation, Cohere call or runner deployment is included in this design consolidation. Before implementation resolve Q017, validate the chosen provider profile and measure a small multilingual acceptance set under D007/D011. Operational proof belongs in CURRENT_STATE, not inferred from this specification.
+
+## Enrichment metadata and hybrid Memory (D028)
+[ENRICHMENT.md](ENRICHMENT.md) owns derived article/topic annotations and reviewed Story Thread / Signal / Trend relations. Join selected enrichment to exact article_id + article_record_sha256 and producer/profile/version; never enrich canonical prose or replace the original source representation with generated tags. Source-only enrichment may run after Article Record persistence; it does not require embeddings and does not alter Indexer eligibility. Missing metadata remains explicit rather than silently dropping indexed articles.
+
+SQL metadata filters include accepted entity, topic, industry, geography, tag, Story Thread and Trend IDs, plus date/source and review/lifecycle constraints. Candidates require an explicit review query mode. Return evidence, relation direction, exact accepted revision and index/profile/chunk provenance; a contradiction to a trend is not support. Metadata matches complement full-text and vectors. Broad shared trend/topic alone cannot force daily-topic membership. Article/chunk vectors remain derived Cohere BB-EMBEDDING-V1 in its shared multilingual space; PostgreSQL supplies storage/comparison and configured lexical search, not a promise of cross-language lexical recall.
+
+Offline knowledge_retrieval.py now provides exact accepted metadata matching, metadata candidate pairs and profile-compatible hit assembly. It makes no Cohere/full-text/SQL calls and does not fuse scores or form topics. Q017/Q018/Q019 still gate physical schema, live retrieval adapters, bounded prior knowledge retrieval and real Czech→EN/DE acceptance. These additions do not claim an implemented Indexer.

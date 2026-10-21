@@ -15,9 +15,9 @@ closed source edition
 → Assembler + mandatory assembly post-check
 → immutable canonical Article Records in Storage
 → Indexer + mandatory index post-check (derived search layer)
-→ Composer  
-→ Topic Dossiers / cross-source groupings  
-→ Translator  
+→ Composer + mandatory topic post-check
+→ daily-topic-v1 (current-day topics + explicit continuity refs)
+→ Selective Deep Read (where recommended and accepted)
 → Editorial Workflow  
 → Master editorial truth  
 → Brief / Detail / channel adaptations
@@ -63,8 +63,14 @@ The accepted design adds a rebuildable search layer over persisted Article Recor
 
 Manual workflow returns NEEDS_REVIEW to ordinary Chat source review/correction, explicit immutable revision/selection and Assembler rerun before indexing. A future pipeline runner orchestrates gates and review pauses. This is design, not a deployed Assembler/Indexer or a production run. [SYSTEM](../docs/SYSTEM.md#assembler) owns the D025 Assembler contract and persistence boundary.
 
-## Composer
-Composer pracuje nad canonical Article Records více publikací. Seskupuje články, které se týkají společného tématu nebo příběhu, a vytváří topic dossier. Není to ještě finální editorial selection.
+## Composer (D027)
+Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
+
+Indexer article/chunk embeddings, PostgreSQL full-text and metadata/entities propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
+
+[docs/COMPOSER.md](../docs/COMPOSER.md) owns deterministic topic identity, technical membership roles, exact article/index provenance, optional supported daily_delta, continuity, Deep Read recommendations, relational operational structures and the mandatory topic post-check. Composer does not perform Deep Read, final selection/importance ranking, Assignment roles, Story Editor framing or Brief writing. Preserve article individuality and importance ≠ reading value. This is D027 design only, not runtime acceptance.
+
+NEEDS_REVIEW returns to Chat article-evidence review, explicit correction and Composer rerun/post-check; BLOCKED integrity failures require repair. A future runner stops at semantic gates. No required v3 Provisional Issue Map layer returns.
 
 ## Translator
 Translator pracuje až nad spolehlivě sestaveným textem. Je vhodným kandidátem pro API automatizaci, protože jde o řízenou transformaci známého textu, nikoli page-layout interpretation.
@@ -111,3 +117,10 @@ D023 / INGESTOR §21.7 requires independent server-equivalent crop preview befor
 
 ## Edition selection and immutable revisions (D024)
 Assembler accepts exactly one immutable edition-selection-v1 manifest ID + SHA through bridge.selection.assembly_input. It verifies every selected Page JSON and PNG and fails closed on missing/mismatched/unusable/known-defective input. No page-directory scan, latest-generation or latest-revision fallback. Mixed v3/v4/revision selections are explicit. Revision full snapshots use a separate page-revision-v1 wrapper; canonical v2/v3/v4 schemas and objects remain unchanged. INGESTOR §22 is normative. No assembly was run.
+
+## Derived enrichment / knowledge architecture — D028
+Canonical article bytes remain untouched. docs/ENRICHMENT.md is the single editorial-enrichment-v1 authority: article and topic annotations, exact SHA/evidence/profile lineage, controlled versus candidate metadata, separate Story Thread/Signal/Trend semantics, explicit review/promotion and durable lifecycle history. COMPOSER's knowledge_links is a bounded projection of that contract, not a parallel design. Daily-topic membership remains concrete and daily-first; broad trend overlap is insufficient.
+
+Memory is SQL metadata + full-text + multilingual Cohere vectors + provenance/time + entities + Story Threads + Signals + Trends + editorial history. Article/Event → Story Thread → Signal → Trend → Analysis/BI is retained. Daily = delta. Memory = context; Memory is primary material for Trend/Analysis products. Source fidelity, event importance and individual reading value remain distinct. Assignment Editor owns inclusion/hierarchy, Story Editor final angle, Deep Read source verification.
+
+Offline enrichment validation and metadata/profile candidate helpers exist. The unapplied candidate-staging SQL migration implements normalized annotations and SHA/run/version-linked candidate relationships, with acceptance deliberately disabled. Q019 gates real upstream article/index FKs, review/promotion/selected-output adapters and topic persistence on the missing physical Assembler/Indexer/Composer structures (Q017/Q018). No source/deployment change.
