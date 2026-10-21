@@ -3,7 +3,7 @@
 ## Authority and boundary
 This is the canonical Indexer design contract (D026), analogous in role to [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / Article Record contract; Project Memory owns decisions, current status and open questions. This document defines intended behavior, not a deployed runtime or an accepted retrieval benchmark.
 
-The Article Record is canonical, immutable JSON in private Supabase Storage. Indexer creates only derived, rebuildable search data. It must never mutate Article Records, their full_text, source Page JSONs or PNG assets. PostgreSQL search text is a disposable projection, never a second canonical article body.
+The Article Record is canonical, immutable JSON in private Supabase Storage. Indexer creates only derived, rebuildable search data. It must never mutate Article Records, their full_text, source Page JSONs or PNG assets. PostgreSQL search text is a disposable projection, never a second canonical article body. Derived BB-ENRICHMENT-V1 sidecars may be joined as metadata only when they bind to the exact same article_id + article_record_sha256; enrichment is never folded into canonical Article Record bytes.
 
 ## Input and eligibility
 Select explicit Article Record identities from a particular assembly run or edition selection. Resolve and verify article_id, Storage bucket/key and exact article_record_sha256 before indexing. This SHA is the SHA-256 of the persisted Article Record bytes (articles.artifact_sha256), distinct from the full-text SHA.
@@ -102,7 +102,9 @@ States are PENDING → INDEXING → INDEXED or FAILED. Retry failed work against
 Report eligible, skipped (with reasons), INDEXED and FAILED article counts, article embedding count, expected/actual chunk and chunk embedding counts, full-text coverage and post-check result. Done means every intended eligible article passed; partial completion remains explicit.
 
 ## Retrieval
-Hybrid retrieval combines metadata filters (publication, edition/date, source and article identity), PostgreSQL full-text relevance and vector cosine similarity. Both article-level similarity and chunk-level evidence are available. Ranking weights, score fusion and thresholds are deliberately not frozen; evaluate them on real editorial queries.
+Hybrid retrieval combines metadata filters, PostgreSQL full-text relevance and vector cosine similarity. Core filters include publication, edition/date, source and article identity. When an exact compatible BB-ENRICHMENT-V1 sidecar is VERIFIED / VERIFIED_WITH_NOTES, retrieval may additionally filter or facet by category, topic, tag, entity, geography, industry, accepted Story Thread, Signal or accepted Trend. Candidate knowledge remains visibly candidate and must not be treated as accepted durable fact.
+
+Both article-level similarity and chunk-level evidence are available. Ranking weights, score fusion and thresholds are deliberately not frozen; evaluate them on real editorial queries. Shared enrichment metadata may improve candidate recall, but broad shared Topic/Trend/Industry/Entity alone never proves same daily-topic membership.
 
 Embed queries with BB-EMBEDDING-V1 / search_query and compare only with compatible search_document vectors. Multilingual retrieval must allow a Czech query to retrieve English or German source passages in the shared space. Return original source text with article/version/chunk provenance; no translation is required to index or retrieve it. Translation or synthesis belongs downstream. PostgreSQL lexical matching alone is not a promise of cross-language recall.
 
@@ -114,4 +116,4 @@ If assembly is NEEDS_REVIEW, ordinary Chat reviews against source evidence, corr
 A future pipeline runner may orchestrate these explicit handoffs, retries, reports and review pauses. It must preserve ordinary Chat supervision and all acceptance gates; this decision does not authorize autonomous semantic ingest.
 
 ## Implementation boundary
-No Indexer runtime, database migration, bucket creation, Cohere call or runner deployment is included in this design consolidation. Before implementation resolve Q017, validate the chosen provider profile and measure a small multilingual acceptance set under D007/D011. Operational proof belongs in CURRENT_STATE, not inferred from this specification.
+The repository now contains the additive derived enrichment/knowledge schema and validation contract in ENRICHMENT.md / business_brief.enrichment, but no Indexer runtime, Cohere call or runner deployment is implied. Before Indexer runtime implementation resolve Q017, validate the chosen provider profile and measure a small multilingual acceptance set under D007/D011. Operational proof belongs in CURRENT_STATE, not inferred from this specification.
