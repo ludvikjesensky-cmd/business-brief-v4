@@ -76,6 +76,19 @@ No Supabase migration, article-records bucket creation, Article Record persisten
 
 Important boundary: the available production read-only connector exposes exact immutable Page/Revision readback but does not expose the Bridge `assembly-input` endpoint itself. Therefore this proves live-source compatibility of the deterministic D029 assembly rules against the accepted artifacts, but does not yet prove the deployed `bb-assembler` runtime adapter's end-to-end Bridge/Supabase credential path. Q020 remains open for that final runtime + persistence acceptance.
 
+## Q020 production migration applied; Railway runtime blocked by active platform outage — 2026-10-21
+The Assembler persistence migration from main (`20261021130000_add_assembler_articles.sql`) was applied successfully to production Supabase project `tduhlvfsqplckemygjdx`.
+
+Verified after migration:
+- `public.articles` exists with RLS enabled and 0 rows;
+- `public.article_source_parts` exists with RLS enabled and 0 rows;
+- private Storage bucket `article-records` exists with `public=false`;
+- no Article Record or source-part row has been written yet.
+
+Supabase advisors show the expected INFO finding that the new RLS tables have no public policies, consistent with the service-role-only design. They also flag an unindexed `articles.publication_id` foreign key as a performance INFO item; this is not a correctness/security blocker for Q020.
+
+The requested Railway Assembler deployment could not be created because Railway is in an active platform-wide incident: new builds/deploys are paused in all regions. Multiple create-service/create-deployment attempts returned `Deploys have been paused temporarily`. Existing Business Brief services remain online. Therefore `bb-assembler --persist`, exact Storage readback and idempotent replay have not run yet; Q020 remains open only on that external deployment gate.
+
 ## Indexer design consolidated (D026; not implemented)
 The accepted downstream design is Assembler → mandatory assembly post-check → immutable Article Record persistence → Indexer → index post-check. Eligibility requires VERIFIED / VERIFIED_WITH_NOTES plus post_check PASS. NEEDS_REVIEW returns to ordinary Chat source review/correction and Assembler rerun through explicit immutable selection.
 
