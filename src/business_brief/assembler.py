@@ -449,7 +449,13 @@ def assemble(
     for key, node in nodes.items():
         item = node["item"]
         cont = item.get("continuation") or {}
-        if cont.get("continued_from_previous_page") is True and key not in incoming:
+        starts_here = cont.get("starts_here")
+        from_previous = cont.get("continued_from_previous_page")
+        if starts_here is True and from_previous is True:
+            unresolved[key] = "continuation flags conflict: starts_here and continued_from_previous_page"
+        elif starts_here is False and from_previous is not True:
+            unresolved[key] = "continuation flags conflict: non-start item lacks incoming continuation"
+        if from_previous is True and key not in incoming:
             unresolved[key] = "incoming continuation has no unique origin"
         status = (item.get("verification") or {}).get("status")
         if status not in ELIGIBLE_ITEM_STATUSES:
