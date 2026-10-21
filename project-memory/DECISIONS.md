@@ -154,3 +154,12 @@ PostgreSQL is an operational/query index, not the canonical article body. The mi
 **Reason:** Cross-page joining should be reproducible and auditable. Page interpretation already happened in Ingestor; Assembler must not become a second semantic/layout model or hide ambiguity behind heuristics.
 
 **Consequences:** Q011 is resolved. Initial implementation should be ordinary deterministic code, with any future model-assisted review kept outside canonical automatic assembly. The first acceptance target is the already accepted WSJ 2026-10-14 selection. This decision defines policy/contract only; it does not implement or run Assembler.
+
+## D026 — ACTIVE — Indexer is a derived, rebuildable multilingual search layer
+**Date:** 2026-10-21.
+**Decision:** Immutable Storage Article Records remain canonical. Indexer accepts only persisted records with assembly VERIFIED / VERIFIED_WITH_NOTES and post_check PASS, bound by exact article_record_sha256. It creates article-level and paragraph-aware chunk-level embeddings plus PostgreSQL full-text projections; it never summarizes, translates, rewrites or mutates canonical records.
+
+BB-CHUNKING-V1 targets roughly 450–700 tokens, whole paragraphs where possible, one-paragraph overlap, deterministic chunk identity and text SHA-256. BB-EMBEDDING-V1 is first-class versioned configuration: Cohere embed-v5.0-pro, 1024 dimensions, search_document for documents, search_query for queries, cosine similarity and shared multilingual space. Supabase/Postgres pgvector vector(1024) is the vector store. Logical derived tables are article_embeddings, article_chunks and article_index_runs, with PENDING / INDEXING / INDEXED / FAILED states and mandatory index post-check.
+
+**Reason:** Search must be rebuildable independently of canonical evidence, with Czech queries able to retrieve English/German source text and every result traceable to its immutable version.
+**Consequences:** [docs/INDEXER.md](../docs/INDEXER.md) is the single detailed Indexer contract. Hybrid retrieval combines vectors, PostgreSQL full-text relevance and metadata filters; weights remain open. Manual workflow includes Chat review/correction and Assembler rerun for NEEDS_REVIEW before indexing; a future runner only orchestrates these gates. This is design acceptance, not runtime, schema, bucket, provider-call or deployment evidence. Q007 remains broader; Q016 resolves the search-layer choice and Q017 records remaining implementation/ranking details.

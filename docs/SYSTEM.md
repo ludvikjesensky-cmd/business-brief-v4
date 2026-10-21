@@ -1,7 +1,7 @@
 # System — Business Brief v4
 
 ## Boundary
-Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá články. Editorial vrstva rozhoduje o významu a publikaci.
+Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Editorial vrstva rozhoduje o významu a publikaci.
 
 ## Technician
 Input: uzavřené source edition.
@@ -225,6 +225,16 @@ article_source_parts
 Chunking, full-text/vector search and embeddings are derived Indexer responsibilities after a persisted Article Record has `post_check = PASS` and an eligible assembly status. They are not required for Assembler success and can be rebuilt without mutating the canonical Article Record.
 
 This section freezes the policy, logical contract and persistence boundary. It does not imply an Assembler deployment, DB migration, bucket creation or production run.
+
+## Indexer (D026)
+Input: persisted immutable Article Records with assembly.status VERIFIED / VERIFIED_WITH_NOTES and post_check.status PASS. Verify exact Storage identity and article_record_sha256 (the persisted artifact SHA, not the full-text SHA).
+
+Output: rebuildable article-level and chunk-level embeddings and PostgreSQL full-text projections. Canonical records and assets remain untouched. [INDEXER.md](INDEXER.md) is the single detailed contract for BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), pgvector vector(1024), derived tables, states and mandatory index post-check. Hybrid retrieval combines vector similarity, PostgreSQL full-text relevance and metadata filters; weighting remains open. Czech queries must be able to retrieve English/German source text without translating it before embedding.
+
+## Manual handoff and future runner
+ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-check → verified immutable Article Record persistence → Indexer → index post-check → done. NEEDS_REVIEW returns to Chat source review/correction through immutable revisions and explicit selection, then rerun Assembler. BLOCKED integrity failures require repair before retry. No review state bypasses Indexer eligibility.
+
+A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler and Indexer are accepted designs, not evidence of implementation or production execution. Composer and other editorial roles remain downstream consumers of canonical evidence; the index supports retrieval and does not replace that evidence.
 
 ## Composer
 Composer pracuje nad Article Records více zdrojů a vytváří topic groupings/dossiers pro články o společném tématu.

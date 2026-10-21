@@ -1,6 +1,6 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-19
+**Last consolidated:** 2026-10-21
 
 ## Current direction
 Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No Assembler, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 (broader content/publication acceptance) remains open. Q011 is resolved by D025 with a deterministic Assembler policy and frozen logical `article-record-v1` contract.
@@ -36,3 +36,10 @@ GitHub confirms PRs #4–#10 are merged and closed. The ingest handoff is merged
 Railway confirms the bridge pin/deployment above remains SUCCESS. Before the merge, the unrelated legacy `ingestor` cron was pinned to `a8d6c26e8002c8a4dcad42fce7fa6c5763e65580`; its redeploy `2e44c090-63b8-4b95-b5c6-8e263b14850e` is SUCCESS. Both source pins remain configured; production has no staged changes.
 
 Q011 is now resolved by D025. The Assembler contract is now closed at the design level: deterministic `article-record-v1`, mandatory post-check, dedicated private `article-records` bucket with canonical `<publication_id>/<edition_date>/<source_sha256>/<manifest_id>/<article_id>.json` keys, and minimal PostgreSQL `articles` + `article_source_parts` operational indexes. The next planned implementation step is a deterministic Assembler over the explicit Edition Selection Manifest ID + SHA, producing immutable `article-record-v1` outputs; ambiguous joins or asset placement become review states rather than guesses. Every assembled article must also pass the mandatory mechanical post-check: exact source-part SHA verification, exactly-once ordered part usage, byte-for-byte reconstruction of `full_text` with canonical `\n\n` separators, final text SHA equality, and validation of every claimed asset placement. Post-check integrity failure is BLOCKED. No Assembler implementation or run is part of this contract freeze. Broader Q010, rights, acquisition and publication gates remain open. Legacy Physical Map, autonomous semantic ingest and paid full-edition Fast Editorial remain historical/superseded; see FAILURES/HISTORY.
+
+## Indexer design consolidated (D026; not implemented)
+The accepted downstream design is Assembler → mandatory assembly post-check → immutable Article Record persistence → Indexer → index post-check. Eligibility requires VERIFIED / VERIFIED_WITH_NOTES plus post_check PASS. NEEDS_REVIEW returns to ordinary Chat source review/correction and Assembler rerun through explicit immutable selection.
+
+[docs/INDEXER.md](../docs/INDEXER.md) owns BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), article/chunk vectors in Supabase pgvector, derived tables, index states and hybrid multilingual retrieval. Canonical Article Records remain untouched. Ranking weights and implementation details remain Q017; broader Editorial Memory remains Q007. A pipeline runner is future orchestration.
+
+Actual acceptance still stops at the accepted WSJ manifest above: no Assembler or Indexer run is claimed. This consolidation adds no runtime code, migration, bucket, Cohere call or deployment. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
