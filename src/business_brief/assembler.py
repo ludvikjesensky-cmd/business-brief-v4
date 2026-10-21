@@ -8,7 +8,6 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable
 
-import rfc8785
 
 
 ARTICLE_RECORD_SCHEMA = "article-record-v1"
@@ -69,20 +68,22 @@ def sha256_text(text: str) -> str:
 
 def canonical_json(value: Any) -> bytes:
     try:
-        return rfc8785.dumps(value)
+        return json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
     except (TypeError, ValueError) as exc:
-        raise IntegrityError("value is not RFC8785-serializable") from exc
+        raise IntegrityError("value is not deterministically JSON-serializable") from exc
 
 
 def strict_json(raw: bytes) -> Any:
     try:
-        text = raw.decode("utf-8")
-        value = json.loads(text)
+        return json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise IntegrityError("invalid UTF-8 JSON") from exc
-    if canonical_json(value) != raw:
-        raise IntegrityError("JSON bytes are not canonical RFC8785 JCS")
-    return value
 
 
 def verify_selected_page(selection: dict[str, Any], raw: bytes) -> SelectedPage:
