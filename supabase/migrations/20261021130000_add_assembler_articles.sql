@@ -3,14 +3,9 @@
 
 insert into storage.buckets(id, name, public)
 values ('article-records', 'article-records', false)
-on conflict (id) do nothing;
-
-do $
-begin
-  if not exists (select 1 from storage.buckets where id='article-records' and name='article-records' and public=false) then
-    raise exception 'article-records bucket must exist and be private';
-  end if;
-end $;
+on conflict (id) do update
+set name = excluded.name,
+    public = false;
 
 create table if not exists public.articles (
   article_id text primary key check (article_id ~ '^art-[0-9a-f]{64}$'),
