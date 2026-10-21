@@ -48,6 +48,11 @@ Branch implementation adds:
 
 The accepted WSJ fixture is expected to exercise six Page-One continuations, including two distinct targets on A4 and two on A10. No real-source Assembler command has yet been run from this branch, so the expected article count/status is not recorded as accepted evidence. Q020 requires read-only real-source inspection before any persistent write.
 
+## PR #14 verification — 2026-10-21
+GitHub Actions verification on head `a3d74adaf3275d2de4fdd0b0a0d06930a5cdfc45` passed cleanly: **294 Python tests**, **9 Assembler PostgreSQL/PGlite schema checks**, **14 existing knowledge-schema checks**, plus `py_compile` for assembler.py and assembler_runtime.py.
+
+Review found and fixed two concrete issues before the green run: the initial CI environment omitted the repository root from PYTHONPATH for legacy bridge tests, and the first Assembler migration draft used a malformed dollar-quoted DO block. The migration now uses portable upsert semantics to ensure `article-records` is private; runtime bucket verification also fails closed unless privacy is explicitly false. A dedicated test now covers the exact accepted WSJ Page-One continuation title pairings for A2/A4/A6/A10. No production migration, runtime deployment or Article Record write occurred.
+
 ## Indexer design consolidated (D026; not implemented)
 The accepted downstream design is Assembler → mandatory assembly post-check → immutable Article Record persistence → Indexer → index post-check. Eligibility requires VERIFIED / VERIFIED_WITH_NOTES plus post_check PASS. NEEDS_REVIEW returns to ordinary Chat source review/correction and Assembler rerun through explicit immutable selection.
 
