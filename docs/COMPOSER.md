@@ -1,7 +1,7 @@
 # Composer — Business Brief v4
 
 ## Authority and boundary
-This is the canonical Composer design contract (D027), analogous to [INDEXER.md](INDEXER.md) and [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / immutable Article Record boundary. Project Memory owns decisions, current evidence and unresolved implementation questions. This is documentation acceptance only; no Composer runtime, model API call, migration, deployment or production write is implied.
+This is the canonical Composer design contract (D027), analogous to [INDEXER.md](INDEXER.md) and [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / immutable Article Record boundary. Project Memory owns decisions, current evidence and unresolved implementation questions. Composer grouping remains a design contract; D028 adds offline enrichment validators/candidate helpers in [ENRICHMENT.md](ENRICHMENT.md), without a Composer runtime, model call or production write.
 
 Composer is the v4 successor to v3 Cross-Paper Editor: it produces cross-source daily topics, not a final dossier, editorial selection, Brief or final angle.
 
@@ -21,10 +21,10 @@ Freeze an explicit editorial_day and the complete intended current-day corpus be
 Each member must have:
 - assembly.status = VERIFIED or VERIFIED_WITH_NOTES;
 - post_check.status = PASS and verified durable Article Record persistence;
-- a BB-ENRICHMENT-V1 sidecar with status VERIFIED or VERIFIED_WITH_NOTES for the exact article_id + article_record_sha256;
+- a BB-ENRICHMENT-V1 sidecar with independently post-checked VERIFIED / VERIFIED_WITH_NOTES output for this exact article_id + article_record_sha256;
 - a successfully INDEXED set with a passing index post-check for the exact article_record_sha256 and compatible Indexer profiles.
 
-Enrichment and Indexer are both derived from the immutable Article Record and may be produced independently/parallel. Composer-ready completeness requires both exact-version outputs; neither may mutate or replace canonical source truth.
+Enrichment and Indexer are independent derived branches over immutable records. Composer-ready completeness requires both exact-version outputs; missing enrichment remains explicit incomplete coverage. Knowledge candidates may be empty, and accepted historical knowledge is not an eligibility prerequisite.
 
 Resolve article_id, publication_id, source_id, Storage bucket/key and article_record_sha256 (persisted artifact SHA, not full-text SHA), plus exact index_run_id and profile identities. Missing or failed indexes remain explicit exclusions/incomplete coverage; never silently call a partial intended corpus complete. An empty corpus produces an explicit empty report, never memory-generated topics.
 
@@ -79,30 +79,26 @@ daily-topic-v1
   daily_delta?                  # today's change, never unsupported synthesis
     description
     evidence_refs[]
-  knowledge_links
+  knowledge_links               # editorial-enrichment-v1; derived, optional evidence-backed content
+    enrichment_contract = editorial-enrichment-v1
     enrichment_profile = BB-ENRICHMENT-V1
-    topics[]
-    tags[]
+    enrichment_output_ref?      # exact run/output SHA/profile when persisted
+    topics[]                    # typed annotation relations, not daily-topic IDs
     entities[]
     geographies[]
     industries[]
-    story_thread_candidates[]
-      story_thread_id?
-      label
-      relation
-      evidence_refs[]
-      status: candidate | accepted
-    signals[]
-      signal_id
-      description
-      polarity: supports | weakens | contradicts | neutral
-      evidence_refs[]
+    tags[]
+    story_thread_candidates[]   # proposals, never accepted by Composer
     trend_candidates[]
-      trend_id?
-      label
-      relation
-      evidence_refs[]
-      status: candidate | accepted
+    story_thread_links[]        # exact reviewed accepted object/revision refs
+    trend_links[]
+    signals[]                   # dated observation + directional links/evidence
+    provenance                  # producer/profile/version, taxonomy snapshot
+    confidence_method
+    review_status               # per claim/link; candidate is the default
+    article_refs[]              # exact current member article_id/artifact SHA/bucket/key
+    index_refs[]                # exact post-checked run/profiles; chunk IDs/SHA if used
+    evidence_refs[]             # each claim maps to resolvable source passage
   deep_read
     recommendation: recommended | not_recommended | review_required
     reasons[]
@@ -136,25 +132,15 @@ membership_reason and evidence_refs are mandatory even if confidence is supplied
 
 coverage counts distinct source_id and publication_id among today's members only. cross_source is true only when both counts exceed one; single_source is true when publication_count = 1, including multiple articles/editions from one publication. Repeated articles from one publication never manufacture cross-paper coverage. Source count is not independent corroboration or importance.
 
-## Enrichment and long-term knowledge links
-Composer consumes exact BB-ENRICHMENT-V1 sidecars for current members when available and SHA-compatible, and emits topic-level knowledge_links with exact provenance. The canonical contract is [ENRICHMENT.md](ENRICHMENT.md).
-
-Carry forward the v3 distinctions:
-- topics/tags/entities/geographies/industries describe current material;
-- a Story Thread is one concrete continuing story, company action, policy or event lineage;
-- a Signal is today's evidence and may support, weaken, contradict or neutrally relate to a longer-running hypothesis;
-- a Trend is a broad long-term phenomenon built from repeated evidence over time.
-
-Composer may link to an already accepted Story Thread/Trend or propose a candidate. It must not silently promote a candidate into accepted durable knowledge. In particular, one article or one daily topic cannot establish a Trend automatically.
-
-Knowledge similarity is not topic identity. Shared broad topic, industry, geography, entity or Trend may propose retrieval candidates, but it must never force otherwise unrelated current-day articles into the same daily topic. Daily-topic membership still requires concrete same-event/same-story/same-problem evidence.
-
-A distinctive individual article remains individually addressable even when it contributes to a daily topic, Story Thread or Trend. This preserves the v3 separation between importance of event and reading value of article.
-
 ## Daily = delta. Memory = context.
 First form today's topics from today's eligible records. Then retrieve compatible prior indexed articles/topics, verify their exact identities and attach continuity/prior_topic_refs. Historical articles belong in memory references, never articles[]. Memory cannot substitute for missing current-day coverage or inflate coverage counts.
 
 new_story requires an explicit bounded continuity search with no supported prior match; an unavailable or inconclusive search is unclear, not proof of novelty. continuing_story and follow_up require cited prior evidence plus today's relationship. daily_delta is optional: omit it or retain uncertainty when today's difference cannot be supported. Claims about change cite today's evidence and prior evidence where comparison requires it. Memory absence must not block honest today's coverage; report the continuity limitation.
+
+## Knowledge links (D028)
+[ENRICHMENT.md](ENRICHMENT.md) owns the bounded article/topic enrichment contract and review rules. The section above is a projection of its typed annotations, knowledge links and signals, not a second competing schema. Each topic enrichment binds this exact topic output SHA/run and current member set; empty arrays mean no supported proposal, not absence of a phenomenon. Unavailable enrichment is explicit incomplete coverage; it cannot be silently treated as Composer-ready. Evidence for today's claims stays within current membership; prior accepted object revisions and historical evidence are separately identified context references. Every relation carries evidence, confidence/method and status, with producer/profile/version provenance.
+
+Composer can propose links but cannot promote a candidate into a durable accepted Story Thread or Trend. A single day's evidence never establishes a long-term Trend. A reviewed existing trend can receive today's supporting, weakening, contradicting or neutral signal proposal; this does not silently change its lifecycle. Broad shared topics/trends never force daily_topic membership. Exact accepted metadata/thread links may complement lexical/vector candidates; semantic evaluation of the same concrete story/problem remains mandatory. D028's metadata_candidates helper creates candidate edges only, never memberships; live adapter/calibration remains Q017/Q018/Q019.
 
 ## Selective Deep Read and editorial separation
 Composer recommends Deep Read and states why; it does not perform it. Triggers include conflicting sources, a high-value long analysis, evidence spread across sources, uncertain cluster identity, or one source carrying decisive details. Uncertain identity first enters Composer review; a Deep Read recommendation does not bypass that gate.
@@ -190,9 +176,7 @@ The deterministic structural check independently verifies:
 - coverage counts recompute from today's members; cross-source really spans more than one publication/source and single-source is explicit;
 - every membership has an explainable reason and resolvable evidence; every memory reference exists at its exact prior identity;
 - generated factual claims in identity/title/delta/continuity/reasons/notes carry article provenance; no unsupported model assertion is accepted;
-- every knowledge_link is bound to an exact compatible enrichment/article SHA and resolvable evidence;
-- accepted Story Thread/Trend refs resolve to accepted knowledge objects; candidates remain visibly candidate;
-- broad shared metadata/Trend alone is never accepted as sufficient topic-membership evidence.
+- knowledge_links pass editorial-enrichment-v1 binding/evidence checks, exact topic/member/index identity validation and candidate-versus-accepted review rules; enrichment cannot promote durable knowledge or expand membership.
 
 A structural PASS proves integrity and presence of evidence, not semantic truth or entailment. Semantic grouping and claim support still require model/Chat judgment and review when uncertain. Similarity/confidence or source count never substitutes for that judgment.
 
@@ -219,6 +203,6 @@ Chat corrections record author/reason, exact evidence and superseded output/run;
 ## v3 inheritance and implementation boundary
 Historical sources: business-brief-v3 at commit 933b5c47fb96c97333ff24dda4e7e019486ebbfd, [EDITORIAL_PIPELINE §9](https://github.com/ludvikjesensky-cmd/business-brief-v3/blob/933b5c47fb96c97333ff24dda4e7e019486ebbfd/docs/EDITORIAL_PIPELINE.md#9-daily-editorial-layer), [EDITORIAL_WORKFLOW §§4–7](https://github.com/ludvikjesensky-cmd/business-brief-v3/blob/933b5c47fb96c97333ff24dda4e7e019486ebbfd/docs/EDITORIAL_WORKFLOW.md#4-kanonický-redakční-řetězec), and EDITORIAL_PLAYBOOK §6 in that same tree. Reuse Cross-Paper Editor, daily_topics, daily_delta, single-source vs cross-paper, Selective Deep Read, and the separation of importance and reading value. The old Fast Editorial INCLUDE/RESERVE/EXCLUDE stage is not a Composer selection power.
 
-v4 starts from verified assembled/indexed Article Records plus derived BB-ENRICHMENT-V1 sidecars. Do not reintroduce Provisional Issue Maps, provisional discovery or a Czech-translation Memory-ready prerequisite as a required v4 layer. v3 is historical design evidence, not a code dependency. The retained enrichment/knowledge semantics are canonicalized in ENRICHMENT.md.
+v4 starts from verified assembled/indexed Article Records. Do not reintroduce Provisional Issue Maps, provisional discovery or a Memory-ready prerequisite as a required v4 layer. v3 is historical design evidence, not a code dependency.
 
-Before Composer runtime implementation, resolve Q018 alongside Q017/Q019 and measure a small real multilingual acceptance set: same-event cross-paper matches, same-entity different events, transitive false merges, singletons, distinctive analyses, ambiguous identity, memory-only temptations, shared-broad-trend false merges and conflicting evidence. Fix review behavior and cost/quality under D007/D011 before automation. The repository now contains derived enrichment validation code and an unapplied additive knowledge-schema migration under D028; this does not constitute a Composer runtime, model call, deployment or production data write.
+Before implementation, resolve Q018 alongside Q017 and measure a small real multilingual acceptance set: same-event cross-paper matches, same-entity different events, transitive false merges, singletons, distinctive analyses, ambiguous identity, memory-only temptations and conflicting evidence. Fix review behavior and cost/quality under D007/D011 before automation. Composer grouping remains unimplemented. D028 adds offline validators, candidate retrieval helpers and an unapplied candidate-staging migration; live generation/search/promotion, deployment and production writes remain outside this change.

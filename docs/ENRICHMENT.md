@@ -1,117 +1,108 @@
-# Enrichment and Editorial Knowledge — Business Brief v4
+# Enrichment and long-term knowledge — Business Brief v4
 
-## Authority and purpose
-This document defines the v4 derived enrichment and long-term editorial knowledge contract. It carries forward the useful v3 editorial-enrichment-v0.2 / Memory semantics while adapting them to immutable v4 Article Records.
+## Authority and implementation scope (D028)
+This is the single canonical contract for the derived enrichment/knowledge subsystem. SYSTEM owns immutable Article Records, INDEXER owns search projections/profiles, COMPOSER owns daily grouping, and EDITORIAL owns inclusion, angle and publishing. EDITORIAL_MEMORY owns the product use of Memory. No source contract is replaced.
 
-Canonical source truth remains the immutable article-record-v1 artifact. Enrichment never rewrites canonical prose, title, byline, assets or provenance. Every enrichment row is rebuildable, versioned and bound to the exact article_id + article_record_sha256.
+`editorial-enrichment-v1` with profile `BB-ENRICHMENT-V1` defines article enrichment and the `daily-topic-v1.knowledge_links` handoff. `src/business_brief/enrichment.py` implements offline typed records, deterministic derivation identity and structural validators; `knowledge_retrieval.py` implements exact accepted metadata filters and candidate-pair/profile compatibility helpers. These are callable building blocks, not a deployed enrichment service, live retrieval engine, semantic grouper or persistence adapter. JSON wire/storage serialization and atomic database publication are gated below. Tests use synthetic independently supplied snapshots; they do not establish real-source semantic quality.
 
-Knowledge chain:
+## Meaning and canonical boundary
 
-    Article / current-day event
-    → Story Thread
-    → Signal
-    → Trend
-    → Analysis / Business Intelligence
+| Concept | Meaning |
+| --- | --- |
+| Topic / `topics[]` | A subject directly discussed in an article; a taxonomy relation, not a daily group or durable continuing story. |
+| Story Thread | A concrete continuing story/company/policy/event over time, e.g. `Mercedes-Benz: restrukturalizace evropské výroby`. A company entity alone is not a thread. |
+| Signal | A sourced new observation/change that supports, weakens, contradicts or neutrally relates to a thread/trend. A signal can exist before its destination is resolved. |
+| Trend | A broad long-term phenomenon, e.g. `restrukturalizace evropského autoprůmyslu`, supported by repeated evidence across time and sources; never established from one article. |
+| Daily topic | Today's bounded concrete story/problem, identified by current membership under COMPOSER. It is not a Story Thread ID. |
 
-A Trend is not a synonym for a topic. A Story Thread is not a broad trend. A single article may create a Signal or candidate relationship, but it must not automatically create an accepted long-term Trend.
+The v3 knowledge chain is retained: **Article / Event → Story Thread → Signal → Trend → Analysis / Business Intelligence**. These are evidence relationships, not a compulsory linear pipeline for every article. A signal may link directly to a trend, to a thread, to both or await review. Thread–trend relationships may be many-to-many and have evidence. Event remains a described source occurrence, not an invented mandatory event service.
 
-## BB-ENRICHMENT-V1
-Article-level enrichment uses profile BB-ENRICHMENT-V1.
+Original article prose and visual assets remain canonical. Enrichment never patches Article Record JSON, page text, asset bindings or canonical hashes. It is rebuildable derived interpretation, even after editorial acceptance. `article_record_sha256` always hashes persisted Article Record bytes (`articles.artifact_sha256`), never just `full_text`. New canonical bytes require a new binding and revalidation; old evidence remains historical. No source prose is copied into durable knowledge objects. Display original passages by resolving exact evidence references.
 
-Required article metadata:
-- exactly one broad category;
-- topics[]: concrete subjects directly discussed;
-- tags[]: useful retrieval/filter terms;
-- entities[]: important people, companies, institutions or organizations;
-- geographies[]: materially relevant locations;
-- industries[]: materially relevant sectors;
-- story_thread_candidates[]: candidate links to concrete continuing stories;
-- trend_candidates[]: candidate links to broader long-running developments;
-- signals[]: evidence-bearing observations that may support, weaken, contradict or neutrally relate to a thread/trend.
+## Article and topic contract
+Each `Enrichment` record has `contract_version=editorial-enrichment-v1`, subject kind/ID, exact member ArticleRefs, producer, producer_version, profile, profile_version, method_version and confidence_method. The run additionally records taxonomy snapshot/version, accepted-knowledge revision snapshot, code/model/prompt versions (or explicit manual method), input-set SHA, timestamps, attempt/error history, outputs and structural post-check. Provider/model output is untrusted until validated.
 
-The broad category controlled list is carried forward from v3 unless a future profile supersedes it: Politika, Geopolitika, Ekonomika, Energie, Firmy a průmysl, Technologie, Finance a trhy, Osobní finance, Právo a regulace, Média, Ostatní.
+Article enrichment has exactly one member and matching article_id. Topic enrichment binds exact topic_id + composer_run_id + topic_output_sha256 and the complete current member set, independently compared with the accepted topic output by the future adapter. Topic ID/hash serialization remains Q018; this contract does not invent it. Historical evidence is attached through explicit continuity/knowledge-review references, never silently added to today's members.
 
-Every run records profile, producer, producer/model version where applicable, article_record_sha256, status and evidence/provenance. Model output is derived editorial metadata, never source evidence.
+| Logical field | Typed representation and rules |
+| --- | --- |
+| `category?` | v3 controlled category retained when useful, from CATEGORIES in enrichment.py; provisional classification with mandatory category_evidence. No new category from model output. |
+| `topics[]`, `tags[]`, `entities[]`, `geographies[]`, `industries[]` | `annotations[]` with field discriminator, label, optional term_id, evidence, confidence, status/review. Empty lists permitted; no arbitrary minimum tag count or forced topic. |
+| `story_thread_candidates[]`, `trend_candidates[]` | `knowledge_links[]` with kind, label, optional accepted object_id + object_revision_sha256, relation, evidence, confidence and status/review. Unresolved labels remain proposals, including repeated labels. |
+| `story_thread_links[]`, `trend_links[]` | The same relation shape with an exact accepted object revision target; an accepted relation requires its own review. Existing target acceptance does not automatically accept a new article's link. |
+| `signals[]` | Signal ID, description, evidence observation date, evidence, typed links, confidence, status/review; run provenance inherited. Empty when no supported delta. |
 
-## Article enrichment contract
-Logical payload:
+`ArticleRef = article_id + article_record_sha256 + bucket + key`; bucket is `article-records`. Evidence uses nonempty Unicode code-point offsets `[start,end)` in canonical `full_text` and SHA-256 of that exact UTF-8 slice, plus the ArticleRef. The validator rejects missing, duplicate, out-of-member or mismatched evidence. Optional IndexRef binds the same ArticleRef, exact index_run_id, embedding_profile and chunking_profile from an independently post-checked snapshot. Chunk-origin evidence must first resolve an exact chunk_id/text_sha256 and its verified source mapping to these canonical offsets; that adapter remains Q017. No invented chunk IDs or range guessing.
 
-    editorial-enrichment-v1
-      profile = BB-ENRICHMENT-V1
-      producer
-      articles[]
-        article_id
-        article_record_sha256
-        category
-        topics[]
-        tags[]
-        entities[]
-        geographies[]
-        industries[]
-        story_thread_candidates[]
-          label
-          relation
-          evidence_refs[]
-          confidence?
-        trend_candidates[]
-          label
-          relation
-          evidence_refs[]
-          confidence?
-        signals[]
-          signal_id
-          description
-          polarity: supports | weakens | contradicts | neutral
-          target_kind?: story_thread | trend
-          target_ref_or_label?
-          evidence_refs[]
+Every annotation/link/signal carries evidence. Evidence presence and hash checks prove integrity, not entailment. The semantic pass or explicit reviewer must assess whether the passage supports the claim. Confidence is finite 0–1 with a recorded method/scale; it is not a calibrated probability or a promotion rule.
 
-Validation requires exact coverage of the intended input set, no duplicate article_id, exact SHA binding, non-empty normalized labels, unique values inside list fields, and evidence refs for every candidate/Signal claim. An enrichment for one Article Record SHA is invalid for another revision.
+Controlled metadata and semantic candidates are distinct. Category uses the retained small v3 controlled list. Other facets use a versioned catalog `(field,term_id) → canonical label`; model-generated labels remain candidates until resolved and reviewed. Entities have explicit typed catalog identities (person/company/institution/organization/place where appropriate), aliases and disambiguation evidence; NFKC + casefold + collapsed whitespace supports lookup and duplicate checks only. It never proves two entities are the same. Countries/regions and industries use stable catalog IDs with taxonomy version and an explicit unknown path; the initial catalog content/standard is Q019, not fabricated here. No automatic cross-field or homonym merge. Accepted relations reference catalog IDs with the exact canonical label; aliases must be resolved explicitly. Topics/tags remain semantic suggestions until review, even when they match a known label.
 
-## Story Threads
-A Story Thread is a concrete continuing story, company action, policy, transaction, conflict, regulatory process or event lineage that can be followed through time. Lifecycle: candidate → accepted → retired, with rejected retained as an auditable review result.
+## Identity, coverage and review
+The internal derivation identity is SHA-256 of compact sorted-key UTF-8 JSON `["editorial-enrichment-v1", [subject_kind, subject_id, sorted member dictionaries, topic_output_sha256, producer, producer_version, profile, profile_version]]`, ensure_ascii=false, separators `,` and `:`, no NaN. This identifies a logical derivation slot, not mutable output bytes. A producer/method/taxonomy/model change affecting interpretation requires a profile/producer version bump. Each rerun/correction has a separate run ID, immutable output SHA/revision and explicit selected/superseded output; differing outputs never overwrite the slot or accepted history.
 
-A candidate may come from article enrichment or Composer. Accepted status requires explicit review/promotion and durable provenance. Shared broad topic/industry/entity is not enough to establish a Story Thread relationship.
+An article run freezes a unique exact input set and one producer/profile/version. `validate_batch` requires exact coverage, no extra/missing article or duplicate enrichment, and no multiple revisions of one article in a run. Retry history may have multiple attempts; only one immutable selected successful output per article/profile/producer version is served. Persist all failures/reviews and compare expected versus actual sets before atomic publication. A partial run cannot claim complete enrichment. An explicit excluded/deferred set with reasons remains separate from successful coverage.
 
-## Signals
-A Signal is a dated evidence unit derived from a specific Article Record or accepted daily topic. It says that something may be changing. Signal polarity is supports, weakens, contradicts or neutral. Every Signal must have exact evidence refs and exact canonical article/version provenance. A Brief may report today's Signal/delta without asserting that a Trend is established.
+Claim/relation/signal review states: `candidate → needs_review → accepted | rejected`; candidate may be explicitly reviewed directly. Any accepted revision may be superseded by an explicit reviewed correction. Noncandidate states require reviewer identity, timezone-aware time, reason and exact evidence covering the claim. Acceptance of structural validation is not editorial acceptance. Callers must construct accepted catalogs from reviewed durable revisions, never from model-supplied IDs. No helper performs promotion or persistence.
 
-## Trends
-A Trend is a broad long-term phenomenon evidenced by repeated Signals, events and/or Story Threads across time and sources. Lifecycle: candidate → accepted → retired, with rejected retained for audit.
+The offline KnowledgeRevision type and validator cover immutable definitions, lifecycle values, lineage and the acceptance minimum; durable database selection remains gated. Durable thread/trend objects have stable opaque IDs and immutable revisions, scope/definition, status, evidence, producer/profile/version lineage and review history. Labels can change or have aliases without changing identity. Candidate IDs are proposal/run scoped and never masquerade as accepted object IDs. Promotion explicitly resolves a proposal to a new or existing durable object under review; merges/splits/redirects preserve old revisions and require review. Rejected proposals remain auditable.
 
-Promotion to accepted is a separate knowledge decision. It requires more than one Signal and must not be automated from a single article, one daily topic, shared entity, vector similarity or model confidence alone. Promotion records supporting Signal IDs, provenance, reviewer/method and version. Later evidence may strengthen, weaken or reverse the interpretation without deleting prior history.
+Thread lifecycle after acceptance: `active | dormant | resolved | superseded`. Initial acceptance may use one supported concrete event, but must not claim an observed history that does not exist. Trend lifecycle after acceptance: `emerging | established | weakening | reversed | dormant | superseded`; lifecycle changes require a new reviewed revision, cited supporting and opposing evidence, and assessment date. Accepted is epistemic/review state, lifecycle describes evolution; neither is a confidence threshold.
 
-## Daily topics and Composer
-Composer may attach knowledge_links to daily-topic-v1: topics/tags/entities/geographies/industries aggregated from exact member enrichments; Story Thread candidates or accepted links; today's Signals; Trend candidates or accepted links.
+Trend promotion has a hard necessary minimum: at least two distinct canonical article IDs, accepted signals on at least two evidence dates, nonempty verified evidence, and explicit review covering those signals. Multiple revisions of one article, duplicated syndicated reporting, repeated labels, source counts or a model score cannot establish a trend. A reviewer must additionally establish independence across sources/events, temporal recurrence, scope, causal/interpretive limits and counterevidence. The structural minimum is deliberately insufficient for auto-promotion. Publication date is not automatically observation date: the reviewer verifies the dated observation in source evidence. New signals can strengthen, weaken or reverse a trend, without deleting earlier evidence. Daily Brief works with today's signal/delta, never a trend conclusion inferred solely from today's cluster.
 
-These links help continuity and Memory. They do not determine daily-topic membership. Broad shared Trend/Topic/Industry/Geography alone must never merge otherwise unrelated current-day articles. Composer may propose new candidates, but it cannot silently promote long-term knowledge.
+## Persistence design and exact implementation gate
+Inspection of v4 migrations finds publications/editions/sources, Technician/observability and bridge bindings, but **no physical `articles`, `article_index_runs`, `article_chunks`, Composer run/topic tables or Assembler/Indexer runtime**. SYSTEM/INDEXER/COMPOSER define those future identities. The existing PR migration `20261021150000_add_editorial_knowledge_layer.sql` is retained and hardened as **candidate staging only**, never a second canonical article store.
 
-## Hybrid Editorial Memory
-Business Brief Memory is not only vector RAG. It combines SQL metadata and exact relationships, PostgreSQL full-text retrieval, multilingual vector retrieval through the versioned embedding profile, time and provenance, entities, Story Threads, Signals, Trends, editorial history and published outputs.
+The staging migration implements nine tables: article_enrichment_runs, article_enrichments, enrichment_annotations, story_threads, trends, signals, story_thread_articles, story_thread_signals and trend_signals. Every derived row has an enforced FK path to run producer/profile/version and exact article version, including a required origin Article Record for each candidate knowledge revision. SQL enforces valid SHA shape, required versions, one article/version per run, normalized relation uniqueness, nonempty signal/annotation evidence arrays, observation dates, directional relations, exact candidate target revision FKs and RLS. Worker grants are insert/select only; no cascade deletion erases provenance.
 
-For the morning Brief: Daily = delta. Memory = context.
-For Trend and Analysis products, Memory is primary knowledge material.
+**No accepted state or successful selected-run publication is available in staging.** Candidate thread/trend definitions may be staged before their evidence links are complete; this is not durable accepted knowledge. Raw evidence arrays are untrusted until resolved by the offline source validator and future readback adapter. The missing canonical article/index FKs are not faked. Q019 gates their addition, verified output selection, immutable audit/review storage and authorized transactional promotion. Direct attempts to set accepted status fail SQL checks even before a promotion adapter exists. Applying this migration to production remains outside this task.
 
-Indexer may use enrichment as metadata filters only when it is bound to the exact Article Record SHA and accepted profile/status. Cohere creates multilingual embeddings; PostgreSQL/pgvector stores and searches vectors and is itself language-agnostic.
+Local SQL tests execute the actual migration in in-memory PostgreSQL/PGlite, including invalid bindings, empty evidence, forbidden acceptance, duplicate normalized terms, directional links, RLS and restricted worker mutations. They do not prove production Supabase configuration, readback adapters or promotion concurrency, which remain gates.
 
-## Persistence model
-The v4 relational knowledge layer is additive and derived: article_enrichment_runs, article_enrichments, story_threads, story_thread_articles, signals, trends and trend_signals. Canonical prose remains only in Article Record Storage.
+The table below defines the final persistence target, refining the candidate scaffold. Additional review/evidence/catalog/topic tables and accepted publication are **not implemented**; implement them together with the real upstream keys. Nothing here is deployed schema:
 
-Until the Assembler article index tables are implemented, enrichment rows bind by article_id + article_record_sha256 without pretending that a missing FK already exists. A later additive migration may attach FKs to the operational article index.
+| Structure | Keys, relationships and constraints |
+| --- | --- |
+| `enrichment_runs` / `enrichment_attempts` | Run UUID; frozen exact input manifest/SHA, contract/producer/profile/method/taxonomy versions, accepted-knowledge snapshot, model/prompt, status `PENDING/RUNNING/PASSED/FAILED/NEEDS_REVIEW`, counts/post-check, immutable output identities/SHA, retry and selection history. Attempts append; selection publishes atomically after readback and exact coverage. |
+| `article_enrichments` | Run/output FK; composite FK `(article_id, article_record_sha256)` to future `articles(article_id, artifact_sha256)` unique key; producer/profile versions, output SHA/revision. Unique selected successful logical slot per exact article + producer/version + profile/version. Canonical storage identity resolved from article row, not accepted from a model. |
+| `topic_enrichments` / `topic_enrichment_articles` | Exact Composer topic output FK `(composer_run_id,topic_id,output_sha256)` and enrichment output FK; one row per exact member Article Record with source/index provenance, unique member, complete set compared to Composer output. |
+| `metadata_terms` / `metadata_aliases` | Versioned catalog, field, stable term ID, canonical label, entity type where applicable; unique field/ID/version; aliases can be ambiguous and must not have global identity uniqueness by label. |
+| `enrichment_annotations` | Enrichment output FK, field, normalized term FK when resolved, candidate label, evidence-set FK, status/confidence/method/review. Unique output/field/resolved ID or output/field/normalized unresolved label. One relation table replaces five redundant article facet tables. Index field/term/status/output for exact filters. |
+| `knowledge_proposals` | Run/output FK, kind thread/trend, candidate label/definition, evidence-set FK, status, resolution to accepted object/revision, review. Unique output/proposal ID; candidate labels never create durable objects. |
+| `story_threads` / `trends` | Stable opaque IDs, selected accepted revision pointer. Shared `knowledge_revisions` holds kind-scoped definition/scope/lifecycle, producer/profile/run lineage, evidence, review and supersession. Only reviewed revisions may be selected. No article prose. |
+| `signals` / `signal_links` | Immutable signal revision, run/output FK, description, evidence date, status/review. Evidence-set FK nonempty before acceptance. Link to exact accepted thread/trend revision with supports/weakens/contradicts/neutral, evidence and separate review. Indexed target/date/status for retrieval. |
+| `thread_trend_links` | Exact thread/trend revision FKs, relation, evidence, review; no inference that every article in a thread supports its trend. |
+| `knowledge_evidence` | Evidence-set ID + ordinal PK, exact article/version FK, range + passage SHA, optional exact index/chunk FK/SHA/profile. Index article/version and evidence set. Evidence-set completeness checked transactionally, never orphan claim rows. |
+| `knowledge_reviews` | Append-only actor/time/reason, before/after revision/status, evidence set, producer/profile lineage via output/revision FK; target revisions and corrections remain available. |
 
-## Review and gates
-Derived enrichment statuses: PENDING, VERIFIED, VERIFIED_WITH_NOTES, NEEDS_REVIEW, BLOCKED. Durable Story Thread/Trend lifecycle: candidate, accepted, rejected, retired.
+All derived rows bind transitively through enforced FKs to exact Article Record hashes, producer/profile/version and immutable run/output. Term catalogs are shared controlled configuration, not derived article claims; they have their own version/review provenance. Durable objects accumulate multi-article evidence through immutable revisions. Future SQL must enforce nonempty evidence, accepted-target FKs, candidate/accepted separation, exact set uniqueness and promotion minima inside locked transactions; Python validation alone is not a database constraint. Prevent concurrent promotion/publication races. Use private server-only tables, RLS, revoked anon/authenticated privileges, invoker functions, indexed FKs and no public promotion RPC. A local SQL integration test must demonstrate integrity, concurrency and privilege failures before rollout. Do not copy canonical prose into these tables.
 
-Rules:
-- unsupported semantic claims → NEEDS_REVIEW;
-- broken identity/SHA/evidence refs → BLOCKED;
-- no one-article automatic Trend promotion;
-- candidate knowledge never masquerades as accepted knowledge;
-- accepted history is append/audit oriented, not silently overwritten.
+## Indexer, Composer and editorial integration
+Article enrichment branches after verified Article Record persistence; source-only passage evidence need not wait for embeddings. It neither blocks Assembler nor changes Indexer source representations. Composer-ready completeness requires selected verified article enrichment and a post-checked index for the same SHA, produced independently or in parallel. Missing/failed enrichment is explicit incomplete coverage, not a silent bypass or fabricated metadata. Empty supported annotation/candidate arrays are valid; lack of an accepted historical trend does not block today’s honest coverage.
 
-## v3 migration
-Retained: category/topics/tags/entities/geographies/industries, Story Thread vs Trend distinction, Story Threads for continuity, Signals as evidence over time, Trends from repeated evidence, hybrid Memory, exact enrichment coverage validation, and the principle that today's Brief uses Signals while long-term Memory supports Trend/Analysis work.
+Retrieval is **SQL metadata + full-text + vector similarity + reranking + provenance/time-aware context assembly**. Exact accepted entity/topic/industry/geography/tag/thread/trend filters join enrichment evidence to the same article/index version. Candidate search is an explicit review mode. A trend match means an article has a reviewed relationship (including contradiction/neutral), not that it proves the trend. Return relationship direction and evidence. Time, source/publication, revision, review/lifecycle state and selected profile are explicit query constraints. Historic corrections do not erase cited evidence; default retrieval excludes superseded/rejected interpretations, with an audit mode to inspect them.
 
-Adapted: enrichment is a sidecar bound to immutable Article Records; multilingual vector search uses BB-EMBEDDING-V1; Composer works from verified assembled/indexed records; long-term knowledge promotion is explicit and versioned.
+`metadata_matches` supplies exact facet/thread/trend article sets. `metadata_candidates` complements lexical/vector candidate channels using accepted entity/industry/geography/thread overlap; broad shared topic/trend alone creates no daily grouping. Accepted trend links remain available for bounded historical context after today's groups exist. `compatible_hits` only accepts independently post-checked exact index identities with matching profiles, preserving channel scores without inventing fusion weights. The live SQL/vector/full-text adapter, index freshness selection, ranking/calibration and bounded historical search remain Q017/Q018/Q019. No helper is a semantic merge rule.
 
-Not carried forward: v3 Provisional Issue Map as a required layer, v3 Czech translation/summary prerequisite for Memory readiness, or any assumption that a model label alone is accepted durable knowledge.
+Vectors remain Cohere BB-EMBEDDING-V1, 1024D, search_document/search_query as in INDEXER. Cohere's shared embedding space provides multilingual similarity; PostgreSQL stores/compares vectors and provides language-configured lexical search. No claim is made that PostgreSQL itself is multilingual or that tests replace a Czech→EN/DE retrieval benchmark. Original/chunk embeddings are derived; avoid automatic double embedding of Czech translations.
+
+Composer groups today's concrete story/problem first, then proposes topic knowledge links with exact current evidence and separately cited accepted prior knowledge. It cannot promote threads/trends or inherit membership from broad taxonomy. It preserves singletons, author/source perspectives and conflicting signals. Topic enrichment does not replace per-article metadata. Deep Read owns deeper verification, Assignment Editor owns inclusion/hierarchy and Story Editor owns final angle. Importance of event ≠ reading value of article. Knowledge candidates never allocate editorial roles or silently restrict the editor's inputs.
+
+## v3 retention and adaptations
+Historical source tree: [business-brief-v3 933b5c47](https://github.com/ludvikjesensky-cmd/business-brief-v3/tree/933b5c47fb96c97333ff24dda4e7e019486ebbfd). Studied EDITORIAL_PIPELINE §§3/6/9, PRODUCT_MODEL §§6–10, CONTRACTS §§10/13/17, ARCHITECTURE §§8/9.5, DECISIONS D028–D032/D039/D047, `src/business_brief/editorial.py`, `src/business_brief/memory.py` and `supabase/migrations/20260925110000_add_editorial_archive_memory.sql`.
+
+| v3 | v4 treatment |
+| --- | --- |
+| category, topics, tags, entities, geographies, industries | Retained; versioned catalogs and evidence-bearing relations replace mostly free string arrays. Category optional; no forced tag quotas. |
+| trends[] and story_thread_candidates[]; reuse wording | Retained meaning; trends[] adapted to candidate proposals or exact reviewed durable links. Labels support lookup; stable reviewed identities prevent accidental promotion by repeated wording. |
+| Signal / chain / trend monitoring | Retained and made explicit with directional evidence, dates, lifecycle and promotion review; not claimed as already implemented in v3 SQL. |
+| editorial.py validates exact article coverage | Retained and strengthened with artifact SHA, producer/profile binding, candidate/accepted separation and passage checks. No v3 4,000-character evidence truncation. |
+| SQL metadata + original/Czech full-text + later vectors | Hybrid principle retained. v4 indexes original source under D026; verified translations remain separate downstream derivatives, not index prerequisites. |
+| metadata embedded into enriched article dictionaries / prose copied to Article Archive | Adapted to separate immutable derived output and relational projections; canonical v4 Article Record bytes remain untouched. |
+| advance-only enrichment, bilingual Memory-ready gate | Deliberately not imported as v4 source eligibility or Composer prerequisites. v4 uses verified assembled/indexed relevant Article Records and explicit deferred metadata reporting. |
+| Fast Editorial / Provisional Issue Maps | Deliberately dropped from current path; no provisional source discovery before trusted Article Records. |
+| Markdown derived, SQL structured knowledge, editorial history | Retained. Markdown reports do not become canonical article or knowledge state. |
+
+## Remaining gates (Q019)
+Before persistence/runtime rollout: implement and accept Assembler physical article keys/readback, Indexer Q017 exact index/chunk mapping and profiles, Composer Q018 exact output/member identities; freeze enrichment wire/storage envelope, initial catalog/entity alias policy and profile snapshot rules; implement transactional migrations/adapters/review authorization and immutable output selection; run local SQL integrity/privilege/concurrency tests. Then measure a small real multilingual editorial set for entailment, false entity merges, signal dating/independence, counterevidence, grouping, recall, cost and review load. No paid API, deployment, source rewrite or production write is part of this change.

@@ -1,7 +1,7 @@
 # System — Business Brief v4
 
 ## Boundary
-Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Enrichment vytváří versioned derived metadata/knowledge candidates nad přesnou Article Record SHA. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics a připojuje evidence-bearing knowledge links před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
+Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
 
 ## Technician
 Input: uzavřené source edition.
@@ -236,19 +236,10 @@ ordinary Chat Ingestor → accepted manifest → Assembler → assembly post-che
 
 A future pipeline runner may orchestrate handoffs, retries and review pauses; it preserves all gates and ordinary Chat supervision. Assembler, Indexer and Composer are accepted designs, not evidence of implementation or production execution. Composer NEEDS_REVIEW returns to Chat review against exact article evidence, explicit correction and Composer rerun with topic post-check. A runner must stop at semantic review gates. The index supports retrieval and does not replace canonical evidence.
 
-## Enrichment and Editorial Knowledge (D028)
-[docs/ENRICHMENT.md](ENRICHMENT.md) owns BB-ENRICHMENT-V1 and the derived long-term knowledge model carried forward from v3. Canonical Article Record bytes remain immutable. Enrichment sidecars bind to exact article_id + article_record_sha256 and carry category, topics, tags, entities, geographies, industries, Story Thread candidates, Trend candidates and evidence-bearing Signals.
-
-Knowledge semantics are explicit: Story Thread = concrete continuing story; Signal = dated evidence; Trend = broad long-term phenomenon supported by repeated Signals over time. One article or one daily topic cannot automatically promote an accepted Trend. Candidate and accepted knowledge are different durable states.
-
-The repository includes additive derived tables for article_enrichment_runs, article_enrichments, story_threads, story_thread_articles, signals, trends and trend_signals plus deterministic validation helpers. These are not canonical prose stores and do not imply a production enrichment/model run.
-
-Editorial Memory is hybrid: SQL metadata/relationships + PostgreSQL full-text + multilingual vector retrieval + time/provenance + Story Threads/Signals/Trends + editorial history. **Daily = delta. Memory = context.** For Trend/Analysis products, Memory becomes primary knowledge material.
-
 ## Composer (D027)
 Composer is the v4 successor to v3 Cross-Paper Editor, after Indexer and before Selective Deep Read / Editorial Workflow. It groups only the same current-day event/story/problem, not a broad subject, and produces `daily-topic-v1`. Its closed current-day corpus requires assembly VERIFIED / VERIFIED_WITH_NOTES, post_check PASS and a successfully post-checked exact index. Canonical Article Records remain immutable.
 
-Indexer article/chunk embeddings, PostgreSQL full-text and compatible BB-ENRICHMENT-V1 metadata/accepted knowledge links propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings or broad shared Trend/Topic/Industry/Entity alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
+Indexer article/chunk embeddings, PostgreSQL full-text and metadata/entities propose candidate relationships; a semantic/model layer may merge, split, retain single-source or request review. Embeddings alone never create topics. Today's groups precede continuity retrieval: **Daily = delta. Memory = context.** Prior references never replace today's coverage.
 
 [COMPOSER.md](COMPOSER.md) owns deterministic topic identity, technical membership roles, exact article/index provenance, optional supported daily_delta, continuity, Deep Read recommendations, relational operational structures and the mandatory topic post-check. Composer does not perform Deep Read, final selection/importance ranking, Assignment roles, Story Editor framing or Brief writing. Preserve article individuality and importance ≠ reading value. This is D027 design only, not runtime acceptance.
 
@@ -304,3 +295,10 @@ D023 / INGESTOR §21.7 requires independent server-equivalent crop preview befor
 
 ## Edition selection and immutable revisions (D024)
 Assembler accepts exactly one immutable edition-selection-v1 manifest ID + SHA through bridge.selection.assembly_input. It verifies every selected Page JSON and PNG and fails closed on missing/mismatched/unusable/known-defective input. No page-directory scan, latest-generation or latest-revision fallback. Mixed v3/v4/revision selections are explicit. Revision full snapshots use a separate page-revision-v1 wrapper; canonical v2/v3/v4 schemas and objects remain unchanged. INGESTOR §22 is normative. No assembly was run.
+
+## Enrichment and durable editorial knowledge (D028)
+[ENRICHMENT.md](ENRICHMENT.md) owns editorial-enrichment-v1, separately from canonical Article Records. After verified immutable article persistence, derived article enrichment records topics/tags/entities/geographies/industries, concrete Story Thread candidates, dated Signals and Trend candidates or exact accepted links. Every claim binds exact article_record_sha256, evidence and producer/profile/version. Composer's daily-topic-v1 carries bounded topic knowledge_links; it proposes rather than promotes durable knowledge.
+
+Memory is a hybrid editorial knowledge system: SQL metadata, full-text, vectors, provenance, time, entities, Story Threads, Signals, Trends and editorial history are first-class. Article / Event → Story Thread → Signal → Trend → Analysis / BI preserves v3 intent. Daily = delta. Memory = context; for Trends and Analysis/BI, Memory is primary knowledge material. Candidate promotion and lifecycle changes require explicit reviewed evidence; one article cannot establish a Trend. Enrichment does not own inclusion/hierarchy, final angle or Deep Read verification.
+
+Offline validators and retrieval helpers are implemented with synthetic tests. The normalized additive persistence design reuses future article/index/topic keys; no stand-in canonical articles schema is introduced. The existing PR SQL migration is hardened as candidate staging with FK-bound run/version lineage, normalized annotations, signal relationships and RLS; accepted state is deliberately unavailable. Q019 gates upstream article/index FKs, review/selection/promotion adapters and topic persistence on Assembler physical identities and Q017/Q018. The migration was tested locally, never applied to production; no runtime service or deployment is implied.
