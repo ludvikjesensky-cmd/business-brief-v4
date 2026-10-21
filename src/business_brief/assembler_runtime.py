@@ -167,8 +167,22 @@ class SupabaseAssemblerStore:
             raw = self.download(PAGE_BUCKET, selection["key"])
             page = verify_selected_page(selection, raw)
 
+            expected_source = {
+                "source_id": source["source_id"],
+                "source_sha256": source["source_sha256"],
+            }
+            if page.page.get("source") != expected_source:
+                raise IntegrityError(f"page {page_no} source identity mismatch")
+            publication = page.page.get("publication") or {}
+            for field in ("publication_id", "canonical_name", "edition_date", "edition_variant"):
+                if publication.get(field) != source.get(field):
+                    raise IntegrityError(f"page {page_no} publication identity mismatch: {field}")
+
             for item in page.page.get("items") or []:
+                item_id = item.get("page_item_id")
                 for asset in item.get("assets") or []:
+                    if asset.get("page_no") != page_no or asset.get("page_item_id") != item_id:
+                        raise IntegrityError(f"page {page_no} asset ownership mismatch")
                     artifact = asset.get("artifact")
                     if not isinstance(artifact, dict):
                         raise IntegrityError(f"page {page_no} asset is missing immutable artifact metadata")
