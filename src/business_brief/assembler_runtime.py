@@ -7,7 +7,9 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
-import httpx
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 from supabase import Client, create_client
 
 from .assembler import (
@@ -58,11 +60,7 @@ class BridgeAssemblyClient:
         if not base_url.startswith("https://"):
             raise RuntimeErrorAssembler("INGESTOR_BRIDGE_URL must be https")
         self.base_url = base_url.rstrip("/")
-        self.client = httpx.Client(
-            headers={"Authorization": f"Bearer {token}"},
-            timeout=60,
-            follow_redirects=False,
-        )
+        self.token = token
 
     @classmethod
     def from_env(cls) -> "BridgeAssemblyClient":
@@ -73,15 +71,27 @@ class BridgeAssemblyClient:
         return cls(base, token)
 
     def assembly_input(self, source_id: str, manifest_id: str, manifest_sha256: str) -> dict[str, Any]:
-        response = self.client.get(
-            f"{self.base_url}/ingestor-v2/source/{source_id}/assembly-input",
-            params={"manifest_id": manifest_id, "sha256": manifest_sha256},
+        query = urlencode({"manifest_id": manifest_id, "sha256": manifest_sha256})
+        request = Request(
+            f"{self.base_url}/ingestor-v2/source/{source_id}/assembly-input?{query}",
+            headers={"Authorization": f"Bearer {self.token}"},
+            method="GET",
         )
-        if response.status_code != 200:
-            raise RuntimeErrorAssembler(
-                f"assembly-input failed: HTTP {response.status_code} {response.text[:500]}"
-            )
-        value = response.json()
+        try:
+            with urlopen(request, timeout=60) as response:
+                raw = response.read()
+                status = response.status
+        except HTTPError as exc:
+            body = exc.read().decode("utf-8", "replace")[:500]
+            raise RuntimeErrorAssembler(f"assembly-input failed: HTTP {exc.code} {body}") from exc
+        except URLError as exc:
+            raise RuntimeErrorAssembler("assembly-input upstream request failed") from exc
+        if status != 200:
+            raise RuntimeErrorAssembler(f"assembly-input failed: HTTP {status}")
+        try:
+            value = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeErrorAssembler("bridge returned invalid JSON") from exc
         if not isinstance(value, dict) or value.get("sha256") != manifest_sha256:
             raise RuntimeErrorAssembler("bridge returned an invalid assembly-input envelope")
         return value
