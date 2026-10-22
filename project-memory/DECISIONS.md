@@ -36,8 +36,10 @@ Dnešní vydání je primární. Editorial Memory přidává kontinuitu, dedupli
 ## D010 — ACTIVE — Watcher není součástí v4
 Automatický WSJ watcher byl odstraněn. Acquisition se musí řešit explicitně jinou cestou.
 
-## D011 — ACTIVE — Paid Fast Editorial automation je pozastavena
-Po reálném WSJ běhu s nepřijatelným API nákladem se nesmí automaticky plánovat další placené full-edition runs bez cost redesignu a malého acceptance testu.
+## D011 — ACTIVE — Page-level API automatizace Fast Editorialu je pozastavena
+Po reálném WSJ běhu s nepřijatelným API nákladem se nesmí automaticky plánovat další placené full-edition page-level API runs bez cost redesignu a malého acceptance testu.
+
+Toto rozhodnutí **není selháním ani pozastavením Fast Editorial jako redakčního modelu**. Týká se konkrétní automatizační implementace `fast-editorial-v4.1`, která prováděla modelové volání nad jednotlivými stranami a následnou syntézu. Úspěšný v3 Fast Editorial byl primárně live Chat/editorial workflow nad kompletními Reference Editions a zůstává platným produktovým dědictvím.
 
 ## D012 — ACTIVE — v1–v3 jsou dědictví, ne current code dependencies
 Relevantní principy, decisions, failures a lessons se přenášejí do v4 Project Memory; staré implementace se nenačítají jako skryté závislosti.
@@ -183,6 +185,21 @@ The output is `daily-topic-v1`, with deterministic day/member-version identity, 
 **Boundary:** Immutable Article Record bytes stay canonical; rebuildable enrichment binds article_record_sha256 and producer/profile/version. daily-topic-v1 gains bounded knowledge_links. SQL metadata/full-text/vector/provenance/time/editorial history are first-class; Daily = delta. Memory = context, with Memory primary for Trend/Analysis. Controlled metadata, candidates and reviewed accepted relations remain separate. Editorial ownership and importance ≠ reading value remain unchanged.
 
 **Implementation:** Offline validators and exact metadata/profile candidate helpers plus tests are implemented. No physical upstream articles/index/topic tables exist; the existing PR migration is hardened to candidate staging, with normalized annotations and enforced run/version/SHA lineage, RLS and no accepted state. Q019 gates upstream FKs, immutable review/output selection and transactional promotion; local PostgreSQL tests cover staging integrity and privileges. Q017/Q018 and real-source acceptance remain open. No v3 advance-only gate, bilingual Memory-ready prerequisite, Fast Editorial or Provisional Issue Map is reintroduced. No model call, deployment or production data write.
+
+## D030 — ACTIVE — Fast Editorial a Deep/Memory jsou dvě nezávislé větve
+**Date:** 2026-10-22.
+
+**Decision:** Business Brief v4 drží Fast Editorial a Deep/Memory jako dvě samostatné větve se samostatnými vstupy, workflow, acceptance gates a provozními artefakty. V aktuální fázi mezi nimi není required dependency ani povinný handoff.
+
+**Fast Editorial** navazuje na ověřený v3 desetidenní experiment. Je edition-first a editorial-first: kompletní Reference Edition → live Chat Editorial Read → provisional Issue Map → cross-paper editorial comparison → editorial selection → Brief. Jeho cílem je rychle pochopit celé vydání, jeho těžiště, jednotlivé texty, jejich reading value a vztahy napříč FT / WSJ / Handelsblatt. Nemá čekat na canonical Article Records, Indexer, Enrichment, Composer ani Memory.
+
+**Deep/Memory** zůstává evidence-first větev pro přesnou rekonstrukci a dlouhodobou znalost: Technician → ordinary Chat Ingestor → immutable Page JSON / selection → Assembler → canonical Article Records → Indexer → Enrichment / Memory. Composer D027 patří do této větve jako případné seskupování canonical indexed Article Records; není nástupcem celého Fast Editorial workflow a není bránou pro ranní Brief.
+
+**Historical code:** `src/business_brief/fast_editorial.py` a `fast_editorial_worker.py` jsou historický automatizační experiment z 9. 10. 2026. Zachovávají užitečný Issue Map contract a některé editorial principy, ale jejich Physical Map / `ingestor_jobs` / page-level paid API runtime je superseded a nesmí být považován za současnou Fast Editorial implementaci.
+
+**Reason:** v3 prokázala hodnotu Fast Editorial jako rychlého redakčního čtení kompletních vydání. v4 současně prokázala lepší cestu pro přesný Deep Read a canonical evidence. Jejich předčasné spojení znovu vytváří zbytečné technické dependency a posouvá ranní Brief za pomalou Deep pipeline.
+
+**Consequences:** Nejbližší Fast Editorial práce nejprve rekonstruuje a přenese ověřený v3 workflow do v4 jako samostatnou větev. Integrace s canonical Article Records, Composerem nebo Memory je samostatná budoucí otázka a nesmí být předpokládána v současném návrhu.
 
 ## D029 — ACTIVE — Deterministic Assembler is implemented repository-side
 **Date:** 2026-10-21.
