@@ -2,12 +2,45 @@
 
 **Last consolidated:** 2026-10-22
 
+
+## Production infrastructure migration — 2026-10-22
+
+Current production compute/web runtime is **Hetzner**, not Railway. Canonical operational detail is in [docs/INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md).
+
+- Host: `tannenberg-prod-01`, IPv4 `46.225.32.16`, Ubuntu 26.04.1 LTS.
+- Caddy is the public HTTPS gateway.
+- `bridge.businessbrief.cz` terminates at Caddy and reverse-proxies to the Bridge container on `127.0.0.1:8080`.
+- `businessbrief.cz` is served as a static site from `/var/www/businessbrief.cz`; source lives in private repo `ludvikjesensky-cmd/business-brief-web-v2`.
+- Supabase remains authoritative PostgreSQL/Storage.
+- The Hetzner-side production environment is `/opt/business-brief-v4/.env`, mode 600; secrets are not stored in Git.
+- Following the Railway Variables security notification received by the operator, secrets previously stored there were treated as potentially exposed and rotated where applicable.
+- Current `INGESTOR_BRIDGE_URL` is `https://bridge.businessbrief.cz`.
+- Railway deployment IDs/pins below are historical provenance only and no longer establish current runtime health.
+
+### Q020 real-source acceptance on Hetzner — COMPLETE
+
+Accepted WSJ source `603e8242-ffe8-4e1d-a5de-9adb3da4d188`, manifest `wsj-2026-10-14-selection-r1`, SHA `f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77`.
+
+Read-only Assembler result:
+- 27 page items;
+- 21 Article Records;
+- 16 VERIFIED;
+- 5 VERIFIED_WITH_NOTES;
+- 0 NEEDS_REVIEW;
+- 0 BLOCKED;
+- persistence not requested; 21 eligible, 0 persisted.
+
+The first explicit `--persist` run wrote the eligible immutable Article Records and returned `CREATED` receipts. Repeating the exact same `--persist` command returned `REPLAYED` for the same records, confirming idempotent same-key/same-bytes persistence rather than duplicate creation.
+
+Public authenticated Bridge readiness returned HTTP/2 200 with `status: READY`. The Assembler container also reached the same public Bridge endpoint and received 200. Q020 is therefore accepted for this exact manifest/runtime.
+
+
 ## Current direction
 D030 now separates the project into two independent branches.
 
 **Fast Editorial:** current priority is to reconstruct and port the proven v3 edition-first live Chat workflow into v4 as an independent morning editorial path. The existing `fast-editorial-v4.1` page-level API worker is historical/superseded automation evidence, not the target implementation. Fast Editorial must not depend on Assembler, Indexer, Enrichment, Composer or Memory in this phase.
 
-**Deep / Memory:** current accepted source boundary remains Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No production Assembler, Indexer, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 remains open. Q011 is resolved by D025 with deterministic Assembler policy and frozen logical `article-record-v1` contract.
+**Deep / Memory:** current accepted source boundary remains Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. A production Assembler acceptance has now occurred on the exact accepted WSJ manifest; Indexer, Composer, Translator and Editorial production runs have not. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 remains open. Q011 is resolved by D025 with deterministic Assembler policy and frozen logical `article-record-v1` contract.
 
 ## Q014/Q015 implemented, deployed and accepted
 D024 / INGESTOR §22 implements page-revision-v1 as a separate full-snapshot v4 wrapper, safe source-scoped readback and inventory, and immutable edition-selection-v1. Canonical v2/v3/v4 schemas, keys, request/claim hashes and historical objects remain unchanged. Revision and manifest writes use create-if-absent, exact SHA/readback, durable original-request/target claims and source fencing. Assembler input requires exactly one accepted manifest ID + SHA, re-verifies all selected JSON/PNGs and never scans latest pages.
@@ -41,7 +74,7 @@ Railway confirms the bridge pin/deployment above remains SUCCESS. Before the mer
 
 Q011 is resolved by D025 and D029 now implements the deterministic Assembler in the repository. `src/business_brief/assembler.py` builds immutable `article-record-v1` records from one exact accepted manifest, performs continuation resolution, unique-anchor asset placement and mandatory mechanical post-check. `assembler_runtime.py` loads the explicit Bridge assembly-input, independently re-downloads/verifies exact manifest/Page JSON/revision/PNG bytes from private Storage, and provides the `bb-assembler` CLI. Persistence is explicit via `--persist` only.
 
-Migration `20261021130000_add_assembler_articles.sql` defines the private `article-records` bucket plus minimal PostgreSQL `articles` + `article_source_parts` operational indexes. No migration has been applied and no production Article Record has been written. The initial resolver intentionally fails closed when continuation labels cannot safely resolve to selected physical page numbers; title-token agreement only disambiguates candidates already bounded by explicit continuation evidence. Q020 owns real-source acceptance on the accepted WSJ manifest before any Indexer consumption. Broader Q010, rights, acquisition and publication gates remain open.
+Migration `20261021130000_add_assembler_articles.sql` defines the private `article-records` bucket plus minimal PostgreSQL `articles` + `article_source_parts` operational indexes. The Assembler persistence path is now production-accepted for the exact WSJ manifest above; immutable Article Records were created and an immediate identical replay returned REPLAYED. The initial resolver intentionally fails closed when continuation labels cannot safely resolve to selected physical page numbers; title-token agreement only disambiguates candidates already bounded by explicit continuation evidence. Q020 owns real-source acceptance on the accepted WSJ manifest before any Indexer consumption. Broader Q010, rights, acquisition and publication gates remain open.
 
 ## Assembler repository implementation (D029; not yet accepted in production)
 Branch implementation adds:
@@ -50,7 +83,7 @@ Branch implementation adds:
 - `supabase/migrations/20261021130000_add_assembler_articles.sql`: private article-records bucket and article/source-part indexes;
 - `tests/test_assembler.py` + `tests/assembler_schema.mjs`: deterministic continuation, ambiguity/review, asset anchor, tamper/hash and SQL/RLS constraints.
 
-The accepted WSJ fixture is expected to exercise six Page-One continuations, including two distinct targets on A4 and two on A10. No real-source Assembler command has yet been run from this branch, so the expected article count/status is not recorded as accepted evidence. Q020 requires read-only real-source inspection before any persistent write.
+The accepted WSJ fixture is expected to exercise six Page-One continuations, including two distinct targets on A4 and two on A10. Real-source Assembler acceptance is complete on Hetzner for the exact accepted WSJ manifest: 21 Article Records (16 VERIFIED, 5 VERIFIED_WITH_NOTES, 0 NEEDS_REVIEW, 0 BLOCKED), followed by CREATED persistence receipts and REPLAYED receipts on identical rerun.
 
 ## PR #14 verification — 2026-10-21
 GitHub Actions verification on head `a3d74adaf3275d2de4fdd0b0a0d06930a5cdfc45` passed cleanly: **294 Python tests**, **9 Assembler PostgreSQL/PGlite schema checks**, **14 existing knowledge-schema checks**, plus `py_compile` for assembler.py and assembler_runtime.py.
@@ -62,14 +95,14 @@ The accepted downstream design is Assembler → mandatory assembly post-check �
 
 [docs/INDEXER.md](../docs/INDEXER.md) owns BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), article/chunk vectors in Supabase pgvector, derived tables, index states and hybrid multilingual retrieval. Canonical Article Records remain untouched. Ranking weights and implementation details remain Q017; broader Editorial Memory remains Q007. A pipeline runner is future orchestration.
 
-Actual acceptance still stops at the accepted WSJ manifest above: no Assembler or Indexer run is claimed. This consolidation adds no runtime code, migration, bucket, Cohere call or deployment. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
+Current accepted runtime now includes the Assembler Q020 run and persistence/replay acceptance for the exact WSJ manifest above; no Indexer run is claimed. This consolidation adds no runtime code, migration, bucket, Cohere call or deployment. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
 
 ## Deep/Memory Composer design consolidated (D027; not implemented)
 [docs/COMPOSER.md](../docs/COMPOSER.md) owns a Deep/Memory grouping layer inspired by v3 Cross-Paper Editor: closed current-day eligible indexed Article Records → candidate graph → semantic grouping → daily-topic-v1 → mandatory topic post-check → Selective Deep Read → Editorial Workflow. Composer does not select the Brief, allocate editorial roles, perform Deep Read or finalize angle/framing. Article individuality and importance ≠ reading value remain explicit.
 
 Daily = delta. Memory = context: continuity retrieval follows today's grouping and cannot substitute older coverage. The contract defines exact article/index provenance, technical membership roles, deterministic day/member identity, single-source coverage, review statuses and minimal relational structures. NEEDS_REVIEW requires Chat review, recorded correction and Composer rerun; a future runner stops at semantic gates. Q018 owns implementation/calibration gates; Q007 remains broader Editorial Memory.
 
-Actual acceptance still stops at the immutable WSJ selection manifest above. No Assembler, Indexer, Composer, Deep Read or Editorial run is claimed. This update is documentation/contract work only: no runtime implementation, model API calls, migrations, deployments or production data writes.
+Current accepted runtime now includes the Assembler Q020 run and immutable persistence/replay acceptance for the exact WSJ manifest above. No Indexer, Composer, Deep Read or Editorial run is claimed. This update is documentation/contract work only: no runtime implementation, model API calls, migrations, deployments or production data writes.
 
 ## Enrichment / hybrid knowledge foundation (D028; repository implementation)
 PR #13 continues the existing Composer design with docs/ENRICHMENT.md and daily-topic-v1 knowledge_links. v3 source contracts/code/schema at 933b5c47fb96c97333ff24dda4e7e019486ebbfd were inspected. Retained/adapted/dropped concepts are explicitly mapped there.
