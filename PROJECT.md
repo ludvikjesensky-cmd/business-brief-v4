@@ -34,6 +34,7 @@ Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/ING
 - docs/INDEXER.md — kanonický design odvozeného search indexu, profily a post-check (D026); implementace zatím neproběhla
 - docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
+- docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
@@ -43,9 +44,9 @@ Původní v4 dokumentace je po migraci zachována v docs.archive/ jako historick
 ## Storage
 KNOWLEDGE: toto Repository, zejména PROJECT.md, project-memory/ a docs/.
 SOURCE: kód, SQL migrace a kontrakty v Repository; source editions v provozním storage.
-PRODUCTION: Railway/Supabase runtime a dočasné workspaces.
+PRODUCTION: Hetzner/Caddy/Docker runtime; Supabase operational database/storage. Railway is historical provenance, not the current critical runtime.
 ARTIFACTS: validované source, page-ingest a editorial artefakty v Supabase Storage a budoucí publikační výstupy.
-OPERATIONAL: Supabase je autoritativní pro jobs, state, provenance, eventy a artefakty; Railway je výpočetní/workspace vrstva.
+OPERATIONAL: Supabase je autoritativní pro jobs, state, provenance, eventy a artefakty; Hetzner je current compute/web runtime. Railway již není součást current critical production path.
 
 ## Critical rules
 Před návrhem starého přístupu čti FAILURES. Nezaměňuj extraction completeness za editorial selection. Neautomatizuj placený modelový workflow před změřeným acceptance testem. Provenance se nesmí ztratit.
