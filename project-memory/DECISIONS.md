@@ -230,3 +230,5 @@ Persistence is implemented but not deployed. Only VERIFIED / VERIFIED_WITH_NOTES
 **Acceptance:** authenticated public Bridge `/ready` returned HTTP/2 200/READY; the Assembler container reached the same public endpoint with 200; Q020 on the accepted WSJ manifest produced 21 records (16 VERIFIED, 5 VERIFIED_WITH_NOTES, 0 review/blocked), persisted with CREATED receipts and immediately replayed with REPLAYED receipts. The public website and Bridge both returned 200 after Caddy/DNS cutover.
 
 **Authority:** [docs/INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md) is the canonical current infrastructure/runbook document.
+
+**D031 consolidation boundary (2026-10-22):** Host OS is Ubuntu 26.04.1 LTS; Docker Bridge binds only to `127.0.0.1:8080`. The static website comes from separate repository `ludvikjesensky-cmd/business-brief-web-v2`. Supabase-secret rotation for Hetzner is recorded; any other affected credential needs an explicit rotation/revocation status rather than an assumption of complete incident closure. No credential values are documentation evidence. D031 changes infrastructure ownership, not editorial contracts.

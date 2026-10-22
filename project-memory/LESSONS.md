@@ -53,3 +53,12 @@ Reconstruct text; preserve visuals as crops. Pull quotes are presentation/layout
 
 ## L018 — Immutable history needs an explicit selection artifact
 Q014/Q015 acceptance separates historical ingest/revisions from what downstream actually uses. Readback verifies bytes and identity; a manifest records exact generation/key/SHA for every physical page. Never infer latest, rehabilitate a known defect from a historical usable flag, or require homogeneous generations when a verified mixed selection is explicit. Independent preview can reveal additional defects even in an unchanged asset; preserve prose and correct only what source evidence requires.
+
+## L019 — Runtime migration requires an explicit authority change
+After the 2026-10-22 cutover, current runtime evidence comes from Hetzner Caddy/Docker, public HTTPS checks and Supabase. Railway success IDs remain useful historical provenance but cannot establish current health. Update runbooks and open acceptance gates together; a stale Q020 OPEN statement can contradict a successful CREATED → REPLAYED run.
+
+## L020 — Secret rotation and service acceptance prove different things
+A Variables security warning warrants treating affected credentials as potentially exposed and recording rotation/revocation status without values. Moving hosts or obtaining 200 READY does not prove that every old credential has been revoked. Keep secrets outside Git, restrict the environment file, and use read-only deploy keys and dedicated revocable Bridge credentials.
+
+## L021 — Test the public path and replay after cutover
+Local container health alone does not verify DNS/Caddy/TLS or application persistence. Check both public hosts, then run the exact source/manifest/SHA read-only, persist deliberately and replay identically. Q020's 27 page_items → 21 Article Records and CREATED → REPLAYED establish acceptance for that selection, not general cross-publication or downstream readiness.

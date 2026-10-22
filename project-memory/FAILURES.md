@@ -74,3 +74,11 @@
 **Retry only if:** every exact server-equivalent crop is independently previewed before visual_checked:true/persist; full-page bbox views are insufficient. See D023 / INGESTOR §21.7.
 
 **Resolution 2026-10-18:** D024 revision r1 was written/read back after independent source-derived standalone previews. It corrects the infographic plus an independently exposed clipped/contaminated photo, preserves all prose and other metadata, and is explicitly selected in the accepted manifest. Original JSON/PNGs remain immutable and excluded; the original defective artifact is not rehabilitated. Exact identities/bounds in CURRENT_STATE/HISTORY.
+
+## F012 — Railway Variables security warning and runtime migration
+**Date:** 2026-10-22. **Observed:** the operator reported a Railway security warning concerning Variables and possible secret exposure. This does not establish confirmed misuse or application-data compromise.
+**Response:** treat affected credentials as potentially exposed, rotate/revoke them, and remove Railway from the critical production path. Supabase-secret rotation for Hetzner is recorded; no blanket claim of all credential revocations is made. Production secrets reside outside Git in the Hetzner `.env`, mode 600. Never retain secret values as incident evidence.
+**Acceptance/status:** Hetzner/Caddy/Docker migration completed; authenticated Bridge readiness 200 READY, website 200, Q020 read-only plus CREATED → REPLAYED accepted for the exact WSJ manifest. Successful runtime checks do not prove every old credential revoked. Historical Railway IDs remain provenance only; see D031 and INFRASTRUCTURE.md.
+
+## F013 — Migration exposed database reachability and authentication configuration errors
+**Date:** 2026-10-22. **Observed:** the initial direct Supabase database connection selected an unreachable IPv6 route; after switching to a reachable pooler path, an incorrect password produced authentication failure. **Resolution:** corrected connectivity and credentials; the database check returned `(1,)`. Preserve the Bridge's session-lock semantics: transaction pooling on port 6543 remains unsupported. **Lesson:** distinguish routing, authentication and application readiness; verify the deployed path before Q020. No connection strings or passwords belong in diagnostics published to Git.
