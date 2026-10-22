@@ -35,8 +35,16 @@ Zásadní editorial pravidlo:
 
 Pokud právě autorova otázka, způsob argumentace nebo framing tvoří hlavní hodnotu článku, musí být tato vrstva zachována v dalším zpracování.
 
-## Upstream evidence
-Editorial workflow nemá začínat z raw PDF ani z neověřeného modelového summary.
+## Two editorial contexts — D030
+
+This document serves both product philosophy and downstream editorial judgment, but v4 now has two independent production branches.
+
+**Fast Editorial** starts from complete Reference Editions and live Chat editorial reading. It may create provisional Issue Maps, compare editions cross-paper and build the morning Brief without canonical Article Records, Indexer, Enrichment, Composer or Memory.
+
+**Deep / Memory editorial work** starts from canonical evidence as described below. Its source-reconstruction and knowledge gates must not be imposed on Fast Editorial unless a future explicit decision integrates the branches.
+
+## Upstream evidence — Deep / Memory branch
+Deep/Memory editorial workflow nemá začínat z raw PDF ani z neověřeného modelového summary. Toto pravidlo se nevztahuje na Fast Editorial, jehož vstupem je záměrně kompletní Reference Edition čtená live Chat editorem.
 
 Upstream chain:
 
