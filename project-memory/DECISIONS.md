@@ -15,8 +15,8 @@ Business Brief nesmí komprimovat zdroj tak, že zachová fakta, ale ztratí aut
 ## D003 — ACTIVE — Provenance je součást produktu
 Každé významné tvrzení/výstup musí být dohledatelný ke zdroji a transformacím.
 
-## D004 — ACTIVE — Supabase je operational memory/archive; Railway je workshop
-Databáze/storage drží autoritativní state a artefakty. Railway filesystem je dočasný.
+## D004 — SUPERSEDED by D031 — Supabase je operational memory/archive; Railway je workshop
+Původní rozhodnutí správně oddělilo autoritativní Supabase data od dočasného compute filesystemu, ale runtime provider se 2026-10-22 změnil. Current production compute/web runtime je Hetzner; viz D031 a docs/INFRASTRUCTURE.md.
 
 ## D005 — ACTIVE — Technician zůstává čistě technický
 OCR a fyzická příprava patří Technicianovi; semantic/editorial interpretation ne.
@@ -92,7 +92,7 @@ PostgreSQL slouží jako operational index/state/provenance vrstva. Dedicated pa
 
 **Consequences:** D017 canonical path zůstává beze změny. UUID source v DB/API se explicitně mapuje na SHA identitu Technician manifestu. Server-side credential/scopes/publication allowlist a 300s signed URLs chrání privátní bucket; Supabase secret se Chatu neposkytuje. Zápis je create-if-absent nad RFC8785 JCS bytes, s SHA-256/readback identity verification a durable idempotency binding. Odlišný obsah/identita na stejném klíči je 409, nikoli overwrite; BLOCKED se canonical neukládá, NEEDS_REVIEW lze uložit bez assembly eligibility. Implementace musí zajistit fencing vůči změnám readiness/active source/bundle mapping.
 
-Preferujeme budoucí malou samostatnou Railway HTTP službu. Toto rozhodnutí nepředstavuje implementaci, deploy, nový DB schema ani obnovení legacy Ingestoru. Přesná schémata a error model se neduplikují do dalších dokumentů. Acceptance gate je v §19.8; první skutečný page pass zůstává ruční, jedna strana a STOP.
+Původně byla preferována malá samostatná Railway HTTP služba. Tento provider choice je nyní historický a superseded D031; samotný D018 Bridge contract, security boundary a persistence semantics zůstávají aktivní beze změny. Přesná schémata a error model se neduplikují do dalších dokumentů. Acceptance gate je v §19.8; první skutečný page pass zůstává ruční, jedna strana a STOP.
 
 ## D019 — ACTIVE — Relevant source-faithful page extraction
 **Date:** 2026-10-16.
@@ -213,4 +213,20 @@ Persistence is implemented but not deployed. Only VERIFIED / VERIFIED_WITH_NOTES
 
 **Reason:** D025 was already frozen, while Q019 and the Indexer need stable physical Article Record identities. A deterministic implementation can now be tested on the accepted WSJ manifest without introducing semantic automation or weakening provenance.
 
-**Consequences:** Repository implementation exists in src/business_brief/assembler.py and assembler_runtime.py with unit/schema tests. No migration has been applied, no Railway service deployed and no production Article Record written yet. Q020 is the acceptance/deployment gate. Q019 may now depend on the real Assembler schema once Q020 confirms it rather than inventing a parallel article catalog.
+**Consequences:** Repository implementation exists in src/business_brief/assembler.py and assembler_runtime.py with unit/schema tests. Q020 was subsequently accepted on the Hetzner runtime for the exact WSJ 2026-10-14 accepted manifest: 21 Article Records, followed by CREATED persistence receipts and REPLAYED receipts on the identical rerun. Current runtime/provenance is in CURRENT_STATE and docs/INFRASTRUCTURE.md.
+
+
+## D031 — ACTIVE — Hetzner is the current production compute/web runtime; Supabase remains authoritative data
+**Date:** 2026-10-22.
+
+**Decision:** Move the current critical Business Brief runtime from Railway to the Hetzner host `tannenberg-prod-01` (`46.225.32.16`). Caddy is the public HTTPS gateway, Docker is the backend runtime boundary, and Supabase remains the authoritative PostgreSQL/Storage layer. `bridge.businessbrief.cz` is the canonical public Bridge endpoint; the Assembler uses `INGESTOR_BRIDGE_URL=https://bridge.businessbrief.cz`. The public `businessbrief.cz` landing page is also served from this host.
+
+**Trigger:** The operator received a Railway security notification concerning Variables and possible secret compromise. Secrets stored there were therefore treated as potentially exposed until rotated. The migration is a security/control boundary change; it is not evidence that Business Brief application data was itself compromised.
+
+**Security consequences:** rotate affected secrets; keep production secrets only in the server-side `.env` outside Git; use SSH public-key authentication; use read-only GitHub deploy keys where only pull access is required; expose the Bridge container only on loopback and publish it through Caddy/TLS.
+
+**Operational consequences:** Current runtime truth is Hetzner service/container state + public endpoint behavior + Supabase state. Railway deployment IDs remain historical provenance only. Existing immutable Supabase artifacts, Bridge wire contracts and provenance identities remain unchanged by the provider migration.
+
+**Acceptance:** authenticated public Bridge `/ready` returned HTTP/2 200/READY; the Assembler container reached the same public endpoint with 200; Q020 on the accepted WSJ manifest produced 21 records (16 VERIFIED, 5 VERIFIED_WITH_NOTES, 0 review/blocked), persisted with CREATED receipts and immediately replayed with REPLAYED receipts. The public website and Bridge both returned 200 after Caddy/DNS cutover.
+
+**Authority:** [docs/INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md) is the canonical current infrastructure/runbook document.
