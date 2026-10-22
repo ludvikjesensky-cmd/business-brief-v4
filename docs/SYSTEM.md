@@ -39,7 +39,7 @@ Detail role je v docs/INGESTOR.md.
 
 ## Ingestor Access Bridge
 
-Přijatý kontrakt v1, implementovaný v `bridge/` a nasazený jako samostatná Railway HTTP služba: úzká autorizovaná HTTP vrstva mezi live Chat Ingestorem a privátním Supabase Storage. Normativní request/response schémata, validace a chyby jsou pouze v [INGESTOR.md §19](INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1).
+Přijatý kontrakt v1, implementovaný v `bridge/` a nyní provozovaný jako samostatná Docker HTTP služba na Hetzneru za Caddy: úzká autorizovaná HTTP vrstva mezi live Chat Ingestorem a privátním Supabase Storage. Normativní request/response schémata, validace a chyby jsou pouze v [INGESTOR.md §19](INGESTOR.md#19-ingestor-access-bridge--normative-http-contract-v1).
 
 - `GET /ingestor-v2/source/current?publication=...` vybírá nejnovější dostupné aktivní vydání jednoznačně; při variantách nebo nepřipraveném zdroji blokuje místo fallbacku.
 - `GET /ingestor-v2/source/<source_id>/page/<page_no>` vrací ověřenou identitu a krátkodobé read-only signed URLs pro manifest, obraz, prepared/OCR PDF a originál.
@@ -47,7 +47,7 @@ Přijatý kontrakt v1, implementovaný v `bridge/` a nasazený jako samostatná 
 
 Bridge neinterpretuje obsah, neposuzuje relevanci, neprovádí OCR ani assembly. Databázový source UUID se mapuje na manifest `sha256:<digest>` přes blob/edition vazby, nikoli rovností řetězců. Server odvozuje canonical klíč, zapisuje create-if-absent a ověřuje stažené JCS bytes přes SHA-256 a identitu. Shodný obsah je replay, odlišný obsah 409; žádný silent overwrite. `STORED` je potvrzení persistence, nikoli nezávislý editorial verdikt. NEEDS_REVIEW lze uložit bez assembly eligibility, BLOCKED se canonical neukládá. Durable bindings a source fencing jsou implementované; nejde o samostatný editorial Page JSON index (bridge/README.md).
 
-Samostatná Railway služba `ingestor-access-bridge` prošla technickým page-1 evidence acceptance z Codex HTTPS klienta; Page JSON se v tomto testu neukládal. Ordinary Chat image + inline OCR read acceptance subsequently passed through private Site v4 (docs/INGESTOR.md §20); the first v2 production persist also passed but its content is superseded (HISTORY, D019). Pro deployment, durable fencing a recovery viz [bridge/README.md](../bridge/README.md). Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
+Historická Railway služba `ingestor-access-bridge` prošla technickým page-1 evidence acceptance z Codex HTTPS klienta; current production Bridge běží na Hetzneru na `bridge.businessbrief.cz`; Page JSON se v tomto testu neukládal. Ordinary Chat image + inline OCR read acceptance subsequently passed through private Site v4 (docs/INGESTOR.md §20); the first v2 production persist also passed but its content is superseded (HISTORY, D019). Pro deployment, durable fencing a recovery viz [bridge/README.md](../bridge/README.md). Auth principal má scopes a publication allowlist; Supabase secret zůstává jen na serveru.
 
 ## Page JSON
 Page JSON je nový handoff artefakt mezi Ingestorem a Assemblerem.
@@ -268,7 +268,7 @@ Supabase PostgreSQL: publications, editions, physical sources/arrivals, jobs, st
 
 Supabase Storage: source inbox/archive, Technician artifacts, Page JSONs, assembled article artifacts a další validované artefakty.
 
-Railway: workers a temporary workspace.
+Hetzner: current workers/web runtime; Caddy HTTPS gateway; Docker backend services. Railway: historical deployment provenance only. Canonical runbook: INFRASTRUCTURE.md.
 
 ## State integrity
 Immutable source a provenance jsou first-class. Ready state se nastavuje až po durable uploadu a validaci. Destruktivní cleanup inboxu je poslední krok.
