@@ -21,13 +21,18 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
+## Active branches
+- **Fast Editorial:** independent edition-first morning editorial workflow inherited from the successful v3 experiment. Current task: reconstruct and port the live Chat Issue Map → cross-paper → Brief workflow. It must not depend on Deep/Memory infrastructure in this phase.
+- **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
+- Integration between the branches is deliberately unresolved; see D030.
+
 ## Detailed docs
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura; obsahuje kanonický Assembler kontrakt a D029 repository implementation
 - docs/INGESTOR.md — kanonické instrukce Ingestoru; §21 article assets / v4 kontrakt a rollout gate (D022)
 - docs/INDEXER.md — kanonický design odvozeného search indexu, profily a post-check (D026); implementace zatím neproběhla
-- docs/COMPOSER.md — kanonický daily-topic-v1 / Cross-Paper Editor design, provenance a review gates (D027); implementace zatím neproběhla
+- docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
@@ -44,6 +49,8 @@ OPERATIONAL: Supabase je autoritativní pro jobs, state, provenance, eventy a ar
 
 ## Critical rules
 Před návrhem starého přístupu čti FAILURES. Nezaměňuj extraction completeness za editorial selection. Neautomatizuj placený modelový workflow před změřeným acceptance testem. Provenance se nesmí ztratit.
+
+Fast Editorial a Deep/Memory jsou podle D030 samostatné větve. Fast Editorial nesmí být podmíněn canonical Article Records, Indexerem, Enrichmentem, Composerem ani Memory, dokud nové explicitní rozhodnutí neurčí jinak.
 
 Business Brief nesmí redukovat zdrojový text na „co se stalo“. Musí zachovat mediální a autorskou perspektivu, otázku, rámování a argumentaci, pokud právě v nich spočívá hodnota textu.
 
