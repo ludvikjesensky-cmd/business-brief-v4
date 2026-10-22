@@ -2,6 +2,45 @@
 
 Architektura odděluje technickou přípravu zdroje, page-level interpretaci, skládání článků, cross-source kompozici, překlad, editorial judgment a publikaci.
 
+
+## Two independent production branches — D030
+
+Business Brief v4 currently has **two independent branches**. They share the product and source family, but neither is a prerequisite for the other.
+
+### Fast Editorial
+
+```text
+complete Reference Editions (FT / WSJ / Handelsblatt)
+→ live Chat Editorial Read of each edition
+→ provisional Issue Map per edition
+→ cross-paper editorial comparison
+→ editorial selection / hierarchy
+→ Brief
+```
+
+Fast Editorial is edition-first and editorial-first. It is optimized for morning understanding and publication judgment. It does **not** require Page JSON, Assembler, Article Records, Indexer, Enrichment, Composer or Memory.
+
+The repository's `fast_editorial.py` / `fast_editorial_worker.py` are historical page-level API automation experiments, not the current Fast Editorial architecture.
+
+### Deep / Memory
+
+```text
+Technician
+→ ordinary Chat Ingestor
+→ immutable Page JSON / explicit edition selection
+→ Assembler
+→ canonical Article Records
+→ Indexer
+→ Enrichment / Editorial Memory
+→ Detail / research / long-term knowledge
+```
+
+Composer D027, if implemented, belongs to this Deep/Memory branch and may group canonical indexed Article Records. It is not the required Cross-Paper stage of Fast Editorial.
+
+### Integration boundary
+
+No required integration is defined yet. Future reuse of Deep/Memory evidence inside Fast Editorial, or promotion of Fast Editorial discoveries into Memory, requires a separate explicit decision and acceptance test. Until then, do not introduce cross-branch dependencies.
+
 ## Canonical flow
 
 closed source edition  
