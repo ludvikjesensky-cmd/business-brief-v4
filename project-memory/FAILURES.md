@@ -13,12 +13,15 @@
 **Result:** technická architektura a množství rolí/dokumentů rostly rychleji než ověřená čtenářská hodnota.  
 **Lesson:** architecture follows verified product; role ≠ agent ≠ API call.
 
-## F003 — Fast Editorial full-edition API economics
+## F003 — Page-level API automatizace Fast Editorialu
 **Origin:** v4, WSJ 9 Oct 2026.  
-**Approach:** page-level model calls + issue synthesis pro celé vydání.  
-**Observed:** přibližně USD 7.95 za jediný reálný průchod, kolem 49 requests podle zaznamenaného experimentu.  
-**Impact:** nepřijatelné pro rutinní ranní provoz v této podobě.  
-**Retry only if:** cost model je předem spočítán a malý acceptance test prokáže přijatelnou cenu při zachování kvality.
+**Goal:** automatizovat edition-first discovery přes modelové volání pro každou stránku a následnou issue synthesis.  
+**Approach:** `fast-editorial-v4.1`: page-level Responses API nad page image + Physical Map blocks, paralelní page discovery, následná Issue Map synthesis.  
+**Observed:** editorial koncept Issue Map byl užitečný, ale automatizační forma byla drahá a navázaná na Physical Map / legacy `ingestor_jobs`. U plného vydání vznikaly desítky placených modelových volání a kvalita page semantics vyžadovala další kontrolu.  
+**Cost/risk:** nepřijatelná API ekonomika pro denní ranní rytmus; zbytečná závislost na superseded source pipeline.  
+**Lesson:** **nezaměňovat selhání konkrétní automatizace za selhání Fast Editorialu.** V3 live Chat/editorial experiment byl produktově úspěšný. Pro Fast Editorial se má nejprve obnovit jeho edition-first Chat workflow; automatizace se řeší až po novém acceptance testu.  
+**Decision:** D011, D030.  
+
 
 ## F004 — WSJ automatic watcher/acquisition
 **Origin:** v4.  
