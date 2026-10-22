@@ -21,12 +21,15 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
+Pro běžnou práci Fast Editorial novému Chatu načti pouze `docs/FAST_EDITORIAL_CHAT.md` + jeho konkrétní roli + relevantní source material. Širší Project Memory není pro běžný editorial startup potřeba.
+
 ## Active branches
 - **Fast Editorial:** independent edition-first morning editorial workflow inherited from the successful v3 experiment. Current task: reconstruct and port the live Chat Issue Map → cross-paper → Brief workflow. It must not depend on Deep/Memory infrastructure in this phase.
 - **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
 - Integration between the branches is deliberately unresolved; see D030.
 
 ## Detailed docs
+- docs/FAST_EDITORIAL_CHAT.md — **single entrypoint for any new Fast Editorial Chat**; read this file instead of loading the wider project documentation for ordinary editorial work
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura; obsahuje kanonický Assembler kontrakt a D029 repository implementation
