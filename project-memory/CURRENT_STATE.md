@@ -1,9 +1,13 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-21
+**Last consolidated:** 2026-10-22
 
 ## Current direction
-Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No Assembler, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 (broader content/publication acceptance) remains open. Q011 is resolved by D025 with a deterministic Assembler policy and frozen logical `article-record-v1` contract.
+D030 now separates the project into two independent branches.
+
+**Fast Editorial:** current priority is to reconstruct and port the proven v3 edition-first live Chat workflow into v4 as an independent morning editorial path. The existing `fast-editorial-v4.1` page-level API worker is historical/superseded automation evidence, not the target implementation. Fast Editorial must not depend on Assembler, Indexer, Enrichment, Composer or Memory in this phase.
+
+**Deep / Memory:** current accepted source boundary remains Technician → Source Bundle → ordinary Chat Ingestor → immutable canonical Page JSON / explicit full page revisions → Edition Selection Manifest → STOP. No production Assembler, Indexer, Composer, Translator or Editorial run has occurred in this acceptance. Ingestor preserves source-faithful relevant prose and article-owned PNG assets; perspective interpretation remains downstream. Q010 remains open. Q011 is resolved by D025 with deterministic Assembler policy and frozen logical `article-record-v1` contract.
 
 ## Q014/Q015 implemented, deployed and accepted
 D024 / INGESTOR §22 implements page-revision-v1 as a separate full-snapshot v4 wrapper, safe source-scoped readback and inventory, and immutable edition-selection-v1. Canonical v2/v3/v4 schemas, keys, request/claim hashes and historical objects remain unchanged. Revision and manifest writes use create-if-absent, exact SHA/readback, durable original-request/target claims and source fencing. Assembler input requires exactly one accepted manifest ID + SHA, re-verifies all selected JSON/PNGs and never scans latest pages.
@@ -60,8 +64,8 @@ The accepted downstream design is Assembler → mandatory assembly post-check �
 
 Actual acceptance still stops at the accepted WSJ manifest above: no Assembler or Indexer run is claimed. This consolidation adds no runtime code, migration, bucket, Cohere call or deployment. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
 
-## Composer design consolidated (D027; not implemented)
-[docs/COMPOSER.md](../docs/COMPOSER.md) now owns the successor to v3 Cross-Paper Editor: closed current-day eligible indexed Article Records → candidate graph → semantic grouping → daily-topic-v1 → mandatory topic post-check → Selective Deep Read → Editorial Workflow. Composer does not select the Brief, allocate editorial roles, perform Deep Read or finalize angle/framing. Article individuality and importance ≠ reading value remain explicit.
+## Deep/Memory Composer design consolidated (D027; not implemented)
+[docs/COMPOSER.md](../docs/COMPOSER.md) owns a Deep/Memory grouping layer inspired by v3 Cross-Paper Editor: closed current-day eligible indexed Article Records → candidate graph → semantic grouping → daily-topic-v1 → mandatory topic post-check → Selective Deep Read → Editorial Workflow. Composer does not select the Brief, allocate editorial roles, perform Deep Read or finalize angle/framing. Article individuality and importance ≠ reading value remain explicit.
 
 Daily = delta. Memory = context: continuity retrieval follows today's grouping and cannot substitute older coverage. The contract defines exact article/index provenance, technical membership roles, deterministic day/member identity, single-source coverage, review statuses and minimal relational structures. NEEDS_REVIEW requires Chat review, recorded correction and Composer rerun; a future runner stops at semantic gates. Q018 owns implementation/calibration gates; Q007 remains broader Editorial Memory.
 
