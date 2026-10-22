@@ -3,7 +3,7 @@
 ## Authority and boundary
 This is the canonical Composer design contract (D027), analogous to [INDEXER.md](INDEXER.md) and [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / immutable Article Record boundary. Project Memory owns decisions, current evidence and unresolved implementation questions. Composer grouping remains a design contract; D028 adds offline enrichment validators/candidate helpers in [ENRICHMENT.md](ENRICHMENT.md), without a Composer runtime, model call or production write.
 
-Composer is the v4 successor to v3 Cross-Paper Editor: it produces cross-source daily topics, not a final dossier, editorial selection, Brief or final angle.
+Composer is a **Deep/Memory branch** grouping layer inspired by the v3 Cross-Paper Editor. Under D030 it is **not** the successor to the complete v3 Fast Editorial workflow and is not a prerequisite for the morning Brief. It produces cross-source daily topics from canonical indexed Article Records for Deep/Memory use; it does not own the independent Fast Editorial Issue Map → cross-paper → Brief path.
 
 ```text
 verified persisted Article Records
