@@ -1,5 +1,10 @@
 # System — Business Brief v4
 
+## Branch scope — D030
+This document describes the **Deep / Memory technical branch**. It does not define or gate Fast Editorial.
+
+Fast Editorial is a separate edition-first live Chat workflow over complete Reference Editions and does not require Ingestor, Assembler, Indexer, Enrichment or Composer. No required integration between the two branches is accepted yet.
+
 ## Boundary
 Technická vrstva připravuje evidence. Ingestor interpretuje konkrétní source page v live conversation. Assembler skládá canonical články. Indexer vytváří pouze odvozený vyhledávací index. Composer seskupuje dnešní články do daily topics před Selective Deep Read. Editorial vrstva rozhoduje o významu a publikaci.
 
