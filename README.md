@@ -28,6 +28,7 @@ Detailní současná dokumentace je záměrně malá:
 - `docs/EDITORIAL.md`
 - `docs/SYSTEM.md`
 - `docs/OPERATIONS.md`
+- `docs/INFRASTRUCTURE.md`
 - `docs/SOURCES_RIGHTS.md`
 - `docs/EDITORIAL_MEMORY.md`
 
