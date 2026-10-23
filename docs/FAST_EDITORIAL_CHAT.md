@@ -159,6 +159,124 @@ That question should influence selection throughout Fast Editorial.
 
 ---
 
+## 2.8 Coverage safety net
+
+Business Brief must not become so fascinated by unusual perspectives that it forgets the main news of the day.
+
+The reader needs confidence that the edition is editorially selective, not accidentally incomplete.
+
+Therefore the Brief should normally contain an early **orientation layer** that answers:
+
+> **What are the main things I should know happened today?**
+
+This layer can be concise. Its purpose is not to retell every major story in full.
+
+Its purpose is to create a **coverage safety net**:
+- the reader should not wonder whether an obvious major story was simply missed;
+- important macro, market, corporate, political or geopolitical developments should be acknowledged;
+- the later, richer editorial selection can then go beyond the obvious without creating anxiety that the basics were omitted.
+
+A useful principle from v3:
+
+> **Main news can be brief. Distinctive journalism deserves depth.**
+
+Do not confuse this with a generic news digest. The orientation layer earns the right to be selective later.
+
+---
+
+## 2.9 Curiosity is a product outcome
+
+Business Brief should not leave the reader thinking:
+
+> "Dobře, mám hotovo. Už vím všechno podstatné."
+
+A stronger outcome is:
+
+> **"Tomuhle už rozumím lépe. A tenhle text si chci přečíst celý."**
+
+Business Brief is not designed to reduce reading as such.
+
+Its purpose is to reduce **wasted reading**.
+
+> **Nechceme čtenáře od čtení odvádět. Chceme jim pomoci poznat, co opravdu stojí za jejich čas.**
+
+The product should cultivate attention:
+- filter out routine duplication;
+- surface intellectually strong texts;
+- explain why they matter;
+- preserve enough of the author's perspective to create genuine interest;
+- stop before flattening the article into a complete substitute for the original or Detail.
+
+This is especially important for:
+- interviews;
+- columns;
+- essays;
+- Big Reads;
+- investigations;
+- management and strategy pieces;
+- sector analyses;
+- strong reporting;
+- articles with an original intellectual frame.
+
+The Brief should make the reader want to go deeper **for a good reason**, not through clickbait or artificial withholding.
+
+---
+
+## 2.10 Brief and Detail are complementary products
+
+The Brief must stand on its own.
+
+It must provide enough information and explanation that the reader is genuinely better oriented.
+
+But the Detail layer should still have legitimate value.
+
+The goal is not to hide important facts in order to force conversion.
+
+The goal is to distinguish two different jobs:
+
+### Brief
+- tells the reader what matters;
+- explains the core issue;
+- shows the distinctive angle;
+- tells the reader why the text is worth attention.
+
+### Detail
+- preserves more of the article's structure and reasoning;
+- gives evidence, nuance, examples and counterarguments;
+- lets the reader spend meaningful time with the text;
+- is the natural paid continuation for articles that deserve deeper engagement.
+
+A healthy editorial question is:
+
+> **Have we explained enough to create understanding, while preserving a real reason to read or listen further?**
+
+The answer must never be manufactured by making the Brief worse.
+
+The pull toward Detail should come from the quality of the underlying journalism.
+
+---
+
+## 2.11 Reading recommendation is a first-class editorial function
+
+When an article deserves deeper attention, say so clearly.
+
+Do not bury strong recommendations in a generic "other stories" section.
+
+The reader should understand:
+- **what is worth reading;**
+- **why it is worth reading;**
+- **what they are likely to gain from it.**
+
+This may be more valuable than another short summary of a routine headline story.
+
+The editorial ambition is not:
+
+> "Here is everything you need so you never have to read the article."
+
+It is:
+
+> **"Here is enough to understand why this article may be worth your next twenty minutes."**
+
 ## 2A. Who the reader is
 
 The primary reader is a Czech manager, entrepreneur, investor, specialist or professionally curious person who:
@@ -686,8 +804,9 @@ Ask:
 - Is the hierarchy right?
 - Is a major area of the day missing?
 - Did a useful RESERVE item disappear mechanically?
-- Is there a coverage safety net?
+- Is there a coverage safety net, especially for the main news of the day?
 - Are distinctive reading recommendations visible?
+- Does at least part of the edition create legitimate desire to read or listen further?
 - Is the Brief intellectually alive?
 - Does it help the reader see, not merely know?
 - Would I trust this edition?
@@ -713,10 +832,12 @@ It is a deliberately composed edition.
 
 It should combine:
 - orientation;
+- a concise main-news safety net;
 - explanation;
 - cross-paper perspective;
 - intellectual curiosity;
-- reading curation.
+- reading curation;
+- a legitimate pull toward deeper reading or listening.
 
 A useful rule:
 
