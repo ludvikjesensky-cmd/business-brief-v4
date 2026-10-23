@@ -21,7 +21,13 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
-Pro běžnou práci Fast Editorial novému Chatu načti pouze `docs/FAST_EDITORIAL_CHAT.md` + jeho konkrétní roli + relevantní source material. Širší Project Memory není pro běžný editorial startup potřeba.
+Fast Editorial používá tři samostatné role a single-entry briefingy. Pro běžný startup načti pouze briefing přidělené role a její vstupy; širší Project Memory ani čtvrtý workspace dokument nejsou potřeba:
+
+- `docs/FAST_EDITORIAL_CHAT.md` = Issue Editor + jedno kompletní vydání → frozen Issue Map + povinné Editorial Notes → **STOP**.
+- `docs/CROSS_PAPER_CHAT.md` = Cross-Paper Editor + 3 frozen Issue Maps (FT, WSJ, HB) a jejich Editorial Notes → Daily Topics / Cross-Paper Map + povinné Editorial Notes → **STOP**.
+- `docs/NEWSROOM_CHAT.md` = Newsroom Editor + Daily Topics, Cross-Paper Notes, relevantní Deep Read a uncertainties → Master Brief, podpůrné artefakty a day retrospective → **STOP**.
+
+Výchozí provozní model jsou oddělené Chaty. Jeden Chat může převzít další roli pouze po explicitním novém zadání role a explicitním načtení jejího briefingu; dokončení předchozí role samo o sobě pokračování neopravňuje. Každý briefing samostatně obsahuje mission, redakční principy, workspace contract a vlastní hard STOP.
 
 ## Active branches
 - **Fast Editorial:** independent edition-first morning editorial workflow inherited from the successful v3 experiment. Current task: reconstruct and port the live Chat Issue Map → cross-paper → Brief workflow. It must not depend on Deep/Memory infrastructure in this phase.
@@ -29,7 +35,9 @@ Pro běžnou práci Fast Editorial novému Chatu načti pouze `docs/FAST_EDITORI
 - Integration between the branches is deliberately unresolved; see D030.
 
 ## Detailed docs
-- docs/FAST_EDITORIAL_CHAT.md — **single entrypoint for any new Fast Editorial Chat**; read this file instead of loading the wider project documentation for ordinary editorial work
+- docs/FAST_EDITORIAL_CHAT.md — single entrypoint pouze pro Issue Editora; jedno vydání → frozen Issue Map → STOP
+- docs/CROSS_PAPER_CHAT.md — single entrypoint pro Cross-Paper Editora; 3 frozen Issue Maps → Daily Topics → STOP
+- docs/NEWSROOM_CHAT.md — single entrypoint pro Newsroom Editora; Daily Topics + Deep Read → Master Brief → STOP
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura; obsahuje kanonický Assembler kontrakt a D029 repository implementation
