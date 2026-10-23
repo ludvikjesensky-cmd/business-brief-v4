@@ -343,6 +343,93 @@ Selective Deep Read is used only where it materially improves accuracy or unders
 
 ---
 
+## 4A. Workspace contract — from editorial judgment to saved work
+
+The operational lesson carried forward from the validated v3 workflow is simple: understand each edition on its own, preserve that judgment, and only then bring the newspapers into conversation.
+
+Every meaningful stage leaves a readable Markdown artifact and mandatory Editorial Notes. A result that exists only in a Chat reply has not yet been handed over to the next editor.
+
+### Primary working artifacts in early v4
+
+In this first phase of v4, **Markdown files are the primary working artifacts**. They hold the editorial decisions, source references, uncertainties and handoffs. They are not merely derived renderings of a database.
+
+Use this recommended layout, relative to the repository root. `YYYY-MM-DD` is the editorial date; record each source's actual edition date if it differs.
+
+```text
+editorial/
+└── YYYY-MM-DD/
+    ├── ft/
+    │   ├── issue-map.md
+    │   └── editorial-notes.md
+    ├── wsj/
+    │   ├── issue-map.md
+    │   └── editorial-notes.md
+    ├── handelsblatt/
+    │   ├── issue-map.md
+    │   └── editorial-notes.md
+    ├── cross-paper/
+    │   ├── daily-topics.md
+    │   └── editorial-notes.md
+    └── newsroom/
+        ├── editorial-selection.md
+        ├── dramaturgy.md
+        ├── story-angles.md
+        ├── verification-notes.md
+        ├── master-brief.md
+        └── editorial-notes.md
+```
+
+These paths are a handoff agreement, not a substitute for editorial thinking. The map must still capture what the newspaper sees; the notes must explain why the editor made a choice.
+
+### Identity and lifecycle
+
+At the top of each artifact record its editorial date, role, version/run identifier, status and input references. For an Issue Map also identify the publication, actual edition date and complete Reference Edition used. Give mapped articles stable local IDs, so later editors can cite a specific article and page rather than a vague topic.
+
+Use `DRAFT` while working. An Issue Map becomes `FROZEN` only after the complete edition has been reviewed, the item fields and issue-level conclusion are saved, and its mandatory Editorial Notes are saved. Record the freeze time and any remaining uncertainties. Freezing preserves the editor's completed judgment; it does not claim that every uncertainty has disappeared.
+
+**A frozen Issue Map is immutable.** Later discoveries from other newspapers, comparison, Deep Read or verification belong in downstream artifacts and notes. Never silently rewrite the original map to make it agree with what became known later.
+
+**A new attempt means a new version/run.** Keep the original `issue-map.md` and its notes intact. For a repeat, create a separate run directory such as `ft/runs/run-02/`, containing its own `issue-map.md` and `editorial-notes.md`. Record why the repeat was needed, its inputs and which earlier run it supersedes. Use the same pattern for repeated Cross-Paper or Newsroom runs; never overwrite a completed handoff. Within an active draft, ordinary editing is expected.
+
+Each downstream artifact must name the exact input paths and versions/runs it uses. A new source run does not automatically replace the inputs of an existing Cross-Paper Map or Master Brief. If the newsroom chooses to use it, create and document a new downstream run.
+
+### What each Chat creates and saves
+
+**Issue Editor — one publication, one complete edition.** Work independently in `ft/`, `wsj/` or `handelsblatt/`. Save the article selection and all fields from section 8, followed by the conclusion from section 9, in `issue-map.md`. Save the issue snapshot, process observations, possible misses and retrospective in that publication's `editorial-notes.md`. Then mark the map `FROZEN` and hand over both file paths and the run identifier. Do this separately for all three titles; do not produce one combined Issue Map.
+
+**Cross-Paper Editor — only after three frozen maps exist.** Check that there is one frozen FT, one frozen WSJ and one frozen Handelsblatt Issue Map for the intended editorial day, each with its notes. If any is missing or still draft, record the missing input and stop the comparison stage. Do not substitute web coverage or treat a two-paper comparison as the completed daily map.
+
+Read the three independent maps and their notes. Save the Daily Topics defined in section 12 to `cross-paper/daily-topics.md`, including source item IDs, exact map/run references and all INCLUDE / RESERVE / EXCLUDE decisions. “Daily Topics” and “Cross-Paper Map” name this same artifact here; there is no need for a duplicate file. Save comparison decisions, disagreements, newly visible connections and limitations to `cross-paper/editorial-notes.md`. Mark the completed topic map `COMPLETE` and hand over both paths. Leave all three frozen source maps unchanged.
+
+**Selective Deep Read Chat — focused evidence for a stated question.** Start from the Deep Read requests in the maps or topics. Save what was checked, source pages or links, findings, changed interpretations and unresolved questions in `newsroom/verification-notes.md`. Distinguish source evidence from editorial interpretation and identify the relevant topic/article IDs. Add the reasoning and effect on selection or angle as a DEEP READ NOTE in `newsroom/editorial-notes.md`. If no Deep Read is needed, record that decision and its reason; do not invent a ceremonial reading stage. Deep Read findings do not unfreeze Issue Maps.
+
+**Newsroom Editor — compose through the eight passes.** Receive all Daily Topics, including RESERVE and EXCLUDE, the Cross-Paper Notes, focused Deep Read findings and uncertainties. Save:
+
+- `editorial-selection.md` — Assignment Editor decisions: product role, hierarchy, intended space and reasons for inclusion, reserve or omission;
+- `dramaturgy.md` — Dramaturg's order, rhythm, transitions and justified combinations;
+- `story-angles.md` — Story Editor's fact, angle, tension, reader takeaway and possible Detail promise for significant items;
+- `master-brief.md` — Brief Writer's draft, then the revised text after Detail, Verification, Language & Style and Editor-in-Chief review;
+- `verification-notes.md` — focused Deep Read findings and Verification Editor checks, corrections, attribution and unresolved limitations;
+- `editorial-notes.md` — mandatory brief-build reasoning, meaningful changes made in the passes and the final day retrospective.
+
+The Detail and Language & Style passes need no separate files: revise the draft and record material decisions in the notes. Keep the Master Brief `DRAFT` until the Editor-in-Chief has reviewed the whole edition and material verification questions have been resolved or explicitly handled in the text. Then mark it `FINAL`, mark the supporting handoff artifacts `COMPLETE`, and record the exact topic map/run and verification inputs used.
+
+### Editorial Notes are part of completion
+
+Notes are **mandatory at every meaningful handoff**, not an optional cleanup after the Brief. Date each entry, identify its stage/run and link it to the artifact or item concerned. Add later observations as new entries; preserve the reasoning recorded at the time of a freeze or completed handoff.
+
+The v3 audit trail included issue-map snapshots, process observations, detailed issue retrospectives, cross-paper notes, Deep Read summaries, brief-build notes and day retrospectives. Preserve those functions in the simple Markdown files above. There is no requirement to recreate the v3 database taxonomy before doing good editorial work.
+
+At the end of its work, each Chat reports what it saved, the status and version/run, the inputs used, unresolved questions and the next role's required inputs. If it cannot write to the repository, it must say that the handoff is not saved and provide the complete Markdown with exact target paths; a Chat response alone must not be represented as a completed repository handoff.
+
+### Let the database follow proven editorial quality
+
+V3 also tracked workflow state and structured records in a database. Early v4 deliberately starts with the readable working artifacts above.
+
+First revalidate several complete editorial days: independent maps, useful comparison, selective deeper reading and a Brief that helps the reader see more. Only then decide which stable structures merit database support, indexing or automation. A future database should preserve source identity, frozen versions and editorial reasoning. It should support a proven editorial practice, not define one in advance.
+
+---
+
 # PART A — ISSUE EDITOR
 
 ## 5. Goal of the Issue Editor
@@ -971,7 +1058,7 @@ Provide:
 
 Instruction:
 
-> Read the complete edition independently and produce a frozen Issue Map according to this briefing. Do not compare it with other publications yet.
+> Read the complete edition independently and produce a frozen Issue Map according to this briefing. Do not compare it with other publications yet. Save the map and mandatory Editorial Notes under the publication's directory using the workspace contract in section 4A; hand over their exact paths and run identifier.
 
 ### Cross-Paper Editor startup
 Provide:
@@ -981,7 +1068,7 @@ Provide:
 
 Instruction:
 
-> Compare the three frozen Issue Maps and create Daily Topics / Cross-Paper Map. Preserve source differences, event importance and reading value. Do not rewrite the source Issue Maps.
+> First confirm that all three required Issue Maps are frozen and their Editorial Notes are available. Compare them and create Daily Topics / Cross-Paper Map. Preserve source differences, event importance and reading value. Save daily-topics.md and mandatory Editorial Notes under cross-paper/ according to section 4A, naming the exact source runs. Do not rewrite the source Issue Maps.
 
 ### Newsroom Editor startup
 Provide:
@@ -992,7 +1079,7 @@ Provide:
 
 Instruction:
 
-> Build the Master Brief through the eight editorial passes. Do not skip directly to generic synthesis.
+> Build the Master Brief through the eight editorial passes. Do not skip directly to generic synthesis. Save the selection, dramaturgy, story angles, verification notes, Master Brief and mandatory Editorial Notes under newsroom/ according to section 4A. Complete the day retrospective and hand over the final artifact paths and statuses.
 
 ---
 
