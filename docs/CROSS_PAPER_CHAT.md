@@ -1,8 +1,7 @@
-# Fast Editorial v4 — Cross-Paper Editor Chat Briefing
+# Fast Editorial — Cross-Paper Editor Chat Briefing
 
 **Status:** canonical working briefing  
 **Purpose:** single entrypoint for Cross-Paper Editor only  
-**Architecture:** independent from Deep / Memory under D030
 
 ---
 
@@ -180,7 +179,7 @@ Its purpose is to create a **coverage safety net**:
 - important macro, market, corporate, political or geopolitical developments should be acknowledged;
 - the later, richer editorial selection can then go beyond the obvious without creating anxiety that the basics were omitted.
 
-A useful principle from v3:
+A useful principle:
 
 > **Main news can be brief. Distinctive journalism deserves depth.**
 
@@ -312,13 +311,13 @@ Daily Topics and Cross-Paper Map are the same artifact; do not create a duplicat
 
 ### Shared artifact discipline
 
-Markdown files are the primary working artifacts in early v4, not database renderings. Paths below are relative to the repository root; YYYY-MM-DD is the editorial date. Record actual source edition dates separately.
+Markdown files are the primary working artifacts, not database renderings. Paths below are relative to the repository root; YYYY-MM-DD is the editorial date. Record actual source edition dates separately.
 
 At the top of every artifact record editorial date, role, version/run ID, status and exact input paths and versions/runs. Use stable article/topic IDs and page references. Use DRAFT while working. Preserve completed handoffs and their notes: a repeat uses a new directory such as ROLE/runs/run-02/ with the same filenames, records its reason and the superseded run, and never overwrites the earlier run. A new input run does not silently replace an existing handoff's inputs. Frozen Issue Maps remain immutable; later findings belong downstream.
 
 Editorial Notes are mandatory. Date each entry and link it to its stage/run and relevant artifact/item. Preserve original reasoning; later observations are new entries. Report exact saved paths, run ID, status, input references and unresolved questions at handoff. If repository saving is unavailable, provide the complete Markdown with exact target paths and explicitly report an unsaved handoff; a Chat reply alone is not completion.
 
-Do not design database schemas, embeddings or orchestration here. Database formalization remains deferred until several complete editorial days again demonstrate quality. Fast Editorial remains independent from canonical Article Records, Indexer, Enrichment, Composer and Deep / Memory infrastructure under D030.
+Do not design database schemas, embeddings or orchestration here. Database formalization remains deferred until several complete editorial days demonstrate quality. This role does not depend on canonical Article Records, Indexer, Enrichment, Composer or Deep / Memory infrastructure.
 
 
 For a repeat use cross-paper/runs/run-02/ beneath the same editorial day. Never modify the three frozen source maps.
