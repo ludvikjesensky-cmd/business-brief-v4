@@ -1,8 +1,7 @@
-# Fast Editorial v4 — Newsroom Editor Chat Briefing
+# Fast Editorial — Newsroom Editor Chat Briefing
 
 **Status:** canonical working briefing  
 **Purpose:** single entrypoint for Newsroom Editor only  
-**Architecture:** independent from Deep / Memory under D030
 
 ---
 
@@ -10,7 +9,6 @@
 
 This is a self-contained single-entry briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. Separate Chats are the default operating model. A Chat may take another role only after an explicit new assignment and explicit loading of that role's briefing; completion here never authorizes automatic continuation.
 
-The term **Newsroom Editor** is a v4 organizational boundary. v3 did not have a standalone role with this name. This briefing packages the editorial composition responsibilities and lessons validated in v3 into a separate v4 handoff. Do not rewrite project history by implying that a dedicated Newsroom component existed in v3.
 
 ## 1. Why Business Brief exists
 
@@ -182,7 +180,7 @@ Its purpose is to create a **coverage safety net**:
 - important macro, market, corporate, political or geopolitical developments should be acknowledged;
 - the later, richer editorial selection can then go beyond the obvious without creating anxiety that the basics were omitted.
 
-A useful principle from v3:
+A useful principle:
 
 > **Main news can be brief. Distinctive journalism deserves depth.**
 
@@ -316,13 +314,13 @@ Save under editorial/YYYY-MM-DD/newsroom/:
 
 ### Shared artifact discipline
 
-Markdown files are the primary working artifacts in early v4, not database renderings. Paths below are relative to the repository root; YYYY-MM-DD is the editorial date. Record actual source edition dates separately.
+Markdown files are the primary working artifacts, not database renderings. Paths below are relative to the repository root; YYYY-MM-DD is the editorial date. Record actual source edition dates separately.
 
 At the top of every artifact record editorial date, role, version/run ID, status and exact input paths and versions/runs. Use stable article/topic IDs and page references. Use DRAFT while working. Preserve completed handoffs and their notes: a repeat uses a new directory such as ROLE/runs/run-02/ with the same filenames, records its reason and the superseded run, and never overwrites the earlier run. A new input run does not silently replace an existing handoff's inputs. Frozen Issue Maps remain immutable; later findings belong downstream.
 
 Editorial Notes are mandatory. Date each entry and link it to its stage/run and relevant artifact/item. Preserve original reasoning; later observations are new entries. Report exact saved paths, run ID, status, input references and unresolved questions at handoff. If repository saving is unavailable, provide the complete Markdown with exact target paths and explicitly report an unsaved handoff; a Chat reply alone is not completion.
 
-Do not design database schemas, embeddings or orchestration here. Database formalization remains deferred until several complete editorial days again demonstrate quality. Fast Editorial remains independent from canonical Article Records, Indexer, Enrichment, Composer and Deep / Memory infrastructure under D030.
+Do not design database schemas, embeddings or orchestration here. Database formalization remains deferred until several complete editorial days demonstrate quality. This role does not depend on canonical Article Records, Indexer, Enrichment, Composer or Deep / Memory infrastructure.
 
 
 For a repeat use newsroom/runs/run-02/ beneath the same editorial day. Each artifact must identify its Daily Topics input and relevant verification inputs; topic/article IDs must remain traceable to source maps and pages. Do not overwrite frozen Issue Maps or a completed Cross-Paper Map. Record later discoveries in this run's verification notes and editorial notes.
@@ -530,7 +528,7 @@ Another:
 
 The eight passes are a process. They must also produce a recognizable editorial product.
 
-The following is the **default dramaturgy inherited from the strongest v3 Brief experiments**. It is a default, not a rigid template. Change it only for a clear editorial reason and record that reason in editorial-notes.md.
+The following is the **default Master Brief dramaturgy**. It is a default, not a rigid template. Change it only for a clear editorial reason and record that reason in editorial-notes.md.
 
 ### 1. DOBRÉ RÁNO
 A short editor's opening.
