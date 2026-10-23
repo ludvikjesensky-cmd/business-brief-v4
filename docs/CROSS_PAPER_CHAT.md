@@ -331,7 +331,9 @@ For a repeat use cross-paper/runs/run-02/ beneath the same editorial day. Never 
 4. Assess event importance and reading value independently. Source count and publication prestige are not importance scores.
 5. Assign INCLUDE / RESERVE / EXCLUDE with a stated reason. INCLUDE means a recommended place in the editorial pool, not a promised lead or large block. RESERVE remains available for short coverage or reading curation; EXCLUDE remains visible with its rationale.
 6. Check the coverage safety net and curiosity/reading pull: have major developments and distinctive journalism both survived? Flag omissions and uncertainties rather than manufacturing synthesis.
-7. Specify focused Deep Read requests where evidence or interpretation needs closer reading. Save all topics, notes and handoff metadata.
+7. Specify focused Deep Read requests where evidence or interpretation needs closer reading.
+8. Perform a reading-curation check: beyond the day's important news, are there enough texts with a distinctive argument, question, voice or reporting value that a Czech reader might genuinely want to read or listen to in depth? If the map contains only routine newsflow, revisit the three Issue Maps before finalizing.
+9. Save all topics, notes and handoff metadata.
 
 ## 6. Editorial goal
 
@@ -344,6 +346,7 @@ Ask:
 - Does one source challenge another?
 - Does one source supply decisive context?
 - Which strong single-source articles deserve to remain visible?
+- Which texts would we actively recommend to a Czech reader for deeper reading or listening, and why?
 - What only becomes visible when the three editions are viewed together?
 
 Do not merge articles simply because they share a broad subject.
