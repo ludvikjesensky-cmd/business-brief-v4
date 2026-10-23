@@ -10,6 +10,8 @@
 
 This is a self-contained single-entry briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. Separate Chats are the default operating model. A Chat may take another role only after an explicit new assignment and explicit loading of that role's briefing; completion here never authorizes automatic continuation.
 
+The term **Newsroom Editor** is a v4 organizational boundary. v3 did not have a standalone role with this name. This briefing packages the editorial composition responsibilities and lessons validated in v3 into a separate v4 handoff. Do not rewrite project history by implying that a dedicated Newsroom component existed in v3.
+
 ## 1. Why Business Brief exists
 
 Business Brief does not exist to create another news digest.
@@ -524,6 +526,82 @@ Another:
 
 ---
 
+## 7A. Default Master Brief dramaturgy
+
+The eight passes are a process. They must also produce a recognizable editorial product.
+
+The following is the **default dramaturgy inherited from the strongest v3 Brief experiments**. It is a default, not a rigid template. Change it only for a clear editorial reason and record that reason in editorial-notes.md.
+
+### 1. DOBRÉ RÁNO
+A short editor's opening.
+
+Do not start with a mechanical list of headlines. In one or a few sentences, give the reader a sense of the day's character, tension or dominant question.
+
+### 2. DNES V KOSTCE
+The coverage safety net.
+
+Give a concise orientation to the main developments of the day so the reader can trust that an obvious major story was not simply missed.
+
+Keep this layer brief. It exists to create confidence and orientation, not to exhaust the day's journalism.
+
+### 3. HLAVNÍ PŘÍBĚHY
+Give real space only to the stories that deserve it.
+
+For each major item, go beyond "what happened":
+- what FT, WSJ or Handelsblatt sees in it;
+- where their frames differ;
+- what question or tension matters;
+- why this perspective is useful to a Czech reader.
+
+Do not flatten source differences into one synthetic view.
+
+### 4. JEŠTĚ POTŘEBUJETE VĚDĚT
+Short-form coverage for important developments that deserve awareness but not a full story.
+
+This section is part of the safety net, not a dumping ground.
+
+### 5. ČÍSLA DNE
+Use only when a number genuinely explains something.
+
+Do not add decorative statistics merely to create a section.
+
+### 6. CO SLEDUJEME
+Name the concrete next signal, decision, threshold or question that could change the interpretation.
+
+Avoid generic "we will keep watching the situation" language.
+
+### 7. CO DNES JEŠTĚ STOJÍ ZA PŘEČTENÍ
+Place the strongest reading-curation recommendations near the end.
+
+This is not leftover coverage. It is a first-class editorial layer for interviews, essays, Big Reads, investigations, columns, management pieces, reports and other texts with high reading value.
+
+For each recommendation make clear:
+- why it is worth the reader's time;
+- what distinctive perspective or question it offers;
+- what the reader is likely to gain by going deeper.
+
+The end of the Brief should often leave the reader with **forward pull**: not "I am done", but "this is what I want to read or listen to next."
+
+### Variable form is mandatory
+
+Do not force every item into the same size or format.
+
+A strong Brief may contain:
+- one substantial lead;
+- several medium-length stories;
+- two-sentence coverage items;
+- a one-line number;
+- a short watch item;
+- reading recommendations that are not "summaries" at all.
+
+Uniform mini-articles flatten hierarchy and kill rhythm.
+
+> **The size and form of an item must follow its editorial job, not a template.**
+
+A major event may need only short coverage if its journalism adds little. A smaller text with exceptional reading value may deserve a strong recommendation or more space.
+
+---
+
 ## 8. Reading curation
 
 Always preserve room for texts worth reading.
@@ -559,7 +637,7 @@ Keep master-brief.md DRAFT until the Editor-in-Chief has reviewed the whole edit
 
 Mark master-brief.md FINAL and all five supporting artifacts COMPLETE only after saving the revised edition, all eight pass decisions/checks, mandatory notes and day retrospective. Record completion time and exact topic map/run and Deep Read inputs used.
 
-Acceptance: a coherent composed edition with hierarchy, coverage safety net, meaningful source differences, strong reading recommendations, useful Brief/Detail distinction, natural Czech and listening rhythm. RESERVE is reconsidered intelligently; prestige and source count never substitute for judgment.
+Acceptance: a coherent composed edition with hierarchy, coverage safety net, meaningful source differences, strong reading recommendations, useful Brief/Detail distinction, natural Czech and listening rhythm. The final edition should normally reflect the default Master Brief dramaturgy in section 7A and must use variable item lengths/forms according to editorial function rather than a uniform mini-article template. RESERVE is reconsidered intelligently; prestige and source count never substitute for judgment.
 
 Hand over the exact paths of all six saved artifacts, run ID, statuses, input references and remaining explicitly handled limitations. This handoff delivers the Master Brief for subsequent separately assigned use.
 
