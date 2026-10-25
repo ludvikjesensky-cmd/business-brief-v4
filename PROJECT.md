@@ -50,7 +50,7 @@ Nový proces zatím **není canonical**, ale technická a dokumentační Closure
 
 Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
 
-**Fresh Fast Editorial Chat startup:** načti celý `FAST_EDITORIAL_START_HERE.md`, aktuální `EDITORIAL_HANDOVER.md` až bude založen, autentické schválené kalibrační Briefy až budou dohledané a relevantní zdroje/artefakty. Nový Chat pak stručně vlastními slovy potvrdí hodnotu produktu, aktuální stav, frozen/closed hranice, zděděné opravy a další konkrétní krok; nejde o novou schvalovací bránu.
+**Fresh Fast Editorial Chat startup:** načti celý `FAST_EDITORIAL_START_HERE.md`, handover contract `docs/fast-editorial/EDITORIAL_HANDOVER.md`, skutečný current state z `fast_editorial.handover_state`, autentické schválené V3 kalibrační Briefy z `docs/fast-editorial/reference/V3_APPROVED_MASTER_BRIEFS.md` a relevantní durable Reference Editions/artefakty. Nový Chat pak stručně vlastními slovy potvrdí hodnotu produktu, aktuální stav, frozen/closed hranice, zděděné opravy a další konkrétní krok; nejde o novou schvalovací bránu.
 
 
 ## Active branches
