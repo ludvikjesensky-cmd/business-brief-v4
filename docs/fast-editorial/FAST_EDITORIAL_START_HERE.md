@@ -1041,6 +1041,179 @@ Nový Chat má při převzetí načíst:
 
 `EDITORIAL_HANDOVER.md` tedy nemá být jedinou databází kontinuity. Je dokumentační kontrakt a lidsky čitelný model toho, co musí být v provozních datech obnovitelné.
 
+### Doplnění V4 — implementované fyzické Supabase schéma
+
+Logický Persistence Contract V1 výše má nyní konkrétní implementaci.
+
+**Supabase project**
+- name: `business-brief-v4`
+- project ref: `tduhlvfsqplckemygjdx`
+
+**PostgreSQL schema**
+- `fast_editorial`
+
+Toto schema je nový kanonický provozní prostor Fast Editorialu.
+
+Historické experimentální tabulky:
+- `public.fast_editorial_jobs`
+- `public.fast_editorial_pages`
+- `public.editorial_map_items`
+
+zůstávají historickou stopou starších experimentů. **Nový Fast Editorial do nich nezapisuje a nepoužívá je jako svůj canonical state.**
+
+#### Fyzické mapování objektů
+
+| Redakční objekt | Supabase tabulka | Úloha |
+| --- | --- | --- |
+| Editorial day | `fast_editorial.days` | Stav jednoho redakčního dne a aktuální krok |
+| Source issue / Issue Map state | `fast_editorial.issues` | Identita vydání, intake, coverage, freeze a issue-level conclusion |
+| Issue Map item | `fast_editorial.issue_items` | Relevantní editorial objects včetně V4 perspective fields |
+| Daily Topic | `fast_editorial.topics` | Cross-Paper syntéza, INCLUDE/RESERVE/EXCLUDE a Deep Read stav |
+| Topic provenance | `fast_editorial.topic_sources` | Vazby topic ↔ issue item, role a distinctive contribution |
+| Deep Read Note | `fast_editorial.deep_read_notes` | Ověření, změny interpretace, wording guardrails a uncertainty |
+| Master Brief version | `fast_editorial.briefs` | Úplný text konkrétní verze Briefu |
+| Brief ↔ topics | `fast_editorial.brief_topics` | Které topics jsou v konkrétní verzi a v jaké funkci |
+| Brief ↔ issues | `fast_editorial.brief_issues` | Která vydání jsou podkladem konkrétní verze |
+| Final gates | `fast_editorial.brief_gates` | V3 + V4 gates navázané na přesnou verzi Briefu |
+| Editorial Notes | `fast_editorial.editorial_notes` | Redakční rozhodnutí, review, změny a auditní stopa |
+| Canonical/checkpoint artifacts | `fast_editorial.artifacts` | Frozen snapshots, Cross-Paper snapshoty a významné textové stavy |
+| Cross-day story memory | `fast_editorial.story_threads` | Otevřené příběhy a jejich poslední doložený stav |
+| Current handover | `fast_editorial.handover_state` | Stav, který nový Chat načte při převzetí práce |
+
+#### Konkrétní pravidlo pro Editorial Notes
+
+Editorial Notes zapisuj do:
+
+`fast_editorial.editorial_notes`
+
+Každý záznam je samostatná redakční událost. Neukládej všechny notes dne jako jeden přepisovaný JSON blob.
+
+Používej `note_type` podle skutečné funkce poznámky, například:
+- `issue_map_snapshot`
+- `process_observation`
+- `cross_paper_map`
+- `deep_read_summary`
+- `deep_read_changed_interpretation`
+- `editorial_selection_v1`
+- `dramaturgy_plan_v1`
+- `story_angles_v1`
+- `master_brief_draft_v1`
+- `detail_gap_review_v1`
+- `verification_review_v1`
+- `language_style_review_v1`
+- `editor_in_chief_review_v1`
+- `day_retrospective`
+
+Konkrétní note může mít vazbu na issue, topic nebo Brief. `brief_id + brief_version` použij tam, kde review hodnotí konkrétní textovou verzi.
+
+Editorial Notes jsou history-preserving. Významnou opravu zapisuj jako nový note nebo explicitní change record; nemaž starší úsudek tak, že po něm nezůstane stopa.
+
+#### Konkrétní pravidlo pro freeze
+
+Před freeze je `fast_editorial.issues.status = 'WORKING'`.
+
+Při freeze:
+
+1. dokonči Issue Map v `issue_items`;
+2. ulož úplný frozen snapshot do `fast_editorial.artifacts` jako `ISSUE_MAP_SNAPSHOT`;
+3. zapiš jeho SHA-256 a velikost;
+4. nastav `issues.frozen_snapshot_id`;
+5. nastav `issues.status = 'FROZEN'`;
+6. nastav `frozen_at`;
+7. zvyš `freeze_revision`.
+
+Původní snapshot se nepřepisuje. Pozdější oprava má vlastní nový artefakt / revision a dohledatelný Editorial Note.
+
+#### Konkrétní pravidlo pro Master Brief
+
+Každá významná textová verze má vlastní řádek v `fast_editorial.briefs`.
+
+- `version` se v rámci dne zvyšuje.
+- `DRAFT` není verified.
+- `VERIFIED` označuje konkrétní schválenou redakční verzi.
+- starší verzi lze označit `SUPERSEDED`, ale její obsah se nemaže.
+
+Úplný text je ve v1 uložen přímo v `content_markdown`.
+
+`content_sha256` slouží k ověření, že review a gates patří ke stejné textové verzi.
+
+Final gates ukládej jednotlivě do `fast_editorial.brief_gates`, nikoli pouze jako jeden obecný PASS.
+
+#### Konkrétní pravidlo pro artefakty
+
+`fast_editorial.artifacts` je obecný canonical/checkpoint registr.
+
+V současné implementaci v1 může být celý artefakt uložen přímo v PostgreSQL:
+- JSON v `payload_jsonb`;
+- Markdown/text v `text_content`.
+
+Tabulka už obsahuje také volitelné `storage_bucket` a `storage_key`. To umožňuje později přesunout velké immutable artefakty do Supabase Storage bez změny jejich redakční identity.
+
+**Pro Fast Editorial v1 není nový Storage bucket podmínkou provozu.** Kanonická data jsou i tak v Supabase, nyní primárně v PostgreSQL. Pokud bude později vytvořen dedikovaný Storage bucket, přechod musí být samostatné vědomé rozhodnutí a nesmí tiše změnit význam existujících artefaktů.
+
+#### Přístup a bezpečnost
+
+Schema `fast_editorial` není určeno pro anonymní nebo klientský přístup.
+
+- RLS je zapnuté na všech Fast Editorial tabulkách.
+- `anon` nemá přístup.
+- `authenticated` nemá přístup.
+- provozní serverová `service_role` má potřebná práva.
+- nevytvářej během redakční práce ad-hoc veřejné policies.
+
+RLS bez user policies je zde záměrný defense-in-depth stav privátní serverové vrstvy.
+
+#### Vazba na existující v4 zdroje
+
+`fast_editorial.issues` může volitelně odkazovat na:
+- `public.editions.id`
+- `public.sources.id`
+
+Tyto vazby využij, pokud již existuje odpovídající registrované vydání/source.
+
+Nejsou ale povinné pro samotnou schopnost Fast Editorialu pracovat. Fast Editorial zůstává podle D030 nezávislý na Deep/Memory pipeline. Vždy však musí mít vlastní dohledatelný `source_ref`.
+
+#### Co má nový Chat udělat při startu
+
+Při převzetí práce nejprve načti z `fast_editorial`:
+
+1. poslední relevantní řádek z `days`;
+2. `handover_state`;
+3. všechny issues daného dne a jejich status;
+4. frozen Issue Maps / snapshot references;
+5. topics a topic_sources;
+6. Deep Read Notes;
+7. Editorial Notes;
+8. poslední Brief version a její gates;
+9. relevantní active story_threads.
+
+Teprve potom vlastními slovy řekni, kde práce stojí a co je další krok.
+
+#### Co má nový Chat udělat při zápisu
+
+Nepřipravuj SQL podle paměti nebo odhadu názvu pole.
+
+Před prvním zápisem v novém Chatu ověř dostupné schéma `fast_editorial`. Pak zapisuj do výše uvedených tabulek.
+
+Po významném zápisu proveď readback:
+- správná identity;
+- správný day/issue/topic/brief;
+- správný status;
+- správné vazby;
+- správný text nebo hash.
+
+Kanonický stav oznam až po tomto ověření.
+
+#### Implementační provenance
+
+Fyzické schéma bylo vytvořeno migracemi:
+
+- `supabase/migrations/20261025210000_add_fast_editorial_v1.sql`
+- `supabase/migrations/20261025210500_add_fast_editorial_v1_fk_indexes.sql`
+
+Tato implementace nahrazuje v části Persistence Contractu výše formulaci, že konkrétní SQL názvy zatím nejsou určeny. Ostatní principy kontraktu zůstávají beze změny.
+
+
 
 
 ---
