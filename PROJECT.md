@@ -34,6 +34,8 @@ Nový Fast Editorial vzniká odděleně v:
 - `docs/fast-editorial/README.md`
 - `docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md`
 - `docs/fast-editorial/06_INTEGRATED_ONBOARDING.md`
+- `docs/fast-editorial/08_CALIBRATION_EXAMPLES.md`
+- `docs/fast-editorial/09_CURRENT_EDITORIAL_MEMORY.md`
 
 Výchozí mechanický řetězec rekonstruovaný z původního úspěšného v3 Chat experimentu je:
 
@@ -49,6 +51,8 @@ Nový proces zatím **není canonical**. Rekonstrukce fungujícího v3 mechanism
 
 Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
 
+**Fresh Fast Editorial Chat startup:** načti `06_INTEGRATED_ONBOARDING.md` + `08_CALIBRATION_EXAMPLES.md` + `09_CURRENT_EDITORIAL_MEMORY.md` a relevantní zdroje/artefakty. Nový Chat pak stručně vlastními slovy potvrdí hodnotu produktu, aktuální stav, frozen/closed hranice, zděděné opravy a další konkrétní krok; nejde o novou schvalovací bránu.
+
 
 ## Active branches
 - **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. Rebuild the proven live-Chat workflow from the original v3 experiment under `docs/fast-editorial/`, then add the Business Brief editorial constitution and validate against historical reference days. It must not depend on Deep/Memory infrastructure in this phase.
@@ -59,6 +63,9 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/fast-editorial/README.md — aktivní vstup do greenfield rekonstrukce Fast Editorial
 - docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md — source-based rekonstrukce prokazatelně fungujícího v3 mechanismu a minimálních struktur
 - docs/fast-editorial/06_INTEGRATED_ONBOARDING.md — hlavní greenfield syntéza V3 mechanismu a Business Brief ducha; kandidát pro regresní test, zatím ne canonical
+- docs/fast-editorial/07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md — pravidla kontinuity a předávání mezi Chaty bez fragmentace denního workflow
+- docs/fast-editorial/08_CALIBRATION_EXAMPLES.md — konkrétní příklady úsudku a oprav pro kalibraci nového Chatu
+- docs/fast-editorial/09_CURRENT_EDITORIAL_MEMORY.md — živý stav práce, otevřené story threads, zděděné opravy a další krok
 - docs/suspended/fast-editorial-pre-greenfield/ — SUSPENDED předchozí návrh; pouze historické srovnání, ne operating instructions
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
