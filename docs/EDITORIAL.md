@@ -64,7 +64,11 @@ Page-level perspective evidence není automaticky finální interpretace článk
 7. Vybrat Brief podle informační hodnoty i perspective value.
 8. Ověřit tvrzení/provenance a přiznat nejistotu.
 9. Vytvořit Master editorial truth.
-10. Adaptovat do kanálů.
+10. Předat VERIFIED Master Editorial Truth do Publishing Workflow; channel adaptations vznikají downstream.
+
+### Fast Editorial publishing boundary
+
+Fast Editorial končí VERIFIED Master Editorial Truth. EMAIL / WEB / VOICE jsou downstream channel adaptations v Publishing Workflow. Mohou měnit formu, ne redakční význam. Skutečné odeslání/publikace, publish receipts, retry a distribuce nejsou Fast Editorial.
 
 Konkrétní počet modelových passů není dogma. Role je odpovědnost, ne nutně agent/API call.
 
