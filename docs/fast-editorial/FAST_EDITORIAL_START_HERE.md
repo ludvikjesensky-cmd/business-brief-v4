@@ -728,6 +728,320 @@ Datové struktury, evidence a automatizace mají chránit úsudek, provenance a 
 
 Formálně zachycuj zejména to, co musí přežít kontext: identitu zdroje, frozen výsledek, provenance, významnou změnu interpretace, důležitou nejistotu a kanonický text. Nepřeváděj každý mentální pohyb na administrativní objekt.
 
+### Doplnění V4 — Fast Editorial Persistence Contract V1
+
+Fast Editorial má dvě odlišné vrstvy pravdy:
+
+- **GitHub** uchovává metodu, kontrakty, dokumentaci, schéma změn a dlouhodobé rozhodnutí o způsobu práce.
+- **Supabase** uchovává skutečný provozní stav redakce, denní artefakty, jejich identity, vazby, provenance, review a kanonické výsledky.
+
+Praktické pravidlo:
+
+> **GitHub říká, jak má Fast Editorial fungovat. Supabase říká, co se skutečně stalo.**
+
+Denní redakční artefakty proto neukládej primárně jako Markdown/YAML soubory do GitHubu jen proto, že jsou lidsky čitelné. Jejich kanonický provozní stav patří do Supabase.
+
+#### 1. Co patří do Supabase PostgreSQL
+
+PostgreSQL je queryable provozní vrstva pro strukturovaný stav, identity, vztahy a audit.
+
+Má nést minimálně tyto logické objekty:
+
+**Editorial day**
+- identita redakčního dne;
+- datum;
+- stav dne;
+- aktuální krok;
+- odkazy na poslední kanonický Brief;
+- časové údaje a relevantní statusy.
+
+**Source issue / issue state**
+- publikace;
+- datum a varianta vydání;
+- intake order;
+- reference původního source artefaktu;
+- stav čtení;
+- status `working | frozen`;
+- reference na frozen snapshot;
+- counts a issue-level conclusion metadata;
+- omezení a process caveats.
+
+**Issue Map items**
+- jedna položka na jeden relevantní editorial object;
+- stabilní identita;
+- source locator;
+- headline / working label;
+- genre;
+- article point;
+- editorial value;
+- CORE / CANDIDATE / LOW;
+- Deep Read kandidatura;
+- V4 perspective fields, pokud jsou doložené;
+- otevřené otázky a uncertainty.
+
+**Daily Topics**
+- topic identity;
+- central question;
+- synthesis;
+- why_now;
+- INCLUDE / RESERVE / EXCLUDE;
+- decision reason;
+- Deep Read stav;
+- otevřené otázky;
+- interpretační změny.
+
+**Topic-source provenance**
+- vazba Daily Topic ↔ Issue Map item;
+- role `primary | supporting | contrasting | background`;
+- konkrétní contribution;
+- distinctive perspective;
+- relevantní evidence reference.
+
+**Deep Read state**
+- který topic byl prověřen;
+- stav review;
+- odkazy na Deep Read Note;
+- selection before / after;
+- unresolved uncertainty.
+
+**Editorial Notes**
+- všechny skutečné redakční poznámky vzniklé během dne;
+- typ poznámky;
+- scope;
+- konkrétní findings;
+- decisions a jejich reasons;
+- evidence refs;
+- changes before / after;
+- unresolved items;
+- result;
+- vazba na konkrétní issue/topic/Brief/version;
+- created_at.
+
+Editorial Notes **patří do Supabase**. Nejsou dokumentace systému, ale redakční provozní evidence. GitHub může obsahovat jejich kontrakt a příklady, ne denní instance.
+
+**Master Brief index / versions**
+- brief identity;
+- editorial day;
+- version;
+- status `draft | verified`;
+- reference na kanonický textový artefakt;
+- source issue/topic references;
+- review note references;
+- final gates;
+- known limitations;
+- verified_at.
+
+**Current handover state**
+- poslední dokončený den;
+- rozpracovaný den;
+- co je frozen;
+- co je hotové;
+- co zbývá;
+- další konkrétní krok;
+- otevřené story threads;
+- aktivní guardrails / corrections;
+- reference na zdroje a artefakty.
+
+To umožní novému Chatu obnovit stav bez spoléhání na shrnutí předchozí konverzace.
+
+#### 2. Co patří do Supabase Storage
+
+Storage je vhodný pro větší nebo immutable kanonické artefakty, jejichž úplný obsah není nutné duplikovat jako authoritative body v PostgreSQL.
+
+Typicky:
+
+- frozen Issue Map snapshot;
+- Cross-Paper snapshot, pokud jej chceme uchovat jako celý serializovaný artefakt;
+- významné textové snapshoty Master Briefu;
+- finální verified Master Brief;
+- případné větší exporty Editorial Notes nebo day retrospective;
+- původní source editions a jejich již existující source artefakty.
+
+PostgreSQL má v takovém případě držet:
+- identitu artefaktu;
+- bucket/key;
+- SHA-256 nebo jinou ověřitelnou identitu;
+- velikost;
+- typ artefaktu;
+- version/status;
+- vazbu na day / issue / topic / brief;
+- timestamp.
+
+Princip:
+
+> **PostgreSQL = stav, metadata, vztahy, provenance a dotazovatelnost. Storage = úplný kanonický artefakt tam, kde to dává smysl.**
+
+Ne všechno musí jít do Storage. Krátké strukturované objekty, které potřebujeme často filtrovat a dotazovat, mohou být authoritative přímo v PostgreSQL.
+
+#### 3. Co naopak nepatří do GitHubu jako provozní data
+
+Do GitHubu neukládej každodenně:
+
+- Issue Maps;
+- Daily Topics;
+- jednotlivé Editorial Notes;
+- Deep Read Notes;
+- drafty každého redakčního dne;
+- gate výsledky;
+- handover state;
+- runtime statusy;
+- provozní provenance konkrétního dne.
+
+GitHub má držet:
+- tento dokument;
+- persistence contract;
+- případné schema/migration files;
+- dlouhodobá rozhodnutí;
+- dokumentované lessons;
+- testy a validátory;
+- změny metody.
+
+#### 4. Freeze a immutable snapshot
+
+Freeze je redakční i persistence hranice.
+
+Když je Issue Map frozen:
+
+1. pracovní obsah je dokončen;
+2. vytvoří se immutable snapshot;
+3. jeho identita se uloží;
+4. issue state se přepne na `frozen`;
+5. snapshot se už nesmí tiše přepisovat.
+
+Pokud se později zjistí objektivní chyba:
+- původní frozen snapshot zůstává;
+- oprava vznikne jako nová explicitní revize nebo correction record;
+- musí být dohledatelné, co bylo původně frozen a co se změnilo.
+
+Freeze chrání nezávislý úsudek vydání, ne historickou neomylnost.
+
+#### 5. Mutable versus immutable
+
+**Mutable během práce:**
+- pracovní Issue Map před freeze;
+- Daily Topic během Cross-Paper a Deep Read;
+- pracovní draft Briefu;
+- current handover state.
+
+**Append-only / history-preserving:**
+- Editorial Notes;
+- významné interpretation changes;
+- review results;
+- correction records.
+
+**Immutable po uzavření konkrétní verze:**
+- frozen Issue Map snapshot;
+- významný textový snapshot;
+- verified Master Brief version;
+- kanonický artefakt s přidělenou version/identity.
+
+Mutable neznamená bez historie. Významná změna musí zůstat dohledatelná.
+
+#### 6. Editorial Notes jako provozní paměť
+
+Editorial Notes mají v Supabase zvláštní význam: jsou mostem mezi živým redakčním úsudkem Chatu a přenositelnou zkušeností.
+
+Každá poznámka má zachovat jen to, co je užitečné pro další práci:
+
+- co bylo kontrolováno;
+- co bylo zjištěno;
+- jaké rozhodnutí padlo;
+- proč;
+- na jaké evidence stojí;
+- co se změnilo;
+- co zůstává otevřené.
+
+Neukládej celý vnitřní dialog nebo každou dočasnou formulaci.
+
+Editorial Notes jsou redakční auditní stopa a continuity evidence, ne transcript myšlení.
+
+#### 7. Final gates patří k přesné verzi Briefu
+
+Výsledky gates musí být uložené v Supabase a musí být jednoznačně navázané na konkrétní verzi Master Briefu.
+
+Minimálně původní V3 gates:
+
+- Coverage;
+- Hierarchy;
+- Curiosity;
+- Trust;
+- Product fit;
+- 90-second test.
+
+A současné V4 produktové testy:
+
+- Perspective;
+- Difference;
+- Reader autonomy;
+- Time respect;
+- Life.
+
+PASS bez vazby na konkrétní textovou verzi nemá kanonický význam.
+
+Pokud po PASS dojde k věcné změně textu, dotčené gates a review se musí znovu posoudit.
+
+#### 8. Canonical versus merely created
+
+Fast Editorial musí vždy rozlišovat:
+
+- vytvořeno v Chatu;
+- připraveno k zápisu;
+- skutečně uloženo;
+- readback / persistence ověřena;
+- frozen;
+- verified.
+
+> **Text created ≠ canonically stored.**
+
+> **Verified ≠ published.**
+
+Chat nesmí oznámit kanonické dokončení jen proto, že vytvořil správně vypadající YAML, JSON nebo text ve své odpovědi.
+
+#### 9. Zápis musí být ověřen
+
+Po každém významném persistence kroku ověř:
+
+- že vznikl správný objekt;
+- že patří ke správnému dni / vydání / topicu / Briefu;
+- že vazby existují;
+- že uložená verze odpovídá tomu, co mělo být uloženo;
+- že stav odpovídá skutečnému redakčnímu stavu.
+
+Pokud zápis selže, nepřepisuj kvůli tomu redakční úsudek. Uchovej obsah, oprav persistence problém a ověř, zda nevznikla částečná nebo duplicitní data.
+
+#### 10. Co tento kontrakt zatím neurčuje
+
+Tento dokument určuje logickou persistence odpovědnost, nikoli ještě konkrétní SQL názvy tabulek, constraints, indexy, RLS policies nebo bucket names.
+
+Ty musí vzniknout vědomě v technické implementaci a být verzované v GitHubu jako schema/migrations.
+
+Nový Fast Editorial Chat nesmí:
+- hádat názvy tabulek;
+- improvizovat nové tabulky během redakčního dne;
+- měnit schéma jen proto, že mu chybí pole;
+- zaměnit historické V3 názvy za nový V4 kontrakt.
+
+Když technický persistence adapter ještě není dostupný, redakční práce může pokračovat pouze jako explicitně **unpersisted working state**. Nesmí být vydávána za kanonicky uloženou.
+
+#### 11. Handover a Supabase
+
+`EDITORIAL_HANDOVER.md` může existovat jako stabilní šablona a popis formátu v GitHubu.
+
+Aktuální handover konkrétního dne však patří do Supabase jako provozní stav.
+
+Nový Chat má při převzetí načíst:
+- aktuální day state;
+- frozen Issue Maps;
+- Daily Topics;
+- Deep Read Notes;
+- Editorial Notes;
+- poslední Master Brief version;
+- otevřené story threads;
+- zděděné corrections / guardrails.
+
+`EDITORIAL_HANDOVER.md` tedy nemá být jedinou databází kontinuity. Je dokumentační kontrakt a lidsky čitelný model toho, co musí být v provozních datech obnovitelné.
+
+
 
 ---
 
