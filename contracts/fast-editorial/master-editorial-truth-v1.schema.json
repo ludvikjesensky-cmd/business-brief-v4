@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://business-brief.local/contracts/fast-editorial/master-editorial-truth-v1.schema.json",
+  "title": "Business Brief Master Editorial Truth v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "edition",
+    "units",
+    "known_limitations"
+  ],
+  "properties": {
+    "contract": {
+      "const": "master-editorial-truth-v1"
+    },
+    "edition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "language"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "greeting": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "opening_frame": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "unit_id",
+          "function",
+          "title",
+          "body",
+          "topic_ids",
+          "issue_ids",
+          "evidence_refs"
+        ],
+        "properties": {
+          "unit_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "function": {
+            "enum": [
+              "main_story",
+              "coverage",
+              "watchlist",
+              "curated",
+              "number",
+              "other"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dek": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          },
+          "topic_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "issue_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "uniqueItems": true
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "source_roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "perspective": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "author_or_media_view": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bb_synthesis": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "differences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "uncertainty": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reading_value": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "detail_potential": {
+            "enum": [
+              "strong",
+              "sufficient",
+              "weak",
+              "not_assessed",
+              null
+            ]
+          }
+        }
+      }
+    },
+    "numbers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "label",
+          "context",
+          "evidence_refs"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "context": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "watch_next": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item",
+          "why_it_matters",
+          "evidence_refs"
+        ],
+        "properties": {
+          "item": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why_it_matters": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "reading_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "source_ref",
+          "why_read",
+          "perspective_value"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why_read": {
+            "type": "string",
+            "minLength": 1
+          },
+          "perspective_value": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "known_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
