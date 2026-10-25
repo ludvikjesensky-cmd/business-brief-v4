@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://business-brief.local/contracts/fast-editorial/channel-adaptation-v1.schema.json",
+  "title": "Business Brief Channel Adaptation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "brief_id",
+    "brief_version",
+    "channel",
+    "format",
+    "transformations",
+    "semantic_check"
+  ],
+  "properties": {
+    "contract": {
+      "const": "channel-adapter-v1"
+    },
+    "brief_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "brief_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "channel": {
+      "enum": [
+        "EMAIL",
+        "WEB",
+        "VOICE"
+      ]
+    },
+    "format": {
+      "enum": [
+        "MARKDOWN",
+        "HTML",
+        "JSON",
+        "TEXT",
+        "SSML"
+      ]
+    },
+    "transformations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "semantic_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "checks"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "no_new_claim",
+            "certainty_preserved",
+            "qualifications_preserved",
+            "attribution_preserved",
+            "interpretation_preserved"
+          ],
+          "properties": {
+            "no_new_claim": {
+              "type": "boolean"
+            },
+            "certainty_preserved": {
+              "type": "boolean"
+            },
+            "qualifications_preserved": {
+              "type": "boolean"
+            },
+            "attribution_preserved": {
+              "type": "boolean"
+            },
+            "interpretation_preserved": {
+              "type": "boolean"
+            }
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
