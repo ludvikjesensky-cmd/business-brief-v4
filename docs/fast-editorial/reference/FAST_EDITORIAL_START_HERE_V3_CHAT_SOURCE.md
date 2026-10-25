@@ -998,3 +998,325 @@ Původní rekonstrukce používala headline, source_locator, open_questions a de
 | intake_order | A: skutečné pořadí příjmu | 2 | Nezávislost a audit |
 | source_file_ref | A: reference originálu | Ověřený soubor | Návrat ke zdroji |
 | page_count | A: rozsah PDF | 18 | Kontrola úplnosti prohlídky |
+| reading_mode | A: skutečný způsob čtení | rendered_vision | Interpretace technických omezení |
+| ocr_performed | A: zda OCR opravdu proběhlo | false | Pravdivý audit |
+| coverage.all_pages_reviewed | A: výsledek kontroly rozsahu | true | Freeze a přiznání neúplnosti |
+| coverage.unread_or_unclear_parts | P: pokud něco zbývá | Nečitelný graf na straně X | Doplnění zdroje |
+| coverage.reviewed_but_excluded_categories | A, prázdné jen po kontrole | Reklama, market-data | Rozlišení nezahrnutí a nepřečtení |
+| editorial_currents | A: hlavní proudy vydání | Sazby; AI; průmysl | Orientace při Cross-Paper |
+| unique_contributions | A: významné vlastní příspěvky | Původní interview | Ochrana single-source hodnoty |
+| important_distinctions | P: pokud hrozí předčasné sloučení | AI safety není finanční riziko Nvidie | Zachování samostatných objektů |
+| counts.total/core/candidate/low | A: skutečné počty | 41 / 11 / 26 / 4 | Kontrola konzistence |
+| counts.deep_read_candidates/memory_candidates | A v této šabloně | 11 / 37 | Přehled kandidatur, nikoli dokončení |
+| snapshot_ref | A při freeze: identita uloženého snapshotu | Skutečná reference | Obnova původního úsudku |
+| status | A: skutečný stav příslušného objektu | frozen | Podmínka Cross-Paper |
+| process_caveats | P: při odchylce | Preflight před registrací runu | Pravdivost timing/auditu |
+
+Pokud původní schéma používá text_layer_usable, ocr_required nebo frozen_at, uchovej tyto ověřené údaje. V této metodické šabloně nejsou všechny samostatným polem; jejich význam nesmí být při přenosu vynechán. ocr_required a ocr_performed nejsou totéž. Čas freeze zapisuj skutečný, ne odhadovaný zpětně.
+
+### H3. Daily Topic a source links
+
+| Pole | Význam a povinnost | Příklad | Pozdější použití |
+| --- | --- | --- | --- |
+| topic_id, day_id | A: identita tématu a dne | Skutečné klíče | Review, text a provenance |
+| working_title | A: přesná pracovní formulace | Toyota před VW v červenci… | Orientace a pozdější titulek |
+| central_question | A: co společně vysvětlujeme | Co se změnilo v poptávce? | Hranice topicu |
+| synthesis | A: podložená společná pointa | Stručný výklad z článků | Story a Writer |
+| why_now | A: dnešní relevance | Nové měsíční údaje | Odlišení opakování |
+| decision | A: výběrový status | include | Další práce |
+| decision_reason | A: důvod výběru či odložení | Silný samostatný zdroj, nový mechanismus | Audit a návrat k RESERVE |
+| source_links[].item_id | A: skutečný zdrojový objekt | Skutečné article ID | Návrat k evidenci |
+| source_links[].role | A: role v tomto topicu | primary | Rozlišení příspěvků |
+| source_links[].contribution | A: konkrétní přidaná hodnota | Dodává srovnávací období | Smysluplná provenance |
+| differences_and_tensions | P: při rozdílech | Odlišné segmenty trhu | Ochrana proti falešné shodě |
+| open_questions | P: při nejistotách | Závazek, nebo možná garance? | Deep Read |
+| deep_read_status | A: skutečný stav kontroly | pending | Připravenost pro Editorial |
+| deep_read_note_ref | P: když kontrola proběhla | Skutečná note reference | Dohledání výsledku |
+| temporal_context.previous_evidence_refs | P: když používáme včerejšek | Včerejší Brief a source refs | Ověřitelné časové srovnání |
+| temporal_context.supported_change | P: při časové interpretaci | Nový mechanismus místo pouhého opakování | Why_now a Story |
+| interpretation_changes | P: pokud se význam změnil | Odkaz na před/po a důvod | Ochrana před návratem chyby |
+
+Původní deep_read.focus je fronta konkrétních otázek a zdrojových kontrol; v rozšířené šabloně vychází z open_questions a source links. Pokud mají podklady samostatný focus, zachovej jej. Časové použití a jeho omezení musí být patrné, i když skutečné schéma nemá příznak used.
+
+### H4. Deep Read Note
+
+| Pole | Význam a povinnost | Příklad | Pozdější použití |
+| --- | --- | --- | --- |
+| note_type, day_id, topic_id | A: druh a rozsah kontroly | deep_read_summary | Správné dohledání |
+| source_passages[].item_id/locator | A: skutečně čtené podklady | Article ID + odstavec/strana | Opakovatelné ověření |
+| initial_interpretation | A: s čím editor přišel | Příliš obecné prvenství Toyoty | Srovnání před/po |
+| known_questions | A; může být prázdné po vědomém posouzení | Rozsah období? | Známá nejistota |
+| verified_findings[].finding | A: ověřené zjištění | Jde o červenec | Obsah pro psaní |
+| verified_findings[].evidence_ref | A pro každé zjištění | Skutečný lokátor | Provenance claimu |
+| verified_findings[].scope_and_qualifications | A, pokud omezuje tvrzení | Evropský private-customer channel | Přesnost formulace |
+| newly_discovered_problems | A, může být prázdné | Ruský model není private capital | Nově odhalené chyby |
+| apparent_conflicts[].issue | P: při nesouladu | Růst versus propad AI akcií | Rozpoznání problému |
+| apparent_conflicts[].resolution_or_remaining_uncertainty | P: spolu s problémem | Různé segmenty | Syntéza bez falešného rozporu |
+| interpretation_before/after | P: při změně; jinak výslovně beze změny | Obecný rámec → zúžený rámec | Audit významu |
+| change_reason | P: při změně | Zdroj nepodporuje původní rozsah | Obnova úsudku |
+| wording_guardrails.safe_formulation | A pro nosnou pointu | V červenci u soukromých zákazníků | Writer a Verification |
+| wording_guardrails.misleading_formulations | P: při rizikové zkratce | Toyota je evropská jednička | Ochrana před regresí |
+| selection_before/after | A: dopad kontroly do výběru | include → include | Odlišení interpretace a relevance |
+| remaining_uncertainties | A, prázdné jen po kontrole | Přesná budoucí kapacita nejasná | Omezení výsledného textu |
+| review_result | A: výsledek prověření | Dokončeno; původní širší claim nepoužít | Přechod dál |
+
+Příznak interpretation_changed může být uložen explicitně, pokud jej schéma má; jinak musí být změna z před/po jednoznačná. Dokončený review s odmítnutým claimem není totéž jako neprovedený review.
+
+### H5. Editorial Note
+
+| Pole | Význam a povinnost | Příklad | Pozdější použití |
+| --- | --- | --- | --- |
+| note_id | A po uložení: identita poznámky | Skutečný klíč | Odkazy a předání |
+| note_type | A: skutečná kategorie | verification_review_v1 | Orientace v auditní stopě |
+| scope.day_id | A | Skutečný den | Oddělení vydání |
+| scope.issue_ids/topic_ids | P podle rozsahu | Dotčené topics | Přesné přiřazení |
+| scope.brief_id/brief_version | P: při kontrole textu | Konkrétní Brief a verze | Zabránění přenosu PASS na jiný draft |
+| scope.workflow_run_id | P: pokud run existuje | Skutečný klíč | Vazba obsahu na provedení |
+| review_question | A u review | Předal Brief pointu a zachoval Detail? | Význam kontroly |
+| findings | A u review; může obsahovat potvrzení bez problému | Watchlist implikuje nesprávný stav | Konkrétní výsledek |
+| decisions[].decision/reason | A u rozhodnutí | Opravit sloveso; close byl pod hranicí | Pochopitelný úsudek |
+| decisions[].evidence_refs | P, pokud rozhodnutí závisí na zdroji | Pasáž z Deep Read | Audit opory |
+| changes[].before/after/impact | P při změně | Zůstane → vrátí se | Přesná oprava a její důsledek |
+| unresolved | A u review; prázdné jen po kontrole | Čeká zdroj k nosnému claimu | Neztracené otevřené otázky |
+| result | A | pass / needs_revision / informational | Další postup |
+| artifact_refs | A, pokud existuje kontrolovaný či vytvořený artefakt | Textový snapshot | Obnova konkrétní práce |
+| created_at | A po uložení: skutečný čas | Čas přidělený systémem | Chronologie |
+
+Původní next_action může být samostatným polem; pokud není, musí vyplývat z decisions a unresolved. Neztratit další konkrétní krok je důležitější než název sloupce.
+
+### H6. Master Brief metadata
+
+| Pole | Význam a povinnost | Příklad | Pozdější použití |
+| --- | --- | --- | --- |
+| brief_id, day_id | A | Skutečné klíče | Identita produktu |
+| edition_date | A | Ověřené datum vydání | Čtenářské i provozní zařazení |
+| version | A | 1 nebo 2 podle skutečnosti | Správa změn |
+| status | A | draft / verified podle skutečné konvence | Připravenost a omezení použití |
+| canonical_text_ref | A nebo vlastní text podle schématu | Konkrétní úplný text | Čtení, review a případný publishing |
+| source_issue_ids | A | Tři skutečná vydání | Coverage zdrojů |
+| source_topic_ids | A | Použité topics | Provenance |
+| editorial_units[].unit_key | P při evidenci jednotek | Identita v konkrétní verzi | Přiřazení sekce či položky |
+| editorial_units[].function | P spolu s jednotkou | coverage | Redakční funkce |
+| editorial_units[].topic_ids/evidence_refs | P spolu s jednotkou | Reálné vazby | Kontrola konkrétního textu |
+| review_note_refs | A pro verified | Odkazy na osm průchodů a závěr | Doložení redakčního schválení |
+| final_gates.coverage/hierarchy/curiosity/trust/product_fit/ninety_second_test | A pro verified | Skutečný výsledek každé brány | Celková kvalita |
+| known_limitations | A; může být prázdné po kontrole | Omezení rozsahu, ne skryté blokující chyby | Poctivé předání |
+| verified_at | P: až po schválení a uložení | Skutečný čas | Historie verze |
+
+Původní souhrn editorial_review s osmi výsledky lze zachovat. V rozšířené šabloně jej reprezentují konkrétní review_note_refs, ne domnělé automatické PASS. Pokud odkazované poznámky osm průchodů nedokládají, metadata nejsou pro schválení úplná.
+
+### H7. Prázdné hodnoty nejsou všechny stejné
+
+**Neznámé:** Hodnotu nemáme, například rok vydání. Použij skutečný podporovaný prázdný stav a vysvětli mezeru. Nevymýšlej hodnotu, aby prošel formulář.
+
+**Dosud nezpracované:** Například Deep Read čeká. To je pracovní stav, nikoli závěr, že nebyl nalezen problém.
+
+**Nevztahuje se:** Článek nemá pokračování nebo poznámka nekontroluje žádný Brief. Prázdná reference je v pořádku, pokud její význam není zaměnitelný s chybějícím podkladem.
+
+**Zkontrolováno, nic nenalezeno:** Prázdný seznam unresolved po skutečné kontrole. Nesmí vzniknout automatickým ponecháním výchozí hodnoty.
+
+V logických šablonách můžeš tyto rozdíly vysvětlit textem. Do existující databáze nevkládej nové enum hodnoty bez znalosti schématu. Povinné pole, které nelze pravdivě vyplnit, je důvodem vyřešit mezeru, nikoli ji zakrýt.
+
+## I. Doporučené artefakty a jejich životní cyklus
+
+Názvy souborů v tabulce jsou přenositelná konvence, nikoli historické názvy. Pokud kanonické výsledky existují v Supabase, nevytvářej druhou nezávisle upravovanou pravdu. Soubory mohou být export nebo pracovní kopie s jasným původem.
+
+| Artefakt / logický protějšek | Účel a obsah | Kdo a kdy vytváří | Kdy je hotový | Životní cyklus |
+| --- | --- | --- | --- | --- |
+| day-context.yaml / den a zdroje | Datum, identita, pořadí a reference vydání, omezení | Jeden Chat při intake | Průběžně aktuální | Mutable; důležité odchylky auditovat |
+| issue-map-{title}.yaml / mapa | Objekty, zdroje, priority a závěr | Tentýž Chat během čtení každého titulu | Po kontrole celého vydání | Pracovní → frozen; oprava jako dohledatelná revize |
+| daily-topics.yaml / daily_topics + vazby | Denní syntéza, source roles, rozhodnutí, otázky | Tentýž Chat při Cross-Paper | Výběr připravený, později zpřesněný Deep Read | Mutable pracovní interpretace; významné změny zaznamenat |
+| editorial-notes.yaml / bbv3.editorial_notes | Důvody, review, Deep Read, změny, retrospektiva | Tentýž Chat při dokončení kroků | Každý záznam po skutečné práci | Přibývající záznamy; opravy bez tichého mazání historie |
+| Textové snapshoty | Přesné meziverze Briefu | Writer a další relevantní průchody | V okamžiku zachycení | Snapshot nepřepisovat novým obsahem pod stejnou identitou |
+| master-brief.md / daily_briefs | Celý text, metadata, provenance a status | Tentýž Chat v Editorial | Po finálních branách a ověření zápisu | Draft → verified; další věcná změna jako verze/revize podle schématu |
+| EDITORIAL_HANDOVER.md | Stav, příští krok, otevřené příběhy, reference | Tentýž Chat při checkpointu a uzavření dne | K uvedenému času aktualizace | Mutable předání; historické verze zachovat |
+| FAST_EDITORIAL_START_HERE.md | Stabilní porozumění a metoda | Při vědomé rekonstrukci či přijaté změně | K vydané verzi dokumentu | Verzované; neměnit automaticky každým dnem |
+
+**Mutable neznamená bez historie.** Pracovní topic se může vyvíjet, ale důležitá změna významu potřebuje poznámku. **Frozen neznamená neomylné.** Znamená uchovaný nezávislý výsledek. **Final neznamená navždy bez opravy.** Znamená schválenou konkrétní verzi; další oprava musí být identifikovatelná a zkontrolovaná.
+
+## J. Co přesně převzít ze živého kontextu
+
+Pět vrstev paměti pomáhá vysvětlit, proč byl jeden souvislý Chat účinný. Tento popis je silná rekonstrukce, nikoli pět historicky zavedených datových objektů.
+
+| Vrstva | Co žilo v kontextu | Co má přežít v artefaktech | Co se ztratí při předání pouhého souhrnu |
+| --- | --- | --- | --- |
+| Paměť článků | Argument, tón, příklady, omezení a místo v čísle | Lokátor, pointa, žánr, důležité kvalifikace a dostupný originál | Nuance a možnost poznat, že souhrn něco přehnal |
+| Paměť úsudků | Proč se něco zdálo významné či hraniční | Důvody důležitých priorit a rozhodnutí | Rozdíl mezi uváženým výběrem a náhodou |
+| Paměť rozdílů | Které podobnosti jsou povrchní | Proč se konkrétní věci spojily nebo zůstaly oddělené | Opětovné sloučení podle štítku |
+| Paměť oprav | Jak vznikla chybná interpretace a co ji vyvrátilo | Před/po, zdroj, dopad a wording guardrails | Návrat stejné chyby při zkrácení |
+| Paměť kompozice | Co už čtenář ví, kde má zpomalit, kde text opakuje | Dramaturgický plán a přesná poslední verze textu | Plochý rytmus a opakované vysvětlování |
+
+Není nutné zapisovat každou alternativní formulaci. Zaznamenej zamítnutý úhel tehdy, když hrozí, že se bude znovu jevit jako atraktivní, ale už víme, proč je chybný. Například „private capital“ pro celý defence-tech příběh je takový případ.
+
+Při převzetí uprostřed psaní nestačí dát novému Chatu topics. Potřebuje i aktuální draft, schválené úhly, významné opravy a informaci, které kontroly už proběhly. Při převzetí mezi dny potřebuje poslední finální Brief, otevřené příběhy a jejich podklady; nemusí znovu načítat všechny pracovní formulace minulého dne.
+
+### Konkrétní paměťová karta příběhu — doporučení pro handover
+
+```yaml
+story_label: "Treasury / cena kapitálu"
+last_supported_state:
+  edition_date: "ověřit v originálu"
+  statement: "Intradenní maximum nad 5 %, close pod hranicí"
+  evidence_refs: []  # V reálné kartě skutečné reference.
+already_explained_to_reader: "Cena kapitálu a přenos do ekonomiky"
+open_question: "Přidávají nové články jiný mechanismus poptávky po dluhu?"
+do_not_repeat_as_fact: "Výnos zůstal nad 5 %"
+next_day_priority: "neurčeno; nové mapy číst nezávisle"
+```
+
+Tato karta není nový temporal pass ani povinný databázový objekt. Je to kompaktní způsob, jak neztratit význam při předání.
+
+## K. Pravomoci osmi editorů na jednom místě
+
+Názvy a pořadí průchodů jsou doložené. Toto jednotné rozdělení pravomocí je rekonstrukční pomůcka.
+
+| Průchod | Co kontroluje | Co může změnit | Výstup | Co nesmí |
+| --- | --- | --- | --- | --- |
+| Assignment | Potřebný obsah dne a role témat | Výběr, využití RESERVE, rozsah coverage | editorial_selection_v1 | Povýšit neověřený podklad bez kontroly; každé INCLUDE automaticky jako lead |
+| Dramaturg | Hierarchii, pořadí, rytmus, váhy | Pořadí, délkové váhy, spojení topics do jednotek | dramaturgy_plan_v1 | Zrušit věcný rozdíl kvůli hezkému příběhu |
+| Story | Pointu, why_now, mechanismus | Úhel a hranici příběhu | story_angles_v1 | Vytvořit nepodložené napětí nebo kauzalitu |
+| Writer | Čtenářský převod zadání | Formulace, přechody a lokální délky | Celý draft + master_brief_draft_v1 | Přidat neověřený fakt, vyrovnat všechny délky, spotřebovat Detail |
+| Detail | Plnou hodnotu Briefu a další hloubku | Rozdělení vysvětlení a rozsah jednotky | detail_gap_review_v1 | Udělat prázdný teaser nebo tvrdit, že hotové Detaily existují |
+| Verification | Skutečně napsané claims a implikace | Čísla, omezení, atribuci, věty i titulky | verification_review_v1 + potřebný snapshot | Spokojit se s dřívějším Deep Read |
+| Language & Style | Češtinu, rytmus, čitelnost | Jazyk a opakování | language_style_review_v1 + potřebný snapshot | Vymazat kvalifikaci a posílit jistotu |
+| Editor-in-Chief | Celek a finální brány | Schválení nebo návrat ke konkrétní opravě | editor_in_chief_review_v1, verdict | Měnit pro vlastní otisk nebo schválit neřešenou nosnou chybu |
+
+Každý průchod může skončit beze změny. Důležitý je skutečný výsledek kontroly a jeho vazba na podklad. Pokud Chief vrátí hierarchii, začni dramaturgií; pokud je problém v samotném zdrojovém významu, vrať se k Deep Read. Po opravě znovu proveď dotčené následné kontroly, ne automaticky všechno od začátku.
+
+## L. Stavba Master Briefu a přiměřený rozsah
+
+Následující rozsahy jsou orientační rekonstrukce, nikoli historicky ověřené limity. Slouží k rozlišení funkcí. Autentický finální text má přednost jako kalibrace a konkrétní den může vyžadovat jiný poměr.
+
+| Možná část | Úloha | Orientační rozsah | Vztah k ostatním |
+| --- | --- | --- | --- |
+| Dobré ráno | Lidský vstup a první orientace | Krátký odstavec | Nemá zdržovat před denní mapou ani ji zbytečně opakovat |
+| Dnes v kostce | Rychle ukázat hlavní změny | Několik vět nebo stručných bodů | Umožní orientaci bez pročtení všech příběhů |
+| Hlavní příběhy | Vysvětlit několik důležitých mechanismů | Proměnlivý počet odstavců podle významu | Nesou skutečné vrcholy a umožní přechod do hloubky |
+| Ještě potřebujete vědět | Uchovat důležité vedlejší události | Jedna až několik vět na položku | Chrání coverage bez soupeření všech témat o lead |
+| Čísla dne | Ukázat význam číselného údaje | Číslo s krátkým kontextem | Nemají být dekorací ani opakováním celého odstavce |
+| Co sledujeme | Pojmenovat otevřený další vývoj | Několik konkrétních bodů | Navazuje na dnešní stav, nepředpokládá neověřenou budoucnost |
+| Co dnes ještě stojí za přečtení | Kurátorsky doporučit silný text | Krátké zdůvodnění na doporučení | Může nabídnout hodnotu mimo denní leady |
+
+Samostatná existence všech těchto názvů a jejich přesné pořadí nejsou doložené. Funkce mapy dne, hlavního čtení, coverage, kurace a watchlistu doložené jsou. Vydání nemá být sedm stejně dlouhých bloků. Day 2 se sedmi hlavními jednotkami a čtyřmi vrcholy je příklad právě této nerovnoměrné váhy.
+
+### Neztratit podrobnost historických kalibračních případů
+
+Toyota/VW: zúžení na červenec a evropské soukromé zákazníky; leden–červenec VW nadále vedl o 376 aut. Nejde jen o obecné poučení „hlídej období“, ale o konkrétní opravu pointy.
+
+Defence-tech: ruská státní mobilizace, levné komerční čínské komponenty a rychlá iterace versus západní venture kapitál a startupy. Společný rámec byl rozšířen na levnější zbraně, komerční technologie a soukromý kapitál.
+
+AI akcie: vybrané hyperscalery rostly o 2 % a více, zatímco PHLX Semiconductor Index spadl o 5,9 %. Rozdíl segmentů vysvětloval zdánlivý rozpor. Správná společná pointa nebyla jednotný směr všech AI akcií.
+
+Treasury: intraday 5,012 %, close 4,96 %. Očekávání hike přibližně 90 % v jednom snapshotu a 77 % v jiném. Neprůměrovat a nevyrábět společnou přesnost. Samostatná pozdější oprava watchlistu se týkala předpokladu „zůstane nad 5 %“.
+
+Nvidia: v hlášení se rozlišovaly přibližně 99 mld. USD hotovosti a likvidních cenných papírů, možné garance až 105 mld. USD pro Ohio projekt a až 125 mld. USD v širším rámci. „Too big to fail“ zůstávalo názorem Mohameda El-Eriana, nikoli regulatorním statusem.
+
+Belgie: pět ze sedmi reaktorů bylo podle hlášení odstaveno, restartovatelnost se lišila a rozdělení nákladů a rizik se státem a Engie se vyjednávalo. Nelze z toho udělat jednoduchý hotový restart všech reaktorů.
+
+Všechna tato čísla jsou převzatá z dostupného konverzačního záznamu experimentu. Při novém publikovaném tvrzení vyžadují originální zdrojové ověření. V tomto dokumentu slouží výhradně jako kalibrace rozhodování.
+
+## M. Provozní napojení: co je přenositelné a co se musí skutečně načíst
+
+Nový Chat nemá od tohoto dokumentu čekat neexistující přístupové údaje. Potřebuje metodiku a ověřenou mapu konkrétního prostředí. Metodika je zde; následující provozní údaje musí být doplněny z autorizovaného původního prostředí, nikoli odhadnuty.
+
+| Údaj | Co je doloženo | Co musí být doplněno | Co bez něj nedělat |
+| --- | --- | --- | --- |
+| Supabase projekt | Experiment zapisoval do Supabase | Přesné project ID a potvrzení správného prostoru | Nezapisovat do podobně pojmenovaného projektu |
+| Editorial Notes | bbv3.editorial_notes | Skutečné sloupce, typy, vazby a vzor záznamu | Nevkládat YAML automaticky do domnělého pole |
+| Topics | daily_topics a provenance role | Schéma, vazební tabulka, klíče a stavy | Nezakládat paralelní strukturu podle názvu přílohy |
+| Briefy | daily_briefs, den/verze/status | Schéma, přesné ID, pole úplného textu a verzování | Nezaměnit draft se schváleným textem |
+| Články a vydání | Samostatné objects a frozen mapy | Skutečné názvy tabulek, source refs a snapshoty | Nerekonstruovat články z počtů v hlášení |
+| Workflow runy | Byly evidované, některé hlášené DONE | Skutečný formát, vazby a význam stavů | Nezaměnit run status za redakční verdict |
+| brief_items | U Day 1 v2 tehdy nebyly materializované | Případný existující publishing postup | Neprohlašovat publikaci za dokončenou |
+| Kalibrační Briefy | Day 1 v2 a Day 2 v1 byly hlášené verified | Celé autentické texty a přesné reference | Nevymýšlet finální texty podle souhrnu |
+
+Prakticky po získání přístupu nejdřív načti schéma a odpovídající vzorové historické záznamy. Zjisti, zda note type je skutečně typ, název či hodnota v JSON. Ověř, jak jsou den, vydání, topic a Brief propojené. Teprve potom sestav zápis. Tento postup nevyžaduje změnu tabulek ani přijetí pozdější architektury.
+
+Do handoveru předej ověřené project ID, schéma/tabulky, reference aktuálního dne, pravidlo verzování a způsob dohledání zdrojů. Nepředávej tajné klíče. Každý výsledek zápisu kontroluj v rozsahu potřebném k potvrzení obsahu a vazeb.
+
+**Hranice úplnosti:** Tento soubor je úplným metodickým předáním v rozsahu dostupné historie a jasně označené rekonstrukce. Není úplným exportem experimentu ani zprovozněným databázovým klientem. Chybějící originály jsou evidované mezery, ne volná místa pro kreativní doplnění.
+
+## N. Kontrola pokrytí všech šestnácti oblastí
+
+| Původní oblast | Hlavní výklad | Praktická opora | Stav |
+| --- | --- | --- | --- |
+| 1. Co pochopit před začátkem | Úvod, kapitoly 1 a 5 | Výběrová kritéria a kalibrační případy | Metodicky pokryto |
+| 2. End-to-end den | Kapitoly 3–19 a 22 | G1–G8: vstupy, kontext, výstupy, zákazy, přechody | Pokryto explicitně |
+| 3. Kontinuita jednoho Chatu | Kapitoly 2 a 25 | J: pět vrstev paměti a ztráty při předání | Pokryto explicitně |
+| 4. Issue Map | Kapitoly 3–7 | A, H1–H2, G2–G4 | Funkce, freeze i pole pokryté |
+| 5. Cross-Paper | Kapitola 8 | A, H3, G5 | Spojování, rozlišení a provenance pokryté |
+| 6. Selective Deep Read | Kapitola 9 | A, H4, G6, L | Spouštěče, oba režimy, změny a příklady pokryté |
+| 7. Osm průchodů | Kapitoly 10–18 | K a G7 | Pravomoci, výsledky, zákazy a návraty pokryté |
+| 8. Finální brány | Kapitoly 18–19 | Metadata A/H6 a G8 | Význam i meze doložení pokryté |
+| 9. Master Brief | Kapitola 20 | L | Funkce, rytmus, rozsah a nejistota názvů pokryté |
+| 10. Editorial Notes | Kapitola 21 | A, H5, B, I | Kdy, proč, jak, příklady a audit pokryté |
+| 11. Kontinuita dnů | Kapitola 24 | J a handover pravidla | Podpůrná Memory bez nového passu pokrytá |
+| 12. Co neformalizovat | Kapitola 26 | Průběžné výhrady ke kvótám a schématům | Pokryto |
+| 13. Artefakty | Kapitola 22 | I a B | Účel, autor, dokončení a životní cyklus pokryté |
+| 14. Datové struktury | Praktická příloha A | H1–H7 | Šest šablon, slovník a prázdné hodnoty pokryté |
+| 15. Samostatný onboarding | Celý soubor | E, G a M | Samostatné metodické zadání; provozní reference vyžadují originály |
+| 16. Sebehodnocení | Úvod a přílohy C–D | O | Doložené, rekonstruované a neznámé oddělené |
+
+„Pokryto“ zde hodnotí přítomnost a dostatečné vysvětlení oblasti v dokumentu, nikoli nové nezávislé ověření historických zdrojů. Nejde o další redakční gate pro každý den.
+
+## O. Závěrečné sebehodnocení rekonstrukce
+
+### A. Doložené z dostupného konverzačního záznamu
+
+- Postupné čtení kompletních vydání FT, WSJ a Handelsblattu; pořadí se měnilo.
+- Samostatné Issue Maps, priority CORE/CANDIDATE/LOW, kandidatury Deep Read a Memory.
+- Freeze před Cross-Paper a zákaz zpětného ovlivnění mapy dalším titulem.
+- Rozlišení článků, pokračování, teaserů, žánrů, reklamy a nezahrnutých částí.
+- Vizuální čtení obrazového FT bez full-issue OCR; textové čtení s kontrolou layoutu tam, kde byla textová vrstva.
+- Cross-Paper na úrovni Daily Topics, rozhodnutí include/reserve/exclude jako používaný rámec, zdrojové role primary/supporting/contrasting/background.
+- Day 2: 112 objektů, 28 topics, 12 INCLUDE a 16 RESERVE, 71 provenance vazeb a tři silné single-source INCLUDE.
+- Selective Deep Read před Editorial; v Day 2 všech dvanáct INCLUDE, interpretační opravy bez změny jejich výběrového statusu.
+- Konkrétní korekce Toyoty, defence-tech, segmentů AI trhu, Treasury, Nvidie a Belgie v rozsahu popsaném hlášeními.
+- Osm jmenovaných průchodů, vlastní Editorial Notes a významné textové snapshoty.
+- Dramaturgické spojování více topics do výsledné jednotky bez požadavku jedna ku jedné.
+- Hierarchie, proměnlivá délka položek, coverage, kurace, watchlist a vztah Briefu k Detailu.
+- Day 2: sedm hlavních jednotek, čtyři vrcholy, Detail value 6 strong/1 sufficient, šest hlášených Verification oprav a read-aloud 7/7.
+- Finální brány Coverage, Hierarchy, Curiosity, Trust, Product fit a samostatný 90-second test.
+- Schválení bez zásahu Editor-in-Chief; Day 1 v2 a Day 2 v1 hlášené jako verified.
+- bbv3.editorial_notes a zmínky o daily_topics, daily_briefs a brief_items; absence materializovaných brief_items u Day 1 v2 v daném checkpointu.
+- Přiznané procesní odchylky preflightu a opravená persistence PASS 4 po transakci bez COMMIT.
+- Reflexe slabší časové osy, poznámka memory_would_help a rozhodnutí nezavádět tehdy nový povinný temporal pass.
+- Poslední dostupný Day 3 checkpoint: FT a WSJ frozen, HB nezpracované, Cross-Paper dosud nezačal.
+
+Tato jistota je o obsahu konverzačního záznamu. Při sestavení dokumentu nebyl současný stav databáze ani původní novinové tvrzení znovu nezávisle ověřen.
+
+### B. Silná rekonstrukce a doporučené provedení
+
+- Vyjádření čtenářské potřeby a způsobu rozpoznávání redakční hodnoty.
+- Praktická hranice mezi CORE, CANDIDATE a LOW; není doložen původní formální scoring.
+- Rozlišení úplnosti čtení, dostatečnosti mapy a selektivity výsledku.
+- Pět vrstev paměti jednoho Chatu a konkrétní způsob jejich zachování.
+- Kritéria spojování podle mechanismu, otázky a napětí, praktické definice zdrojových rolí.
+- Dva režimy Deep Read: známá nejistota a hledání dosud nepoznané chyby.
+- Přesné praktické vymezení pravomocí jednotlivých editorů, návraty a opakování dotčených kontrol.
+- Význam kategorií Detail value a praktický výklad šesti finálních bran.
+- Šest přenositelných datových struktur, jejich pole, povinnost a příklady.
+- Opravování frozen mapy přes dohledatelnou revizi; životní cyklus artefaktů.
+- Ověření RESERVE podle rozsahu pozdějšího použití a další návraty ke zdrojům při změně claimu.
+- Vyplněné didaktické vzory Editorial Notes, jednotný přehled G a tabulka pravomocí K.
+- Postup technické obnovy, kontroly zápisů a mapování logických polí na skutečné schéma.
+- Balíček stálého průvodce, kalibračních ukázek a aktuálního handoveru; dosud zde nebyl prokázán úspěšný end-to-end test předání do nového Chatu.
+
+Tyto části jsou předávanou metodou, ne doslovným archivním přepisem. Neměly by se v dalších dokumentech začít citovat jako historicky zavedené databázové nebo procesní pravidlo bez tohoto rozlišení.
+
+### C. Nejisté, nedostupné nebo nedoložené
+
+- Úplné původní SQL schéma, project ID, názvy všech tabulek a sloupců, konkrétní klíče, constraints a vztahové cardinality.
+- Úplné originální znění Playbooku a instrukcí každého passu.
+- Celé autentické finální Briefy, mapy a zdrojové PDF v rámci tohoto předávacího dokumentu.
+- Přesná cílová persona a pevná norma délky či času čtení celého vydání.
+- Přesné historické názvy a pořadí všech sekcí Master Briefu.
+- Přesný technický protokol 90-second a read-aloud testů.
+- Přesná původní definice Memory candidate a návazný ingestní/RAG postup.
+- Skutečnost, že všechny Detaily byly napsané, že Briefy byly publikované nebo že existoval hotový automatizovaný publishing.
+- Zavedený temporal pass, systém trendů nebo oddělení osmi rolí do samostatných agentů.
+- Úplný seznam šesti konkrétních Verification oprav Day 2; dostupný záznam detailně zachycuje jen některé, zejména Treasury.
+- Rok redakčních vydání tam, kde je v dostupných zprávách pouze den a měsíc.
+- Aktuální stav provozního prostředí po posledním dostupném historickém checkpointu.
+
+Tyto mezery nejsou důvodem znehodnotit zachycenou zkušenost. Jsou hranicí, kterou má nový Chat vidět. Metodu může převzít z tohoto souboru; konkrétní historická tvrzení a provozní zápisy musí opřít o skutečné dostupné podklady.
