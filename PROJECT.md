@@ -33,6 +33,7 @@ Nový Fast Editorial vzniká odděleně v:
 
 - `docs/fast-editorial/README.md`
 - `docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md`
+- `docs/fast-editorial/06_INTEGRATED_ONBOARDING.md`
 
 Výchozí mechanický řetězec rekonstruovaný z původního úspěšného v3 Chat experimentu je:
 
@@ -44,7 +45,7 @@ Independent Issue Maps
 → verified Master Brief
 ```
 
-Nový proces zatím **není canonical**. Nejprve rekonstruujeme prokazatelně fungující mechanismus a minimální datové struktury. Teprve potom do něj vložíme současnou produktovou a redakční constitution Business Briefu a provedeme regresní testy na historických dnech.
+Nový proces zatím **není canonical**. Rekonstrukce fungujícího v3 mechanismu byla oddělena od produktového a redakčního ducha Business Briefu a obě vrstvy jsou nyní syntetizovány v `docs/fast-editorial/06_INTEGRATED_ONBOARDING.md`. Tento dokument je hlavní kandidát pro regresní testy na historických dnech; `03_ONBOARDING_V3_MECHANISM.md` zůstává kontrolní baseline.
 
 Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
 
@@ -57,6 +58,7 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 ## Detailed docs
 - docs/fast-editorial/README.md — aktivní vstup do greenfield rekonstrukce Fast Editorial
 - docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md — source-based rekonstrukce prokazatelně fungujícího v3 mechanismu a minimálních struktur
+- docs/fast-editorial/06_INTEGRATED_ONBOARDING.md — hlavní greenfield syntéza V3 mechanismu a Business Brief ducha; kandidát pro regresní test, zatím ne canonical
 - docs/suspended/fast-editorial-pre-greenfield/ — SUSPENDED předchozí návrh; pouze historické srovnání, ne operating instructions
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
