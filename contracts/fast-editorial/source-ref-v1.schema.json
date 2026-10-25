@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://business-brief.local/contracts/fast-editorial/source-ref-v1.schema.json",
+  "title": "Fast Editorial durable source reference v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "kind",
+    "publication_code",
+    "issue_date",
+    "edition_variant",
+    "display_name",
+    "durable_ref"
+  ],
+  "properties": {
+    "contract": {
+      "const": "fast-editorial-source-ref-v1"
+    },
+    "kind": {
+      "enum": [
+        "SUPABASE_SOURCE",
+        "SUPABASE_STORAGE"
+      ]
+    },
+    "publication_code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "edition_variant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "durable_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "edition_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "storage_bucket": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "storage_key": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "page_count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    }
+  }
+}
