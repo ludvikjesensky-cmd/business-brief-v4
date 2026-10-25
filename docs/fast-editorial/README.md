@@ -147,6 +147,40 @@ This is now the **primary candidate for regression testing with a clean Chat**.
 
 It is not yet canonical. Do not discard `03_ONBOARDING_V3_MECHANISM.md`; that file remains the control baseline for identifying what the editorial-spirit layer changed.
 
+
+### 8. `07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md`
+
+Defines how editorial knowledge moves to a new Chat without fragmenting the daily workflow.
+
+Core transfer package:
+- stable onboarding;
+- calibration examples;
+- current editorial memory.
+
+### 9. `08_CALIBRATION_EXAMPLES.md`
+
+Concrete examples of editorial judgment from the successful experiment:
+- Toyota vs Volkswagen;
+- defence-tech;
+- AI stock segments;
+- Treasury watchlist;
+- approval without forced edits.
+
+Future versions should add one or two complete approved historical Master Briefs.
+
+### 10. `09_CURRENT_EDITORIAL_MEMORY.md`
+
+Live operational continuity artifact.
+
+Tracks:
+- current work state;
+- frozen / closed artifacts;
+- open story threads;
+- inherited corrections;
+- next concrete step.
+
+It must remain small and useful. It does not replace source artifacts or determine the next day's Issue Maps.
+
 ---
 
 ## Current source of truth
@@ -159,6 +193,9 @@ For the greenfield reconstruction:
 - reconstruction confidence / guardrails: `04_EVIDENCE_AND_GUARDRAILS.md`
 - product spirit / editorial way of working: `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
 - integrated synthesis candidate: `06_INTEGRATED_ONBOARDING.md`
+- continuity / handoff method: `07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md`
+- editorial calibration: `08_CALIBRATION_EXAMPLES.md`
+- live editorial memory: `09_CURRENT_EDITORIAL_MEMORY.md`
 
 `00_V3_RECONSTRUCTION_BASELINE.md` remains the source-based reference behind them.
 
@@ -191,3 +228,21 @@ Do not yet design:
 - publication infrastructure.
 
 Do not optimize architecture before the editorial method is accepted.
+
+
+---
+
+## Fresh-Chat startup bundle
+
+For a new Fast Editorial Chat, load:
+
+1. `06_INTEGRATED_ONBOARDING.md`
+2. `08_CALIBRATION_EXAMPLES.md`
+3. `09_CURRENT_EDITORIAL_MEMORY.md`
+4. the relevant complete source editions / saved editorial artifacts
+
+Then perform the short comprehension check defined in the onboarding.
+
+Do not load the suspended pre-greenfield briefings.
+
+Do not treat calibration examples as fixed templates or quotas.
