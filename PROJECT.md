@@ -55,6 +55,7 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 
 ## Active branches
 - **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md` is the current complete handoff candidate combining the proven v3 live-Chat method with the Business Brief v4 editorial purpose. Validate it against authentic historical Briefs and clean-Chat regression tests before declaring it canonical. It must not depend on Deep/Memory infrastructure in this phase.
+  - Persistence v1 is implemented in Supabase project `business-brief-v4`, private schema `fast_editorial`; concrete operational Editorial Notes, Issue Maps, Topics, Brief versions, gates and handover state belong there. GitHub holds the method and migrations. See migrations `20261025210000_add_fast_editorial_v1.sql` and `20261025210500_add_fast_editorial_v1_fk_indexes.sql`.
 - **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
 - Integration between the branches is deliberately unresolved; see D030.
 
