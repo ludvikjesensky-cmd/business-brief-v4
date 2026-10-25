@@ -1179,6 +1179,20 @@ Pokud adaptace potřebuje změnit význam, musí se vrátit do Master Editorial 
 
 #### Dvě kanonické reprezentace stejné redakční pravdy
 
+#### Queryable metadata Master Briefu
+
+Stejně jako ve v3 držíme u každé konkrétní Brief version také několik jednoduchých queryable metadata přímo v `fast_editorial.briefs`:
+
+- `title` — čtenářský titul této verze;
+- `deck` — podtitul / deck;
+- `language` — primární jazyk, default `cs`;
+- `editorial_summary` — krátké provozní/redakční shrnutí verze.
+
+Tato pole nejsou náhradou `content_json` ani `content_markdown`. Jsou rychlou queryable vrstvou pro dashboard, handover, listing verzí a publishing workflow.
+
+`editorial_summary` má popsat redakční stav nebo podstatu verze stručně. Nemá sloužit jako druhý, zkrácený Master Brief.
+
+
 Každý řádek v `fast_editorial.briefs` nyní nese dvě reprezentace téže verze:
 
 **`content_json`**
@@ -1372,6 +1386,10 @@ Voice output se nevytváří z Issue Maps, Topics ani jednotlivých článků. V
 - `content_json`
 - `content_json_sha256`
 - `editorial_truth_contract`
+- `title`
+- `deck`
+- `language`
+- `editorial_summary`
 - existující `content_markdown`
 - existující `content_sha256`
 
@@ -1380,6 +1398,7 @@ Kanálové výstupy jsou v:
 
 Implementační migration:
 - `supabase/migrations/20261025212000_add_master_editorial_truth_and_channel_outputs_v1.sql`
+- `supabase/migrations/20261025213500_add_fast_editorial_brief_metadata_v1.sql`
 
 
 #### Konkrétní pravidlo pro artefakty
