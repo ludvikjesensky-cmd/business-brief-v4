@@ -21,27 +21,43 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
-Fast Editorial používá tři samostatné role / mentální režimy a single-entry briefingy, nikoli nutně tři samostatné konverzace. Pro běžný startup načti pouze briefing přidělené role a její vstupy; širší Project Memory ani čtvrtý workspace dokument nejsou potřeba:
+Fast Editorial je nyní v **greenfield reconstruction** režimu.
 
-- `docs/FAST_EDITORIAL_CHAT.md` = Issue Editor + jedno kompletní vydání → frozen Issue Map + povinné Editorial Notes → **STOP**.
-- `docs/CROSS_PAPER_CHAT.md` = Cross-Paper Editor + 3 frozen Issue Maps (FT, WSJ, HB) a jejich Editorial Notes → Daily Topics / Cross-Paper Map + povinné Editorial Notes → **STOP**.
-- `docs/NEWSROOM_CHAT.md` = Newsroom Editor + Daily Topics, Cross-Paper Notes, relevantní Deep Read a uncertainties → Master Brief, podpůrné artefakty a day retrospective → **STOP**.
+Předchozí aktivní návrh Fast Editorial byl 2026-10-25 pozastaven a přesunut do:
 
-**One day, one Editorial Chat. Multiple explicit roles. Frozen artifacts between roles.** Výchozí produkční model je jeden kontinuální Editorial Chat pro celý den: postupně nezávisle zpracuje FT, WSJ a HB, poté Cross-Paper a Newsroom. Uvedené tři soubory jsou role/mental-mode briefings. Jeden Chat může role projít postupně, ale každá další role vyžaduje explicitní nové zadání a explicitní načtení příslušného briefingu; dokončení předchozí role samo o sobě pokračování neopravňuje. Každé další vydání vyžaduje vlastní explicitní zadání Issue Editora. Hard STOP ukončuje aktuální roli / mentální režim, ne nutně celou konverzaci; po Master Briefu končí role Newsroom. Každý briefing samostatně obsahuje mission, redakční principy, workspace contract a vlastní hard STOP.
+- `docs/suspended/fast-editorial-pre-greenfield/`
 
-Kontinuita paměti Chatu je žádoucí, ale redakční nezávislost každé Issue Map je procesní pravidlo. Issue Editor posuzuje pouze aktuální vydání; ani při tvorbě WSJ/HB mapy nesmí předčasně syntetizovat cross-paper pohled nebo nechat předchozí tituly určovat její úsudek. Každá mapa se zmrazí před dalším vydáním. Frozen FT mapu nelze zpětně měnit po četbě WSJ/HB; pozdější poznatky patří do downstream artefaktů. Uložené artefakty jsou zdrojem explicitního stavu, verzí a rozhodnutí i při pokračování ve stejné konverzaci.
+Tyto soubory jsou historický návrh pro srovnání, nikoli současné operating instructions.
 
-Samostatné Chaty zůstávají povolené pro paralelizaci, regresní testy nebo když kontext naroste, ale nejsou výchozí produkční model.
+Nový Fast Editorial vzniká odděleně v:
+
+- `docs/fast-editorial/README.md`
+- `docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md`
+
+Výchozí mechanický řetězec rekonstruovaný z původního úspěšného v3 Chat experimentu je:
+
+```
+Independent Issue Maps
+→ Cross-Paper
+→ Selective Deep Read
+→ eight Editorial Review passes
+→ verified Master Brief
+```
+
+Nový proces zatím **není canonical**. Nejprve rekonstruujeme prokazatelně fungující mechanismus a minimální datové struktury. Teprve potom do něj vložíme současnou produktovou a redakční constitution Business Briefu a provedeme regresní testy na historických dnech.
+
+Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
+
 
 ## Active branches
-- **Fast Editorial:** independent edition-first morning editorial workflow inherited from the successful v3 experiment. Current task: reconstruct and port the live Chat Issue Map → cross-paper → Brief workflow. It must not depend on Deep/Memory infrastructure in this phase.
+- **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. Rebuild the proven live-Chat workflow from the original v3 experiment under `docs/fast-editorial/`, then add the Business Brief editorial constitution and validate against historical reference days. It must not depend on Deep/Memory infrastructure in this phase.
 - **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
 - Integration between the branches is deliberately unresolved; see D030.
 
 ## Detailed docs
-- docs/FAST_EDITORIAL_CHAT.md — single entrypoint pouze pro Issue Editora; jedno vydání → frozen Issue Map → STOP
-- docs/CROSS_PAPER_CHAT.md — single entrypoint pro Cross-Paper Editora; 3 frozen Issue Maps → Daily Topics → STOP
-- docs/NEWSROOM_CHAT.md — single entrypoint pro Newsroom Editora; Daily Topics + Deep Read → Master Brief → STOP
+- docs/fast-editorial/README.md — aktivní vstup do greenfield rekonstrukce Fast Editorial
+- docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md — source-based rekonstrukce prokazatelně fungujícího v3 mechanismu a minimálních struktur
+- docs/suspended/fast-editorial-pre-greenfield/ — SUSPENDED předchozí návrh; pouze historické srovnání, ne operating instructions
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura; obsahuje kanonický Assembler kontrakt a D029 repository implementation
