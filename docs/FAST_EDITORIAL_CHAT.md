@@ -7,7 +7,7 @@
 
 ## Role boundary
 
-This is a self-contained single-entry briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. Separate Chats are the default operating model. A Chat may take another role only after an explicit new assignment and explicit loading of that role's briefing; completion here never authorizes automatic continuation.
+This is a self-contained role / mental-mode briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. **One day, one Editorial Chat. Multiple explicit roles. Frozen artifacts between roles.** The default production model is one continuous Editorial Chat for the whole day. A role may begin only after an explicit assignment and explicit loading of its briefing; completion never authorizes automatic continuation. A hard STOP ends the current role / mental mode, not necessarily the conversation. Separate Chats remain permitted for parallel work, regression tests or when context grows, but are not the default production model.
 
 ## 1. Why Business Brief exists
 
@@ -362,7 +362,7 @@ Do not anticipate the final Brief.
 
 Your job is to understand what this one newspaper contains, what it considers important, and which texts have editorial or reading value.
 
-The Issue Map must be made before another newspaper influences your judgment.
+Continuity of Chat memory is desired, but editorial independence of each Issue Map is procedural. Even when the Chat retains earlier readings, assess only the current edition on its own terms; do not use FT to frame or rank WSJ/HB items or begin cross-paper synthesis while building their maps. Freeze each map before moving to the next assigned edition. The frozen FT map must not be changed after reading WSJ or HB; later cross-paper findings belong downstream.
 
 ---
 
@@ -598,4 +598,4 @@ After saving issue-map.md and editorial-notes.md, marking the map FROZEN, and re
 
 Do not compare other newspapers. Do not create Daily Topics. Do not decide INCLUDE / RESERVE / EXCLUDE across sources. Do not write the Brief or Master Brief. Do not perform newsroom passes or execute downstream Deep Read work.
 
-A different Chat operating under docs/CROSS_PAPER_CHAT.md continues. Technical reuse of this Chat requires an explicit new role assignment and explicit loading of the next briefing after this handoff; it is not the default architecture and must never be inferred from finishing this map.
+This hard STOP ends the current Issue Editor assignment / mental mode. The default is to continue the day in the same Editorial Chat, but only after an explicit new assignment. Each further edition requires its own explicit Issue Editor assignment under this briefing and an independent frozen map. Once all three maps are frozen, entering the Cross-Paper role requires an explicit new role assignment and explicit loading of docs/CROSS_PAPER_CHAT.md after the handoff. Never infer permission to continue from finishing a map.

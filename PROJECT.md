@@ -21,13 +21,17 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
-Fast Editorial používá tři samostatné role a single-entry briefingy. Pro běžný startup načti pouze briefing přidělené role a její vstupy; širší Project Memory ani čtvrtý workspace dokument nejsou potřeba:
+Fast Editorial používá tři samostatné role / mentální režimy a single-entry briefingy, nikoli nutně tři samostatné konverzace. Pro běžný startup načti pouze briefing přidělené role a její vstupy; širší Project Memory ani čtvrtý workspace dokument nejsou potřeba:
 
 - `docs/FAST_EDITORIAL_CHAT.md` = Issue Editor + jedno kompletní vydání → frozen Issue Map + povinné Editorial Notes → **STOP**.
 - `docs/CROSS_PAPER_CHAT.md` = Cross-Paper Editor + 3 frozen Issue Maps (FT, WSJ, HB) a jejich Editorial Notes → Daily Topics / Cross-Paper Map + povinné Editorial Notes → **STOP**.
 - `docs/NEWSROOM_CHAT.md` = Newsroom Editor + Daily Topics, Cross-Paper Notes, relevantní Deep Read a uncertainties → Master Brief, podpůrné artefakty a day retrospective → **STOP**.
 
-Výchozí provozní model jsou oddělené Chaty. Jeden Chat může převzít další roli pouze po explicitním novém zadání role a explicitním načtení jejího briefingu; dokončení předchozí role samo o sobě pokračování neopravňuje. Každý briefing samostatně obsahuje mission, redakční principy, workspace contract a vlastní hard STOP.
+**One day, one Editorial Chat. Multiple explicit roles. Frozen artifacts between roles.** Výchozí produkční model je jeden kontinuální Editorial Chat pro celý den: postupně nezávisle zpracuje FT, WSJ a HB, poté Cross-Paper a Newsroom. Uvedené tři soubory jsou role/mental-mode briefings. Jeden Chat může role projít postupně, ale každá další role vyžaduje explicitní nové zadání a explicitní načtení příslušného briefingu; dokončení předchozí role samo o sobě pokračování neopravňuje. Každé další vydání vyžaduje vlastní explicitní zadání Issue Editora. Hard STOP ukončuje aktuální roli / mentální režim, ne nutně celou konverzaci; po Master Briefu končí role Newsroom. Každý briefing samostatně obsahuje mission, redakční principy, workspace contract a vlastní hard STOP.
+
+Kontinuita paměti Chatu je žádoucí, ale redakční nezávislost každé Issue Map je procesní pravidlo. Issue Editor posuzuje pouze aktuální vydání; ani při tvorbě WSJ/HB mapy nesmí předčasně syntetizovat cross-paper pohled nebo nechat předchozí tituly určovat její úsudek. Každá mapa se zmrazí před dalším vydáním. Frozen FT mapu nelze zpětně měnit po četbě WSJ/HB; pozdější poznatky patří do downstream artefaktů. Uložené artefakty jsou zdrojem explicitního stavu, verzí a rozhodnutí i při pokračování ve stejné konverzaci.
+
+Samostatné Chaty zůstávají povolené pro paralelizaci, regresní testy nebo když kontext naroste, ale nejsou výchozí produkční model.
 
 ## Active branches
 - **Fast Editorial:** independent edition-first morning editorial workflow inherited from the successful v3 experiment. Current task: reconstruct and port the live Chat Issue Map → cross-paper → Brief workflow. It must not depend on Deep/Memory infrastructure in this phase.

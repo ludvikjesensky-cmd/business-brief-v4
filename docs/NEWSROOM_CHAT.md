@@ -7,7 +7,7 @@
 
 ## Role boundary
 
-This is a self-contained single-entry briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. Separate Chats are the default operating model. A Chat may take another role only after an explicit new assignment and explicit loading of that role's briefing; completion here never authorizes automatic continuation.
+This is a self-contained role / mental-mode briefing. No wider Project Memory or fourth workspace document is required for ordinary editorial work. **One day, one Editorial Chat. Multiple explicit roles. Frozen artifacts between roles.** The default production model is one continuous Editorial Chat for the whole day. A role may begin only after an explicit assignment and explicit loading of its briefing; completion never authorizes automatic continuation. A hard STOP ends the current role / mental mode, not necessarily the conversation. Separate Chats remain permitted for parallel work, regression tests or when context grows, but are not the default production model.
 
 
 ## 1. Why Business Brief exists
@@ -297,6 +297,8 @@ Do not flood the reader with everything that appeared in the newspapers.
 The newsroom may read widely. The product must select.
 
 ## 3. Input gate and startup
+
+Begin only after an explicit switch to the Newsroom role and loading this briefing. By default, continue in the same Editorial Chat and use the natural contextual continuity of the earlier FT, WSJ and HB readings and Cross-Paper work. Saved artifacts remain the source of explicit state, statuses, input versions and decisions; Chat memory supplements them and never replaces required inputs or permits rewriting frozen Issue Maps. Record later findings in the downstream notes under the workspace contract.
 
 Receive this briefing, the COMPLETE Daily Topics / Cross-Paper Map and its mandatory Cross-Paper Editorial Notes, relevant focused Deep Read notes, source references and uncertainties. Receive all topics, including RESERVE and EXCLUDE, not only INCLUDE.
 
@@ -645,4 +647,4 @@ Hand over the exact paths of all six saved artifacts, run ID, statuses, input re
 
 After saving the FINAL Master Brief, COMPLETE supporting artifacts and mandatory notes/day retrospective, and handing over exact paths/run ID, **YOU MUST STOP**.
 
-Do not publish, distribute, generate the full Detail product, start another editorial day or perform another role automatically. The Detail Editor pass reviews the Brief/Detail boundary; it is not authorization to produce full Details. Further work requires an explicit new assignment and its applicable briefing. Technical reuse of this Chat is possible only under that explicit transition; it is not the default operating model.
+Do not publish, distribute, generate the full Detail product, start another editorial day or perform another role automatically. The Detail Editor pass reviews the Brief/Detail boundary; it is not authorization to produce full Details. Further work requires an explicit new assignment and its applicable briefing. This hard STOP ends the Newsroom role / mental mode after the Master Brief handoff, not necessarily the conversation. The day's preceding roles normally share this same Editorial Chat; any further work still requires the explicit transition above.
