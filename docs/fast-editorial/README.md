@@ -1,248 +1,133 @@
 # Fast Editorial
 
 **Status:** GREENFIELD RECONSTRUCTION  
-**Working basis:** successful v3 Chat experiment reconstructed from the original experiment conversation  
 **Canonical status:** NOT YET CANONICAL
 
-This directory is the clean working area for the new Fast Editorial process.
+This directory contains the new Fast Editorial rebuilt from:
+- the successful v3 Chat experiment;
+- the original Chat's reconstruction of its own working method;
+- the Business Brief v4 product and editorial doctrine.
 
-The previous Fast Editorial design is preserved under:
+The previous Fast Editorial design remains suspended under:
 
 `docs/suspended/fast-editorial-pre-greenfield/`
 
-It is historical comparison material only. Do not use it as operating instructions unless a rule is explicitly re-adopted.
+Do not use those suspended briefings as operating instructions.
 
 ---
 
-## Reconstruction principle
+## Main handoff
 
-Rebuild the process from what actually worked.
+### `FAST_EDITORIAL_START_HERE.md`
 
-Do not port the suspended design by default.
+This is now the **primary complete handoff for a new Fast Editorial editor**.
 
-The recovered working chain is:
+It is intentionally comprehensive. It transfers:
+- why Business Brief exists;
+- how the editor should think;
+- the reconstructed v3 working method;
+- the v4 perspective / reading-value doctrine;
+- Issue Map, freeze and Cross-Paper;
+- Selective Deep Read;
+- eight Editorial Review passes;
+- final quality gates;
+- Editorial Notes;
+- difficult decision cases;
+- cross-day continuity;
+- practical structures and field semantics;
+- calibration cases;
+- handoff principles;
+- evidence boundaries.
+
+It does **not** reconstruct the historical Supabase / SQL implementation. Technical infrastructure is outside the Fast Editorial handoff.
+
+The untouched source produced by the original v3 experiment Chat is preserved at:
+
+`reference/FAST_EDITORIAL_START_HERE_V3_CHAT_SOURCE.md`
+
+---
+
+## Normal startup for a new Chat
+
+A new editor should receive:
+
+1. `FAST_EDITORIAL_START_HERE.md`
+2. the current `EDITORIAL_HANDOVER.md` once established
+3. one or two authentic approved historical Master Briefs once recovered and verified
+4. relevant source editions and saved editorial artifacts for the active day
+
+After loading them, the Chat should briefly state:
+- what value Business Brief is meant to create;
+- where the work stands;
+- what is already frozen / closed;
+- what important corrections or open questions it inherits;
+- what exact next step it will perform.
+
+This is a comprehension check, not an approval gate.
+
+---
+
+## Supporting reference documents
+
+The files `00_...` through `09_...` are **development and reconstruction references**, not the normal startup surface.
+
+They preserve:
+- reconstruction evidence;
+- workflow decomposition;
+- working data structures;
+- v3-only mechanism control;
+- anti-overformalization guardrails;
+- Business Brief spirit;
+- earlier synthesis drafts;
+- continuity design;
+- calibration notes;
+- a provisional editorial-memory structure.
+
+Use them when:
+- auditing why a rule exists;
+- comparing the integrated handoff with the original reconstruction;
+- changing the method;
+- running regression analysis.
+
+Do not require a normal daily editor to read them all.
+
+---
+
+## Reconstructed operating chain
 
 ```
-Independent Issue Maps
+Complete edition A
+→ independent Issue Map
+→ freeze
+
+Complete edition B
+→ independent Issue Map
+→ freeze
+
+Complete edition C
+→ independent Issue Map
+→ freeze
+
+Three frozen Issue Maps
 → Cross-Paper
 → Selective Deep Read
 → eight Editorial Review passes
+→ final quality gates
 → verified Master Brief
 ```
 
-One continuously working Chat carried the process. Continuity of live context was part of the method. Editorial independence of each newspaper issue was protected procedurally through frozen Issue Maps.
+Default model: **one continuously working Chat for the editorial day and, where practical, several consecutive days.**
 
 ---
 
-## Read order
+## Current open work
 
-### 1. `00_V3_RECONSTRUCTION_BASELINE.md`
+Before declaring the new Fast Editorial canonical:
 
-Source-based reconstruction baseline.
+1. recover and verify the full authentic Day 1 v2 and Day 2 v1 Master Briefs;
+2. create the practical `EDITORIAL_HANDOVER.md`;
+3. regression-test the new `FAST_EDITORIAL_START_HERE.md` in a clean Chat;
+4. compare the result with the historical experiment and the approved examples;
+5. adjust only where the test reveals a real editorial gap or unnecessary formalism.
 
-Use it when you need to understand the evidence behind the current greenfield process.
-
-It deliberately mixes:
-- documented experiment behavior;
-- careful reconstruction;
-- working structural proposals.
-
-It is not an operating prompt.
-
-### 2. `01_WORKFLOW.md`
-
-The reconstructed end-to-end mechanism.
-
-Use it to understand:
-- intake;
-- independent issue reading;
-- freeze;
-- Cross-Paper;
-- Selective Deep Read;
-- eight Editorial Review passes;
-- final gates;
-- completion.
-
-This is the current working process specification.
-
-### 3. `02_DATA_STRUCTURES.md`
-
-Minimal working artifacts and reconstructed data structures.
-
-Use it for:
-- Issue Map items;
-- issue-level conclusions;
-- Daily Topics;
-- Deep Read Notes;
-- Editorial Notes;
-- Master Brief metadata;
-- provenance.
-
-These structures support the process. They must not start driving editorial judgment.
-
-### 4. `03_ONBOARDING_V3_MECHANISM.md`
-
-Self-contained test briefing for a clean Chat.
-
-It should be sufficient to reproduce the reconstructed v3 mechanism from complete editions to a verified Master Brief.
-
-**Important:** it intentionally does not yet include the later Business Brief editorial constitution. It is a mechanism test, not the final onboarding.
-
-### 5. `04_EVIDENCE_AND_GUARDRAILS.md`
-
-Confidence boundaries and anti-overformalization rules.
-
-Read this before adding:
-- a new role;
-- a new artifact;
-- a mandatory field;
-- scoring;
-- workflow state;
-- agent separation;
-- automation.
-
-
-### 6. `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
-
-The complete product and editorial layer extracted from the suspended Fast Editorial design and the wider Business Brief philosophy.
-
-It captures not only the editorial constitution, but also:
-- why Business Brief exists;
-- what value it transfers from foreign journalism;
-- how the editor should read and think;
-- event importance vs reading value;
-- reader autonomy and productive uncertainty;
-- source individuality and cross-paper difference;
-- coverage safety net;
-- curiosity and reading curation;
-- Brief vs Detail;
-- editorial voice, hierarchy and variable form;
-- provenance, uncertainty and trust;
-- anti-patterns;
-- automation and over-engineering guardrails.
-
-This file defines **why and how to think**, while `01_WORKFLOW.md` defines **what happens in what order**.
-
-Do not merge the two layers silently. Their synthesis into final onboarding is a separate design step.
-
-
-### 7. `06_INTEGRATED_ONBOARDING.md`
-
-The first full synthesis candidate.
-
-It combines:
-- the reconstructed successful v3 operating mechanism;
-- the Business Brief product purpose;
-- editorial way of reading and thinking;
-- perspective value;
-- event importance vs reading value;
-- reader autonomy;
-- coverage safety net;
-- reading curation;
-- Brief / Detail complementarity;
-- editorial voice;
-- anti-patterns and final quality tests.
-
-This is now the **primary candidate for regression testing with a clean Chat**.
-
-It is not yet canonical. Do not discard `03_ONBOARDING_V3_MECHANISM.md`; that file remains the control baseline for identifying what the editorial-spirit layer changed.
-
-
-### 8. `07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md`
-
-Defines how editorial knowledge moves to a new Chat without fragmenting the daily workflow.
-
-Core transfer package:
-- stable onboarding;
-- calibration examples;
-- current editorial memory.
-
-### 9. `08_CALIBRATION_EXAMPLES.md`
-
-Concrete examples of editorial judgment from the successful experiment:
-- Toyota vs Volkswagen;
-- defence-tech;
-- AI stock segments;
-- Treasury watchlist;
-- approval without forced edits.
-
-Future versions should add one or two complete approved historical Master Briefs.
-
-### 10. `09_CURRENT_EDITORIAL_MEMORY.md`
-
-Live operational continuity artifact.
-
-Tracks:
-- current work state;
-- frozen / closed artifacts;
-- open story threads;
-- inherited corrections;
-- next concrete step.
-
-It must remain small and useful. It does not replace source artifacts or determine the next day's Issue Maps.
-
----
-
-## Current source of truth
-
-For the greenfield reconstruction:
-
-- mechanism: `01_WORKFLOW.md`
-- data structures: `02_DATA_STRUCTURES.md`
-- clean-Chat v3 mechanism control: `03_ONBOARDING_V3_MECHANISM.md`
-- reconstruction confidence / guardrails: `04_EVIDENCE_AND_GUARDRAILS.md`
-- product spirit / editorial way of working: `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
-- integrated synthesis candidate: `06_INTEGRATED_ONBOARDING.md`
-- continuity / handoff method: `07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md`
-- editorial calibration: `08_CALIBRATION_EXAMPLES.md`
-- live editorial memory: `09_CURRENT_EDITORIAL_MEMORY.md`
-
-`00_V3_RECONSTRUCTION_BASELINE.md` remains the source-based reference behind them.
-
-Nothing here is yet declared final canonical Fast Editorial.
-
----
-
-## Next synthesis stage
-
-The next stage is deliberately separate:
-
-1. preserve the reconstructed mechanism;
-2. preserve the full Business Brief spirit, editorial purpose and working principles;
-3. identify where that layer changes editorial judgment without corrupting the proven workflow;
-4. regression-test `06_INTEGRATED_ONBOARDING.md` against historical reference days and the v3 mechanism control;
-5. revise only where evidence shows quality loss or unnecessary formalism;
-6. only then declare the new Fast Editorial canonical.
-
-Do not mix the constitution into the reconstruction retroactively.
-
----
-
-## Explicit non-goals for now
-
-Do not yet design:
-- database schemas;
-- paid model automation;
-- multi-agent orchestration;
-- Deep / Memory integration;
-- publication infrastructure.
-
-Do not optimize architecture before the editorial method is accepted.
-
-
----
-
-## Fresh-Chat startup bundle
-
-For a new Fast Editorial Chat, load:
-
-1. `06_INTEGRATED_ONBOARDING.md`
-2. `08_CALIBRATION_EXAMPLES.md`
-3. `09_CURRENT_EDITORIAL_MEMORY.md`
-4. the relevant complete source editions / saved editorial artifacts
-
-Then perform the short comprehension check defined in the onboarding.
-
-Do not load the suspended pre-greenfield briefings.
-
-Do not treat calibration examples as fixed templates or quotas.
+Do not add new architecture merely for completeness.
