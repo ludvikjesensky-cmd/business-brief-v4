@@ -1139,6 +1139,249 @@ Každá významná textová verze má vlastní řádek v `fast_editorial.briefs`
 
 Final gates ukládej jednotlivě do `fast_editorial.brief_gates`, nikoli pouze jako jeden obecný PASS.
 
+### Doplnění V4 — Master Editorial Truth a channel adaptations
+
+Master Brief není finální e-mail, webová stránka ani voice script.
+
+Je to **Master Editorial Truth**: jedna ověřená redakční pravda dne, ze které se teprve odvozují jednotlivé kanálové formáty.
+
+Princip:
+
+```text
+Reference Editions
+→ Fast Editorial
+→ VERIFIED Master Editorial Truth
+→ channel adaptations
+   → EMAIL
+   → WEB
+   → VOICE
+```
+
+Kanál smí měnit formu, ne význam.
+
+Channel adapter může:
+- zkrátit;
+- přeskládat;
+- změnit pořadí prezentačních prvků;
+- přizpůsobit titulky a přechody;
+- převést text do HTML, mluvené řeči nebo jiného prezentačního formátu;
+- doplnit navigační a technické prvky kanálu.
+
+Nesmí:
+- přidat nový faktický claim;
+- zesílit jistotu;
+- odstranit kvalifikaci tak, že se změní význam;
+- změnit interpretaci;
+- vytvořit nový editorial závěr;
+- znovu rozhodovat o tom, co je hlavní příběh dne.
+
+Pokud adaptace potřebuje změnit význam, musí se vrátit do Master Editorial Truth a vzniknout nová Brief version.
+
+#### Dvě kanonické reprezentace stejné redakční pravdy
+
+Každý řádek v `fast_editorial.briefs` nyní nese dvě reprezentace téže verze:
+
+**`content_json`**
+- machine-readable Master Editorial Truth;
+- slouží jako stabilní strukturovaný vstup pro channel adapters;
+- contract: `master-editorial-truth-v1`.
+
+**`content_markdown`**
+- human-readable rendering téže Master Editorial Truth;
+- je text, který skutečně čte a schvaluje redakce;
+- musí významově odpovídat `content_json`.
+
+Obě reprezentace patří ke stejné `brief_id + version`.
+
+Nesmí existovat stav, kdy JSON říká něco jiného než Markdown a oba jsou považované za stejnou verified verzi.
+
+Každá reprezentace má vlastní SHA-256:
+- `content_sha256` pro Markdown;
+- `content_json_sha256` pro canonical serialized JSON.
+
+#### Master Editorial Truth v1 — logická struktura
+
+Struktura není rigidní vizuální šablona. Je to sémantický kontrakt, který zachovává význam a umožňuje různé renderování.
+
+Doporučené jádro:
+
+```yaml
+contract: "master-editorial-truth-v1"
+
+edition:
+  date:
+  language: "cs"
+  greeting:
+  opening_frame:
+
+units:
+  - unit_id:
+    function: "main_story | coverage | watchlist | curated | number | other"
+    title:
+    dek:
+    body:
+    topic_ids: []
+    issue_ids: []
+    evidence_refs: []
+    source_roles: []
+    perspective:
+      author_or_media_view:
+      bb_synthesis:
+      differences:
+    uncertainty:
+    reading_value:
+    detail_potential:
+
+numbers:
+  - value:
+    label:
+    context:
+    evidence_refs: []
+
+watch_next:
+  - item:
+    why_it_matters:
+    evidence_refs: []
+
+reading_recommendations:
+  - title:
+    source_ref:
+    why_read:
+    perspective_value:
+
+known_limitations: []
+```
+
+Ne všechna pole musí být použita u každé jednotky. Struktura má zachovat význam, provenance, perspektivu a funkci jednotky, nikoli nutit všechny příběhy do stejného tvaru.
+
+Důležitá zásada:
+
+> **Master Editorial Truth je strukturovaná redakční pravda, ne layout.**
+
+Email, web a voice mohou mít odlišný layout, délku a rytmus bez změny této pravdy.
+
+#### Channel outputs
+
+Konkrétní kanálové adaptace patří do:
+
+`fast_editorial.channel_outputs`
+
+Každý output je vždy navázán na jedno přesné `brief_id`.
+
+Podporované kanály v1:
+- `EMAIL`
+- `WEB`
+- `VOICE`
+
+Každý channel output má:
+- channel;
+- vlastní version;
+- status;
+- format;
+- content;
+- SHA-256;
+- adapter contract;
+- adaptation notes;
+- semantic check;
+- generated_at;
+- verified_at.
+
+Podporované formáty v1:
+- `MARKDOWN`
+- `HTML`
+- `JSON`
+- `TEXT`
+- `SSML`
+
+#### Povinná vazba na VERIFIED Brief
+
+Channel output smí vzniknout pouze z Briefu se stavem `VERIFIED`.
+
+Toto pravidlo je v databázi vynucené triggerem.
+
+Nelze tedy korektně vytvořit:
+- e-mail z pracovního draftu;
+- webovou verzi z neověřeného textu;
+- voice script z rozpracovaného Editorial passu.
+
+Nejprve musí existovat verified Master Editorial Truth.
+
+#### Verze a invalidace
+
+Příklad:
+
+```text
+Master Brief v3 VERIFIED
+  ├─ EMAIL v1 VERIFIED
+  ├─ WEB v1 VERIFIED
+  └─ VOICE v2 VERIFIED
+```
+
+Pokud vznikne Master Brief v4, staré channel outputs zůstávají historicky navázané na v3.
+
+Nevydávej je automaticky za aktuální výstupy v4.
+
+Pro novou Master Brief version musí vzniknout nové channel adaptations.
+
+#### Semantic check
+
+Každý channel output má `semantic_check`:
+
+- `PENDING`
+- `PASS`
+- `FAIL`
+
+PASS znamená, že adaptace:
+- nepřidala nový claim;
+- neposunula míru jistoty;
+- neztratila významnou kvalifikaci;
+- nezměnila zdrojovou atribuci;
+- nezměnila redakční interpretaci.
+
+Channel-specific stylistická změna sama o sobě semantic FAIL není.
+
+Pokud semantic check selže, oprav adaptaci. Neopravuj potichu Master Editorial Truth jen proto, aby se vešla do kanálu.
+
+#### Specifika jednotlivých kanálů
+
+**EMAIL**
+- kompaktní rytmus;
+- silný opening;
+- jasná hierarchie;
+- odkazy a CTA mohou být přidané jako channel metadata;
+- nesmí se zkrátit tak, že se ztratí hlavní význam nebo qualification.
+
+**WEB**
+- může být delší;
+- může použít richer typography, karty, navigaci, vizuály a odkazy;
+- může rozvinout strukturu, ale nesmí přidávat nové editorial claims mimo Master Truth bez nové verze.
+
+**VOICE**
+- přepisuje vizuální strukturu do přirozené mluvené řeči;
+- může měnit pořadí vět kvůli rytmu a srozumitelnosti;
+- čísla a zkratky může verbalizovat;
+- může doplnit mluvené přechody;
+- nesmí měnit fakta, důraz ani míru jistoty;
+- `SSML` je prezentační formát, ne nová editorial vrstva.
+
+Voice output se nevytváří z Issue Maps, Topics ani jednotlivých článků. Vždy až z verified Master Editorial Truth.
+
+#### Fyzická implementace
+
+`fast_editorial.briefs` nyní obsahuje:
+- `content_json`
+- `content_json_sha256`
+- `editorial_truth_contract`
+- existující `content_markdown`
+- existující `content_sha256`
+
+Kanálové výstupy jsou v:
+- `fast_editorial.channel_outputs`
+
+Implementační migration:
+- `supabase/migrations/20261025212000_add_master_editorial_truth_and_channel_outputs_v1.sql`
+
+
 #### Konkrétní pravidlo pro artefakty
 
 `fast_editorial.artifacts` je obecný canonical/checkpoint registr.
