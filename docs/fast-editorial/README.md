@@ -101,6 +101,30 @@ Read this before adding:
 - agent separation;
 - automation.
 
+
+### 6. `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
+
+The complete product and editorial layer extracted from the suspended Fast Editorial design and the wider Business Brief philosophy.
+
+It captures not only the editorial constitution, but also:
+- why Business Brief exists;
+- what value it transfers from foreign journalism;
+- how the editor should read and think;
+- event importance vs reading value;
+- reader autonomy and productive uncertainty;
+- source individuality and cross-paper difference;
+- coverage safety net;
+- curiosity and reading curation;
+- Brief vs Detail;
+- editorial voice, hierarchy and variable form;
+- provenance, uncertainty and trust;
+- anti-patterns;
+- automation and over-engineering guardrails.
+
+This file defines **why and how to think**, while `01_WORKFLOW.md` defines **what happens in what order**.
+
+Do not merge the two layers silently. Their synthesis into final onboarding is a separate design step.
+
 ---
 
 ## Current source of truth
@@ -111,6 +135,7 @@ For the greenfield reconstruction:
 - data structures: `02_DATA_STRUCTURES.md`
 - clean-Chat mechanism test: `03_ONBOARDING_V3_MECHANISM.md`
 - reconstruction confidence / guardrails: `04_EVIDENCE_AND_GUARDRAILS.md`
+- product spirit / editorial way of working: `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
 
 `00_V3_RECONSTRUCTION_BASELINE.md` remains the source-based reference behind them.
 
@@ -123,8 +148,8 @@ Nothing here is yet declared final canonical Fast Editorial.
 The next stage is deliberately separate:
 
 1. preserve the reconstructed mechanism;
-2. extract the later Business Brief editorial constitution;
-3. identify where constitution changes editorial judgment without corrupting the proven workflow;
+2. preserve the full Business Brief spirit, editorial purpose and working principles;
+3. identify where that layer changes editorial judgment without corrupting the proven workflow;
 4. create a new final onboarding briefing;
 5. regression-test against historical reference days;
 6. only then declare the new Fast Editorial canonical.
