@@ -550,6 +550,26 @@ Vedle původních bran se ptej ještě:
 
 Přesné názvy sekcí musíme ověřit z autentických finálních Briefů. Následující vysvětlení jejich možných funkcí není tvrzením, že existoval závazný sedmisekční template.
 
+### Doplnění V4 — Closure Pass — historická kalibrace sekcí
+
+Tato historická mezera byla 25. 10. 2026 uzavřena proti skutečné databázi `business-brief-v3`, schema `bbv3`, table `daily_briefs`.
+
+Autentické VERIFIED Briefy Day 1 v2 a Day 2 v1 byly načteny celé. Oba používají shodné hlavní sekce:
+
+1. `Dnes v kostce`
+2. `Co stojí za přečtení`
+3. `Další důležité změny`
+4. `Ještě stojí za pozornost`
+5. `Signály`
+6. `Co sledovat dál`
+
+To z těchto dvou Briefů nedělá povinný rigidní template pro každý budoucí den. Je to však nyní autentická kalibrace, nikoli domněnka.
+
+Celé verbatim texty a jejich V3 identity jsou v:
+
+`docs/fast-editorial/reference/V3_APPROVED_MASTER_BRIEFS.md`
+
+
 „Dobré ráno“ může čtenáře uvést do dne. Nemá to být dlouhá obecná úvaha před zprávami. „Dnes v kostce“ může rychle zpřístupnit denní mapu. Pokud obě části říkají totéž, stačí funkci spojit nebo zkrátit.
 
 „Hlavní příběhy“ nesou vysvětlení. Ne každý musí mít stejný počet odstavců. „Ještě potřebujete vědět“ chrání coverage a dává důležitým vedlejším věcem přiměřený prostor.
@@ -1478,6 +1498,209 @@ Tato implementace nahrazuje v části Persistence Contractu výše formulaci, ž
 
 
 
+## Doplnění V4 — Fast Editorial Closure Pass 25. 10. 2026
+
+Tato část uzavírá provozní mezery, které zůstaly po rekonstrukci V3 a po prvním zavedení persistence V4. Nemění původní V3 zkušenost. Určuje současnou provozní realitu Fast Editorialu.
+
+### 1. Fast Editorial Input Contract
+
+Produkční Fast Editorial pracuje nad **complete Reference Edition**.
+
+Přímý attachment v živém Chatu lze použít pro transient preflight a čtení. **Issue však nesmí být označena FROZEN, dokud nemá durable source reference.**
+
+Canonical `source_ref` musí odpovídat:
+
+`contracts/fast-editorial/source-ref-v1.schema.json`
+
+a nese contract:
+
+`fast-editorial-source-ref-v1`
+
+Při freeze databáze vynucuje:
+- durable source kind `SUPABASE_SOURCE` nebo `SUPABASE_STORAGE`;
+- neprázdný `durable_ref`;
+- shodu `publication_code`;
+- shodu `issue_date`;
+- shodu `edition_variant`.
+
+Pokud existuje `public.sources.id` nebo `public.editions.id`, použij také relační vazbu v `issues.source_id` / `issues.edition_id`. Fast Editorial tím nezískává závislost na Ingestoru, Assembleru, Indexeru, Composeru ani Memory. Jde pouze o durable identitu source edition.
+
+### 2. Handover Contract
+
+Dokumentační kontrakt je:
+
+`docs/fast-editorial/EDITORIAL_HANDOVER.md`
+
+Skutečný current state žije v:
+
+`fast_editorial.handover_state`
+
+Handover se aktualizuje na přirozených hranicích: po freeze issue, po Cross-Paper, po podstatném Deep Read bloku, při přerušení Editorial fáze, po VERIFIED Briefu a při uzavření dne.
+
+Pokud není aktivní den, nový Chat to řekne explicitně. Nevytváří fiktivní handover.
+
+### 3. Persistence invariants jsou nyní vynucené databází
+
+Databáze nyní nepovolí:
+
+- `FROZEN/CORRECTED` issue bez durable source_ref, frozen snapshotu, `frozen_at` a kladné `freeze_revision`;
+- `VERIFIED` Brief bez obou hashů, validního Master Editorial Truth, názvu, správného data/jazyka, provenance links a všech 11 gates PASS;
+- final gate před uložením obou content hashů;
+- změnu obsahu stejné Brief version po prvním final gate;
+- změnu obsahu nebo provenance VERIFIED Briefu;
+- smazání VERIFIED Briefu;
+- `VERIFIED` channel output bez `semantic_check = PASS`, `verified_at` a `channel-adapter-v1`;
+- změnu VERIFIED channel outputu bez vytvoření nové verze;
+- `VERIFIED/CLOSED` day bez VERIFIED Briefu;
+- `CLOSED` day bez handover_state;
+- křížové propojení issue/topic/brief artefaktů mezi různými editorial days;
+- přepis nebo mazání Editorial Notes;
+- přepis immutable artefaktu.
+
+Editorial Notes jsou append-only. Oprava vzniká jako nový note/change record.
+
+### 4. Přesný pořad finálního uzavření Brief version
+
+Pro jednu konkrétní Brief version:
+
+1. dokonči `content_markdown` a `content_json`;
+2. ověř, že představují stejnou editorial truth;
+3. spočítej a ulož `content_sha256` a `content_json_sha256`;
+4. ulož provenance přes `brief_topics` a `brief_issues`;
+5. proveď a ulož všech 11 final gates;
+6. od prvního gate už tuto Brief version věcně neměň;
+7. nastav `verified_at`;
+8. teprve potom nastav `status = VERIFIED`.
+
+Pokud se po final gate musí změnit obsah, vzniká **nová Brief version**.
+
+### 5. Master Editorial Truth je nyní skutečný kontrakt
+
+Normativní JSON Schema:
+
+`contracts/fast-editorial/master-editorial-truth-v1.schema.json`
+
+Database navíc provádí základní strukturální validaci přes:
+
+`fast_editorial.validate_master_editorial_truth_v1(jsonb)`
+
+`master-editorial-truth-v1` tedy už není pouze ukázkový YAML v tomto dokumentu.
+
+### 6. Channel adaptation contract
+
+Normativní contract:
+
+`contracts/fast-editorial/channel-adaptation-v1.schema.json`
+
+Channel output je derivace konkrétní VERIFIED Master Editorial Truth. Smí měnit prezentaci, ne redakční význam.
+
+### 7. Hranice Fast Editorial → Publishing
+
+**Fast Editorial končí VERIFIED Master Editorial Truth.**
+
+Tím je uzavřen redakční výběr, interpretace, text, provenance a gates.
+
+EMAIL / WEB / VOICE jsou downstream **Publishing Workflow / channel adaptation**. Z provozních důvodů jsou jejich připravené výstupy v této verzi evidované v `fast_editorial.channel_outputs`, ale nejsou součástí redakční pravdy.
+
+Skutečné odeslání e-mailu, publikace na web, TTS/audio rendering, publish receipts, retry a distribuce nejsou odpovědností Fast Editorialu. Musí být řešeny Publishing Workflowem.
+
+### 8. Detail boundary
+
+Detail Editor v Fast Editorialu kontroluje, zda Brief stojí sám o sobě a zda téma má další hodnotnou hloubku.
+
+Fast Editorial **nevyrábí automaticky celý Detail article**.
+
+V Master Editorial Truth může zachytit `detail_potential`. Samotná produkce Detailu je samostatný downstream editorial/publishing workflow.
+
+### 9. Story Threads a Memory boundary
+
+`fast_editorial.story_threads` jsou krátkodobá continuity evidence pro handover.
+
+Nejsou:
+- Editorial Memory;
+- Signal;
+- Trend;
+- RAG object;
+- canonical Deep/Memory knowledge.
+
+`memory_candidate` také nic automaticky neingestuje. Je to pouze redakční příznak.
+
+### 10. V4 protokol 90-second testu
+
+Historický přesný technický protokol není doložen. Pro současný Fast Editorial platí:
+
+- testuje se **poslední kandidátní Brief version**, ne podklady;
+- editor má během přibližně 90 sekund z titulku, decku, `Dnes v kostce`, hlavních nadpisů a prvních vět poznat hlavní obraz dne a hierarchii;
+- test není požadavek, aby celý Brief šel přečíst za 90 sekund;
+- PASS musí mít krátký konkrétní důvod v `brief_gates`;
+- pokud rychlá orientace zkresluje význam nebo hierarchii, je to FAIL/NEEDS_REVISION.
+
+### 11. V4 read-aloud protocol
+
+Language & Style Editor má poslední relevantní text skutečně přečíst nahlas nebo použít skutečný audio playback.
+
+Pokud technický zvukový výstup není dostupný, proveď textový rhythm/readability pass a **neoznačuj jej za provedený audio test**.
+
+Kontroluj rytmus, délku vět, doslovné anglicismy, opakování a zejména to, zda jazyková úprava neodstranila qualification.
+
+### 12. Aktuální V4 enum a storage reality
+
+Původní přílohy níže obsahují historické a rekonstrukční formulace typu „ověřit skutečné schéma“. Pro současný V4 provoz platí implementované schema `fast_editorial`.
+
+Klíčové hodnoty:
+
+- `issues.status`: `WORKING | FROZEN | CORRECTED | BLOCKED`
+- `issue_items.priority`: `CORE | CANDIDATE | LOW`
+- `topics.decision`: `INCLUDE | RESERVE | EXCLUDE`
+- `topics.deep_read_status`: `PENDING | IN_PROGRESS | DONE | NEEDS_REVIEW | NOT_REQUIRED`
+- `briefs.status`: `DRAFT | VERIFIED | SUPERSEDED`
+- `channel_outputs.status`: `GENERATED | VERIFIED | SUPERSEDED | BLOCKED`
+- `channel_outputs.semantic_check`: `PENDING | PASS | FAIL`
+
+Současné provozní protějšky jsou:
+- Issue Map: `fast_editorial.issues + issue_items`
+- Daily Topics: `fast_editorial.topics + topic_sources`
+- Editorial Notes: `fast_editorial.editorial_notes`
+- Master Brief: `fast_editorial.briefs`
+- final gates: `fast_editorial.brief_gates`
+- handover: `fast_editorial.handover_state`.
+
+Historické názvy `bbv3.*` v přílohách zůstávají zachované jako provenance V3, nikoli jako instrukce pro nový zápis.
+
+### 13. Autentická V3 kalibrace je nyní dostupná
+
+Read-only reference:
+
+`docs/fast-editorial/reference/V3_APPROVED_MASTER_BRIEFS.md`
+
+Obsahuje celý autentický `content_md`:
+- Day 1 v2 VERIFIED;
+- Day 2 v1 VERIFIED.
+
+Nový Chat je má použít jako kalibraci kvality a formy, nikoli jako rigidní template.
+
+### 14. Closure acceptance
+
+Dne 25. 10. 2026 proběhl transakční end-to-end smoke test:
+
+`day → issue → frozen snapshot → issue item → topic → provenance → Deep Read → Brief → hashes → 11 gates → VERIFIED Brief → Editorial Note → VERIFIED EMAIL output → handover → CLOSED day`
+
+Test prošel.
+
+Současně byly ověřeny negativní případy:
+- immutable artifact mutation je odmítnuta;
+- Editorial Note mutation je odmítnuta;
+- VERIFIED Brief mutation je odmítnuta;
+- provenance insert po VERIFIED je odmítnut;
+- VERIFIED channel output s PENDING semantic check je odmítnut.
+
+Celý test byl rollbacknut; nevytvořil produkční data.
+
+Tím je **technická a dokumentační specifikace Fast Editorial Closure Passu uzavřená**.
+
+Ještě zbývá jediný externí acceptance krok, který nelze poctivě simulovat uvnitř téhož konverzačního kontextu: dát balíček do skutečně nového čistého Chatu a ověřit, že nic významného nemusí domýšlet. To už není otevřená specifikace, ale regresní acceptance test před označením procesu za canonical.
+
+
 ---
 
 # Praktická příloha: struktury a provozní orientace
@@ -1709,6 +1932,16 @@ Rok vydání zde není potvrzen. Žádný z těchto počtů není norma nebo po�
 ## D. Co ještě nelze nahradit tímto průvodcem
 
 K plné kalibraci patří celé autentické Master Briefy Day 1 v2 a Day 2 v1. V této přípravě nebyly načteny; nejsou proto nahrazeny domyšlenými texty ani falešnými odkazy. Při jejich získání ověř den, rok, verzi a status. Přečti je celé, ne jen závěrečné hlášení.
+
+### Doplnění V4 — Closure Pass — tato mezera je uzavřená
+
+Day 1 v2 a Day 2 v1 byly 25. 10. 2026 ověřeny přímo v projektu `business-brief-v3`:
+
+- Day 1 v2: `bbv3.daily_briefs.id = 30d0e38c-38fb-4db4-9c19-e11209a853f8`, status `verified`
+- Day 2 v1: `bbv3.daily_briefs.id = 0b61a97b-3938-4844-9a4d-53b2be0c0bdd`, status `verified`
+
+Oba byly načteny jako celý `content_md`, nikoli pouze jako summary. Jejich read-only kalibrační kopie je v `reference/V3_APPROVED_MASTER_BRIEFS.md`.
+
 
 Pro provozní pokračování potřebuješ reálné mapy, topics, poznámky a zdrojová vydání rozpracovaného dne. Tento návod poskytuje způsob práce, ne neexistující přístup k historickým souborům.
 
