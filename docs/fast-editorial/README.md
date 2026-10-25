@@ -1,6 +1,6 @@
 # Fast Editorial
 
-**Status:** GREENFIELD RECONSTRUCTION  
+**Status:** CANDIDATE READY FOR ACCEPTANCE  
 **Canonical status:** NOT YET CANONICAL
 
 This directory contains the new Fast Editorial rebuilt from:
@@ -39,7 +39,7 @@ It is intentionally comprehensive. It transfers:
 - handoff principles;
 - evidence boundaries.
 
-It does **not** reconstruct the historical Supabase / SQL implementation. Technical infrastructure is outside the Fast Editorial handoff.
+It now includes the current Fast Editorial persistence, input, Master Editorial Truth, handover and channel-boundary contracts. Deep/Memory infrastructure remains outside the Fast Editorial handoff.
 
 The untouched source produced by the original v3 experiment Chat is preserved at:
 
@@ -52,8 +52,8 @@ The untouched source produced by the original v3 experiment Chat is preserved at
 A new editor should receive:
 
 1. `FAST_EDITORIAL_START_HERE.md`
-2. the current `EDITORIAL_HANDOVER.md` once established
-3. one or two authentic approved historical Master Briefs once recovered and verified
+2. `EDITORIAL_HANDOVER.md` as the handover contract plus the actual `fast_editorial.handover_state` from Supabase
+3. the authentic approved V3 calibration Briefs in `reference/V3_APPROVED_MASTER_BRIEFS.md`
 4. relevant source editions and saved editorial artifacts for the active day
 
 After loading them, the Chat should briefly state:
@@ -122,12 +122,12 @@ Default model: **one continuously working Chat for the editorial day and, where 
 
 ## Current open work
 
-Before declaring the new Fast Editorial canonical:
+The Closure Pass is complete: authentic Day 1 v2 / Day 2 v1 calibration, handover contract, Supabase persistence invariants, durable input contract, Master Editorial Truth schema and Publishing boundary are implemented.
 
-1. recover and verify the full authentic Day 1 v2 and Day 2 v1 Master Briefs;
-2. create the practical `EDITORIAL_HANDOVER.md`;
-3. regression-test the new `FAST_EDITORIAL_START_HERE.md` in a clean Chat;
-4. compare the result with the historical experiment and the approved examples;
-5. adjust only where the test reveals a real editorial gap or unnecessary formalism.
+Before declaring Fast Editorial canonical, one acceptance step remains:
+
+1. regression-test the complete handoff in a genuinely clean Chat against a real Reference Edition;
+2. compare the result with the historical experiment and approved V3 examples;
+3. adjust only if that clean-room test reveals a real editorial gap or unnecessary formalism.
 
 Do not add new architecture merely for completeness.
