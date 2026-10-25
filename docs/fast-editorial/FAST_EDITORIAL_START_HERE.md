@@ -1,12 +1,19 @@
 # Fast Editorial — průvodce pro nového editora
 
-**FAST_EDITORIAL_START_HERE.md · úplné metodické předání pro nový Fast Editorial · 25. 10. 2026**
+**FAST_EDITORIAL_START_HERE.md · úplné metodické předání 3.0 · 25. 10. 2026**
 
-**Základ:** zkušenost a rekonstrukce původního Fast Editorial v3 + produktový a redakční duch Business Brief v4.
+### Doplnění V4 k této verzi
 
-Tento dokument je hlavní předání know-how novému editorovi. Není ranním checklistem. Má obnovit způsob práce, redakční úsudek, produktový smysl a hranice, které se v experimentu osvědčily.
+Původní text tohoto průvodce je zachován jako zkušenost Chatu, který Fast Editorial skutečně dělal. Následující doplnění označená jako **Doplnění V4** přidávají později formulovaný smysl Business Briefu a redakční principy, které v původní rekonstrukci nebyly plně přítomné. Nemění historickou zkušenost V3; rozšiřují ji o současné produktové porozumění.
 
-Dokument zachovává úplnost redakční zkušenosti, ale není rekonstrukcí historické technické infrastruktury v3. Obsahuje lidsky psaný průvodce, praktické šablony, kalibrační příklady, životní cyklus artefaktů, pravidla kontinuity a závěrečné rozlišení jistoty. Chybějící historické originály se nesmějí nahrazovat domněnkou; jejich seznam je v přílohách D a N.
+Fast Editorial dnes chápeme jako redakční službu, která českému profesionálnímu čtenáři nepřenáší pouze události a fakta, ale také **způsob, jakým o nich kvalitní zahraniční média a autoři přemýšlejí**.
+
+> **Není důležité, na co se díváš, ale co vidíš.**
+
+> **Šíře v zákulisí, výběr na povrchu.**
+
+
+Toto vydání pokrývá všech šestnáct oblastí rekonstrukčního zadání. Obsahuje lidsky psaný průvodce, praktické šablony, úplný provozní přehled, slovník polí a závěrečné rozlišení jistoty. Úplnost metodického předání neznamená, že byly získány chybějící historické originály. Přesný seznam těchto omezení a postup jejich doplnění je v přílohách D a O.
 
 ## Než otevřeš první noviny
 
@@ -15,12 +22,6 @@ Přebíráš práci, která už v experimentu vedla k dobrým Business Briefům.
 Představ si čtenáře, který ráno otevře Brief. Nechce se prohrabat naší výrobou. Nechce sledovat, kolik jsme zpracovali článků a kolik kontrol jsme odškrtli. Chce po několika větách vědět, co se ve světě podstatného děje. U nejdůležitějších věcí chce rozumět tomu, co změnu způsobuje a co může znamenat. A někdy chce narazit na text, který by sám nenašel a který mu otevře novou otázku.
 
 Tvoje práce je tento zážitek vytvořit. Za ním musí stát poctivé čtení a dohledatelná evidence, ale čtenář má dostat přirozené, přesné a živé vydání.
-
-Business Brief však nechce přenášet jen události. Přenáší také **způsob, jakým o nich kvalitní zahraniční média a autoři přemýšlejí**: jakou otázku kladou, co v události vidí, jak problém rámují, kde hledají mechanismus, rozpor, důsledek nebo nečekanou souvislost.
-
-> **Není důležité, na co se díváš, ale co vidíš.**
-
-Pokud český čtenář událost už zná, ale díky Business Briefu v ní uvidí něco, co by jinak přehlédl, produkt splnil svůj účel.
 
 Tento průvodce proto začíná u úsudku. Technické struktury najdeš dále. Čti jej jako vysvětlení od kolegy, který ti předává svůj stůl: co na něm leží, proč to tam je, kde se už jednou spletl a na co si máš dát pozor.
 
@@ -32,8 +33,6 @@ Aby tě text nezahltil výhradou v každém odstavci, platí toto rozlišení pr
 
 - **Doložená zkušenost** jsou popsané události experimentu, názvy použitých průchodů a poznámek, zaznamenané výsledky a příklady oprav.
 - **Předávaná redakční praxe** je srozumitelná rekonstrukce toho, jak tento způsob práce zopakovat. Výklad rozhodovacích situací a vyplněné vzory nejsou doslovným historickým Playbookem.
-- **Současná produktová a redakční doktrína Business Briefu** je vědomá vrstva v4. Nejde o tvrzení, že všechny tyto principy byly ve v3 explicitně pojmenované, ale o dnešní definici toho, jakou hodnotu má Fast Editorial vytvářet.
-- **Technická implementace** je oddělená otázka. Logické struktury v tomto dokumentu jsou pracovní kontrakty pro předání, ne povinnost obnovovat historickou technickou infrastrukturu v3.
 
 Čísla z experimentu v příkladech slouží k vysvětlení redakčního rozhodování. Nejsou aktuálními zprávami ani nově ověřenými fakty pro publikaci. Vyplněné ukázky poznámek níže jsou didaktické rekonstrukce, nikoli export originálních řádků.
 
@@ -47,11 +46,10 @@ Aby tě text nezahltil výhradou v každém odstavci, platí toto rozlišení pr
 6. Jak osm redakčních pohledů promění podklady v text.
 7. Jak poznat, že vydání funguje.
 8. Jak zapisovat Editorial Notes, aby nesly zkušenost.
-9. Jak řešit obtížné situace a obnovit práci.
-10. Jak zachovat kontinuitu mezi dny a při předání.
+10. Jak řešit obtížné situace a obnovit práci.
 11. Praktické šablony, historie experimentu a předání.
 
-Praktické přílohy: **A** šest struktur; **B** ukládání na checkpointech; **C** doložené výsledky; **D** potřebné originální podklady; **E** startovací zadání; **F** rada editorovi; **G** celý den krok za krokem; **H** úplný slovník polí; **I** životní cyklus artefaktů; **J** přenos živého kontextu; **K** pravomoci osmi editorů; **L** stavba a rozsah Briefu; **M** kontrola všech hlavních oblastí; **N** závěrečné sebehodnocení A/B/C.
+Praktické přílohy: **A** šest struktur; **B** ukládání na checkpointech; **C** doložené výsledky; **D** potřebné originální podklady; **E** startovací zadání; **F** rada editorovi; **G** celý den krok za krokem; **H** úplný slovník polí; **I** životní cyklus artefaktů; **J** přenos živého kontextu; **K** pravomoci osmi editorů; **L** stavba a rozsah Briefu; **O** závěrečné sebehodnocení A/B/C.
 
 Aktuální stav rozpracované práce patří do EDITORIAL_HANDOVER.md. Tento dokument vysvětluje metodu a mění se při vědomé změně metody, nikoli po každém novém vydání.
 
@@ -67,31 +65,22 @@ Na druhou stranu je nemůžeš bez rozmyslu slepit do obecného tvrzení „vše
 
 Právě mezi těmito dvěma chybami pracuje redakční úsudek. Příliš roztříštěné vydání nechá syntézu na čtenáři. Příliš uhlazené vydání mu nabídne přesvědčivý, ale zjednodušený příběh.
 
-### Nejen co se stalo, ale co v tom noviny vidí
-
-Business Brief není překladač ani soupis zpráv. U hodnotného textu se ptej: co autor vidí, jakou otázku si klade, jak problém rámuje, na čem staví argument, co komplikuje snadný závěr a co zůstává otevřené.
-
-FT, WSJ a Handelsblatt mohou popisovat stejnou událost, ale vidět jiné příčiny, rizika, vítěze a poražené, historické paralely nebo strategické otázky. Tyto rozdíly nejsou šum k vyhlazení. Často jsou samotnou hodnotou produktu.
-
-> **Nekomprimuj text tak, že zachováš fakta, ale ztratíš autora.**
-
-Kontrolní otázka: kdyby autor originálu četl naše zpracování, poznal by v něm svou otázku a argument, nebo jen data, která použil?
-
-### Event importance a reading value nejsou totéž
-
-Sleduj dvě odlišné veličiny. **Event importance** říká, jak významná je samotná událost. **Reading value** říká, jak hodnotný je konkrétní text pro čtenářovo přemýšlení. Velká událost může mít rutinní článek. Menší téma může obsahovat mimořádný argument, interview, analýzu nebo mentální rámec.
-
-Při výběru se proto neptej jen „Je to důležité?“, ale také:
-
-> **Ztratil by český čtenář zajímavý způsob vidění světa, kdybychom tento text vynechali?**
-
 ### Důležitost není jen velikost titulku
 
 Velký titulek je informace o tom, co zdůrazňuje daná redakce. Ber ho vážně. Ale i krátký text uvnitř čísla může popisovat podstatnou změnu. A dlouhá analýza nemusí být dnešním hlavním příběhem, přestože může být výborná pro kuraci.
 
 Hledej, co se změnilo, komu na tom záleží, jak to funguje a zda článek přináší něco, co stojí za čtenářův čas. „Je to o velké firmě“ není úplná odpověď. „Je to originální“ také nestačí, pokud originalita nemá pro produkt význam.
 
-Původní v3 experiment neměl v dostupném záznamu přesnou personu. Současný Business Brief však cílí především na českého manažera, podnikatele, investora, odborníka nebo profesně zvídavého člověka, který nemá čas systematicky číst FT, WSJ a Handelsblatt, ale chce rozumět nejen událostem, nýbrž i argumentům, otázkám a perspektivám. Nevymýšlej mu další socioekonomické vlastnosti, které produkt nedefinuje.
+Přesná cílová persona není v dostupných záznamech určena. Nevymýšlej jí příjem, profesi nebo investiční profil. Drž se doloženého slibu: orientace v byznysu, ekonomice, technologiích a relevantním politickém dění.
+
+### Doplnění V4 — komu dnes Business Brief slouží
+
+Pozdější produktová práce tento rámec zpřesnila. Primárním čtenářem je český manažer, podnikatel, investor, odborník nebo profesně zvídavý člověk, který nemá kapacitu systematicky číst Financial Times, The Wall Street Journal a Handelsblatt, ale chce rozumět nejen událostem, nýbrž i argumentům, otázkám, mechanismům a perspektivám.
+
+Business Brief proto nemá být jen rychlejší cesta k informaci. Má být cestou k **lepšímu vidění problému**.
+
+> **Nechceme, aby čtenář odcházel s povinným názorem. Chceme, aby odcházel posunutý.**
+
 
 ### Brief má být velkorysý k času čtenáře
 
@@ -101,29 +90,11 @@ Přitom nevysvětluj každému tématu celý svět od začátku. Krátká věta 
 
 Přirozený jazyk není povrchnost. Přesnost nemusí znít akademicky. Když se ti pointa nedaří říct srozumitelně, vrať se k otázce, zda jí skutečně rozumíš.
 
-### Čtenář má dostat perspektivu, ne povinný názor
-
-Business Brief může vysvětlovat, porovnávat a hodnotit redakční přínos. Nemá tři noviny slít do jedné syntetické doktríny ani čtenáři vnucovat jediný správný závěr. Když se kvalitní zdroje dívají na stejnou věc jinak, může být právě tento rozdíl tím nejcennějším.
-
-Dobrá četba nemusí vždy nejistotu zmenšit. Někdy je pokrok, že čtenář vidí více relevantních možností, ostřejší napětí nebo lepší otázku.
-
-> **Nechceme, aby čtenář odcházel s povinným názorem. Chceme, aby odcházel posunutý.**
-
-### Coverage safety net
-
-Zájem o originální perspektivy nesmí vytlačit hlavní zprávy dne. Čtenář potřebuje jistotu, že výběr je záměrný, nikoli náhodně neúplný. Hlavní události proto mohou být pokryté stručně, i když jejich články nepřinášejí mimořádnou reading value.
-
-> **Main news can be brief. Distinctive journalism deserves depth.**
-
 ### Curiosity má vycházet z obsahu
 
 Čtenářskou zvědavost nevyvoláváme zadržováním odpovědi. Pokud text ví, proč je problém důležitý, řekne to. Další čtení má nabídnout hloubku, nikoli teprve základní vysvětlení slibu z titulku.
 
 Například finanční role Nvidie může otevřít otázku, jak se v AI ekonomice propojuje zákazník, dodavatel a financování. Nemusíme předstírat tajemství. Stačí přesně ukázat zajímavý mechanismus a jeho omezení.
-
-Reading recommendation je samostatná redakční funkce. Pokud článek stojí za hlubší pozornost, řekni čtenáři **proč**: jakou perspektivu, otázku, argument nebo zkušenost mu další čtení přinese. Kurace není zbytkový koš.
-
-> **Nechceme čtenáře od čtení odvádět. Chceme mu pomoci poznat, co opravdu stojí za jeho čas.**
 
 ### Úplnost je závazek při čtení, selekce při vydávání
 
@@ -185,21 +156,6 @@ Nemusíš vytvářet záznam každé vynechané reklamy. Stačí v závěru vyd�
 
 Následující rozlišení je praktická rekonstrukce úsudku, nikoli původní bodovací rubrika. Jeho účelem je pomoci ti všimnout si hodnoty, ne přidělit každému textu matematické skóre.
 
-### Co z článku musíš pochopit
-
-U editorialně významného textu se pokus určit nejen „co tvrdí“, ale také:
-
-- jakou otázku si autor klade;
-- jak téma rámuje;
-- jakou argumentační osu vede;
-- co považuje za podstatné;
-- jaké důkazy, příklady nebo osoby používá;
-- kde připouští protiargument nebo nejistotu;
-- co je na textu nové, překvapivé nebo charakteristické pro dané médium;
-- co by český čtenář bez tohoto textu pravděpodobně neviděl.
-
-Není-li autorova otázka nebo argument bezpečně rozpoznatelný, nevymýšlej jej. Označ potřebu hlubšího čtení.
-
 ### Co může dát článku vysokou hodnotu
 
 **Nová skutečnost s významným dopadem.** Událost mění situaci pro trh, odvětví, stát nebo důležitou skupinu lidí. Potřebuješ vědět, co je skutečně nové a co je již známé pozadí.
@@ -214,9 +170,30 @@ Není-li autorova otázka nebo argument bezpečně rozpoznatelný, nevymýšlej 
 
 **Důležitá protiváha.** Text může komplikovat příběh, který ostatní zdroje líčí příliš hladce. Jeho hodnota může spočívat právě v omezení naší vlastní teze.
 
-### Event importance, reading value a CORE/CANDIDATE/LOW
+### Doplnění V4 — event importance není reading value
 
-Event importance a reading value drž odděleně. CORE/CANDIDATE/LOW je pracovní priorita uvnitř samostatně čteného vydání, která má zohlednit obojí i charakter konkrétního čísla. Není to matematický součet ani finální publication decision.
+Při hodnocení článku drž odděleně dvě otázky:
+
+- **Importance of event:** jak významná je samotná událost.
+- **Reading / thinking value:** jak hodnotný je tento konkrétní text pro čtenářovo pochopení.
+
+Velká událost může mít rutinní článek. Menší téma může obsahovat výjimečnou otázku, argument, mechanismus, reportáž nebo mentální rámec.
+
+Při četbě se proto navíc ptej:
+
+- Co autor vidí, co není zřejmé z titulku?
+- Jakou otázku pokládá?
+- Jak problém rámuje?
+- Jak staví argument?
+- Co je v jeho pohledu nové, nečekané nebo nepohodlné?
+- Co by český čtenář bez tohoto textu pravděpodobně minul?
+
+Rozhodovací otázka V4 zní:
+
+> **Ztratil by český čtenář zajímavý způsob vidění světa, kdybychom tento článek vynechali?**
+
+Odlišný nebo menšinový názor není hodnotný automaticky. Hledáme intelektuální užitečnost, ne kontrariánství pro efekt.
+
 
 ### CORE, CANDIDATE a LOW
 
@@ -234,15 +211,15 @@ Jestli nevíš, co článek říká, ještě jsi jej dostatečně nepochopil: do
 
 Nedávej CORE jen proto, že by ti bylo líto článek ztratit. Od toho máš mapu, CANDIDATE a později RESERVE. Záznam zachovává možnost návratu bez povinnosti publikovat.
 
-### Dlouhodobá hodnota není úkolem této fáze
+### Paměťový potenciál je jiná otázka
 
-Původní experiment evidoval také Memory candidate, ale nový Fast Editorial je na této vrstvě záměrně nezávislý na Deep / Memory infrastruktuře. Pokud si všimneš strukturálně významného textu, můžeš jeho dlouhodobou hodnotu stručně poznamenat v Editorial Notes nebo handoveru, ale nevytvářej tím nový povinný workflow ani technickou závislost.
+Memory candidate se v experimentu evidoval, jeho přesná historická definice však není dostupná. Při rekonstrukci jej chápej jako označení možné dlouhodobější užitečnosti. Není totožný s dnešní prioritou. Silný strukturální text může být paměťově hodnotný a přitom dnes nepatřit mezi leady.
+
+Nepřidávej automaticky takto označený článek do jiné databáze či RAG, pokud pro to nemáš skutečný zavedený postup. Příznak není důkaz dokončené ingestce.
 
 ## 6. Issue Map: co musí uchovat a co nemá předstírat
 
 Mapa má umožnit pozdější srovnání a návrat ke zdroji. Nemá být prvním návrhem celého Briefu. Dobrá položka zachytí identitu článku, jeho vlastní pointu, redakční hodnotu a důležité otázky.
-
-U textu s vyšší perspective value musí mapa zachovat i to, **jak autor nebo médium problém vidí**: jeho otázku, frame nebo argumentační osu. Ne každý článek potřebuje dlouhý interpretační zápis; ale tam, kde právě perspektiva tvoří hodnotu, nesmí při mapování zmizet.
 
 Když napíšeš jen „AI / významné / CORE“, další editor z toho nic nezíská. Když napíšeš dlouhý obecný esej o AI, ztratíš konkrétní článek. Hledej přiměřenou prostřední úroveň: několik přesných vět a spolehlivý lokátor.
 
@@ -250,7 +227,23 @@ Lokátor musí člověka nebo další Chat dovést na stejné místo. Pokud se l
 
 Závěr vydání má říct, jaké bylo jeho redakční těžiště, čím přispělo, co zůstává nejisté a které objekty musí zůstat odlišitelné. Počty jsou kontrola konzistence, ne hlavní obsah závěru.
 
-Freeze znamená: samostatné čtení tohoto vydání je uzavřeno a jeho původní úsudek uchován. Další noviny nesmějí přepsat to, co jsme viděli nezávisle. Oprava objektivní chyby je možná, ale zřetelně a s uchováním původního snapshotu. Tento opravný mechanismus je naše praktické doporučení pro přenos, nikoli doložená původní technická funkce.
+### Doplnění V4 — co má Issue Map chránit navíc
+
+Issue Map nemá uchovat jen to, **co článek říká**, ale u textů s vysokou perspektivní hodnotou také to, **jak článek přemýšlí**.
+
+Kde je to skutečně přítomné a doložitelné, zachovej:
+
+- autorovu otázku;
+- framing problému;
+- hlavní argument nebo úhel;
+- co je nové nebo užitečné pro čtenářovo přemýšlení;
+- event importance odděleně od reading value;
+- důležitou nejistotu, protiváhu nebo otevřenou otázku.
+
+Nedělej z toho bodovací systém. Pole a poznámky mají zabránit tomu, aby se z bohatého článku později stala jen „mrtvolka článku“: headline, fakt a generická věta proč je to důležité.
+
+
+Freeze znamená: samostatné čtení tohoto vydání je uzavřeno a jeho původní úsudek uchován. Další noviny nesmějí přepsat to, co jsme viděli nezávisle. Oprava objektivní chyby je možná, ale zřetelně a s uchováním původního snapshotu. Tento opravný mechanismus je naše praktické doporučení pro přenos, nikoli doložená původní databázová funkce.
 
 Po freeze pošli uživateli stručný stav: titul je hotový, co jej charakterizuje, případné podstatné omezení a co následuje. Nepředstírej již hotové denní závěry.
 
@@ -268,8 +261,6 @@ Po každém titulu proveď stejné uzavření a freeze. Třetí vydání není j
 
 Teď poprvé smíš z trojice vydání vytvářet společný obraz dne. Máš již dostatek podkladů, abys rozhodoval, které podobnosti něco znamenají a které jsou jen slovní.
 
-Cross-Paper nemá hledat společné minimum. Ptej se také: **na co se všechny zdroje dívají a co každý z nich vidí jinak?** Syntéza je dobrá tehdy, když rozdíly a souvislosti zviditelní, ne když je uhladí do průměru.
-
 ### Začni otázkou, nikoli složkou
 
 Topic „AI“ je příliš široký. Topic „jak bezpečnostní rizika mění kapitálový závod AI“ už pojmenovává napětí. Ještě musíš ověřit, že jej zdroje skutečně nesou.
@@ -284,7 +275,7 @@ Stejná událost je přirozený důvod ke spojení, ale není jediný. Články 
 
 **Jsou příbuzné, ale samostatné.** Bezpečnost AI, financování Nvidií a dostupnost datacenter se mohou objevit v jedné dramaturgické oblasti, aniž tvoří jeden Daily Topic.
 
-Slučování musí čtenáři něco vysvětlit. Pokud jen šetří počet řádků v úložiště, nemá redakční důvod.
+Slučování musí čtenáři něco vysvětlit. Pokud jen šetří počet řádků v databázi, nemá redakční důvod.
 
 ### Role zdrojů jsou konkrétní
 
@@ -304,9 +295,24 @@ INCLUDE je rozhodnutí, že topic patří do další hlavní redakční práce. 
 
 Nepotřebuješ vytvořit topic pro každý článek jen proto, aby se všechny položky mapy „spotřebovaly“. Mapa je širší než denní výběr. Pokud však vypadne významný CORE příspěvek, měl bys umět říct proč.
 
-Při hraničním rozhodnutí znovu použij dvojí test: co musí čtenář vědět kvůli orientaci a co by ztratil z hlediska způsobu vidění, kdybychom text vynechali. Silný single-source text může být INCLUDE právě kvůli reading value; počet titulů není náhradou úsudku.
-
 Při hraničním rozhodnutí formuluj důvod, který by pochopil druhý editor: „obsahově silné, ale nepřináší nový denní posun; vhodné pro kuraci“ je použitelný důvod. „Nesedí“ nikoli.
+
+### Doplnění V4 — Cross-Paper nesmí vyhladit rozdíly
+
+Když více novin píše o stejném tématu, nesnaž se z nich automaticky vyrobit jeden průměrný text.
+
+Ptej se:
+
+- Na co se dívají společně?
+- Co každý z nich **vidí**?
+- V čem se liší jejich rámec, mechanismus nebo otázka?
+- Přináší jeden fakta a druhý interpretaci?
+- Je rozdíl perspektiv sám o sobě hodnotou pro čtenáře?
+
+Syntéza má vztahy a rozdíly **zviditelnit**, ne je vyhladit.
+
+Silný single-source text může zůstat významnou součástí Briefu, pokud přináší způsob vidění, který by jinak zmizel. Počet titulů není skóre kvality.
+
 
 ## 9. Selective Deep Read: kdy přesně nastává
 
@@ -331,8 +337,6 @@ Otevři nosný článek a relevantní podpůrné články. Nevybírej jen větu,
 
 Před čtením si můžeš napsat známé otázky. Po čtení se zeptej, co tě překvapilo a co jsi předtím přehlédl. Tím chráníš druhou funkci Deep Read: hledání chyby, kterou sis ještě neuměl položit jako otázku.
 
-Přidej ještě jednu kontrolu: **neztratila naše dosavadní syntéza právě to, co bylo na původním textu intelektuálně cenné?** Deep Read může napravit nejen chybný fakt nebo mechanismus, ale i příliš ploché zacházení s autorovou otázkou, argumentem či nejistotou.
-
 ### Kdy je hotovo
 
 Máš dostatečně jasné, co topic tvrdí, o které zdroje se opírá, jaký je rozsah tvrzení a co zůstává nejisté. Zásadní nevyřešený problém nemůže zmizet pod statusem done. Můžeš dokončit review se závěrem, že claim nelze použít nebo že topic má jít do rezervy; to ale není faktické schválení původní verze.
@@ -349,6 +353,17 @@ Nvidia: dostupné prostředky, možná výše garancí a názor „too big to fa
 
 Belgie: atraktivní titulek o návratu k jádru se musí vejít do skutečného technického a vyjednávacího stavu. Restartovatelnost reaktorů a rozdělení nákladů nejsou podružné výjimky, pokud mění podstatu zprávy.
 
+### Doplnění V4 — Deep Read chrání i intelektuální hodnotu článku
+
+Selective Deep Read nekontroluje jen čísla, rozsah a společný mechanismus.
+
+U textu vybraného právě pro jeho perspektivu se také vrať k otázce:
+
+> **Neztratili jsme při mapování nebo syntéze to, co bylo na původním článku intelektuálně cenné?**
+
+Ověř, zda zůstala zachována autorova otázka, argument, podmíněnost, protiváha nebo paradox. Fakticky správný souhrn může být produktově chybný, pokud z textu odstraní právě jeho způsob vidění.
+
+
 ## 10. Přechod do Editorial: přestaň jen spravovat podklady
 
 Po Deep Read už máš materiál pro vydání. Je čas rozhodnout, jak jej čtenáři předáš. Ne každému topicu patří samostatný miničlánek. Ne všechno, co jsi obtížně ověřil, musí zůstat v hlavním textu.
@@ -361,13 +376,23 @@ Osm průchodů dělej skutečně postupně nad společným vývojem textu. Na ko
 
 Podívej se na celý den a navrhni jeho obsahové zadání. Které věci čtenář nesmí minout? Co potřebuje vysvětlení? Co stačí krátce zaznamenat? Co je zajímavé další čtení?
 
-Záměrně odděl **coverage** a **reading value**. Velká událost může dostat krátké, přesné pokrytí. Menší text s mimořádným argumentem nebo perspektivou může dostat výraznou kuraci či větší prostor. Nevyžaduj, aby jeden žebříček řešil obě funkce.
-
 Vycházej z topics po Deep Read a z rezervy. Znovu neprovádíš nezávislé mapování novin; rozhoduješ o využití již pochopeného materiálu. Pokud se objeví mezera, vrať se k mapám a zdrojům.
 
-Výsledek má být srozumitelný i bez otevřených podkladových artefaktů: „dnes vysvětlíme cenu kapitálu a její přenos, fyzické limity ropy, napětí v AI a novou ekonomiku obrany; ostatní významné události pokryjeme kratší vrstvou“. To je obsahové zadání, nikoli ještě hotový text.
+Výsledek má být srozumitelný i bez databáze: „dnes vysvětlíme cenu kapitálu a její přenos, fyzické limity ropy, napětí v AI a novou ekonomiku obrany; ostatní významné události pokryjeme kratší vrstvou“. To je obsahové zadání, nikoli ještě hotový text.
 
 V poznámce zachyť hlavní výběr, funkci důležitých vedlejších témat, případně co zůstalo v rezervě a proč. Pokud využiješ reserve nad dosavadní úroveň ověření, doplň zdrojovou práci. Automatické INCLUDE pro každý CORE neexistuje.
+
+### Doplnění V4 — dvě různé povinnosti Assignment Editora
+
+Assignment Editor musí současně chránit dvě věci:
+
+1. **Coverage safety net:** hlavní události dne nesmějí zmizet jen proto, že jejich články nejsou intelektuálně výjimečné.
+2. **Distinctive journalism:** silné texty nesmějí zmizet jen proto, že jejich událost není největší headline dne.
+
+> **Main news can be brief. Distinctive journalism deserves depth.**
+
+Proto neexistuje jediný žebříček, který by zároveň měřil velikost události i hodnotu čtení.
+
 
 ## 12. Dramaturg: dej vydání tvar
 
@@ -385,19 +410,30 @@ V dramaturgické poznámce popiš pořadí, vrcholy, spojení a účel kratšíc
 
 U každé hlavní jednotky si polož otázku: co by měl čtenář umět po přečtení říct vlastními slovy? Pokud odpověď zní jen „je to důležité téma“, příběh ještě nemáš.
 
-U textů s vysokou perspective value se ptej také: **jaký způsob vidění má po přečtení zůstat v hlavě?** Pointa nemusí být jen „co se stalo“. Může být v tom, jak autor přesouvá otázku, komplikuje běžný rámec nebo ukazuje mechanismus, který v české debatě nebývá vidět.
-
 Úhel není ozdobný titulek. Je to vybraná cesta materiálem. U Treasury může být úhlem překročení hranice, změna kupujících nebo přenos do financování. Nevybírej je podle atraktivity slov, ale podle toho, co dnes přibylo a co nesou zdroje.
 
 Příběh nemusí obsahovat konflikt dvou osob. Může jít o napětí mezi ambicí a fyzickou kapacitou, mezi investicemi a rizikem nebo mezi krátkodobým pohybem a dlouhodobou strukturou. Nenutíš každému textu stejné dramatické schéma.
 
 Zapiš pointu, why_now, hlavní mechanismus a hranici tvrzení. Pokud nedokážeš formulovat úhel bez přesahu přes zdroje, zúž jej nebo se vrať k Deep Read.
 
+### Doplnění V4 — Story Editor chrání autonomii čtenáře
+
+Dobrý příběh nemusí odstranit všechnu nejistotu. Někdy je jeho hodnotou přesnější otázka, viditelný trade-off nebo poctivě zachovaný spor.
+
+Rozlišuj:
+
+- fakt zdroje;
+- interpretaci autora nebo média;
+- syntézu Business Briefu.
+
+Nenuť čtenáře k jednomu povinnému názoru jen proto, aby text působil rozhodně.
+
+Produktivní nejistota není slabina, pokud je skutečně přítomná ve zdrojích a pomáhá čtenáři vidět problém přesněji.
+
+
 ## 14. Brief Writer: napiš čtenáři text, který lze číst
 
 Teď už nepíšeš poznámky pro sebe. Píšeš člověku, který neviděl tvoje tabulky. V úvodu mu dej orientaci. V hlavních příbězích vysvětli změnu a význam. V kratších položkách nezdržuj. Kuraci zdůvodni konkrétní hodnotou textu.
-
-Piš inteligentně, ale ne akademicky; zvědavě, ne vševědoucně; sebevědomě ve výběru, skromně v soudech. Rozlišuj fakt, interpretaci autora a vlastní syntézu Business Briefu. Nenuť čtenáři jeden správný názor tam, kde kvalitní zdroje nechávají prostor pro více rozumných interpretací.
 
 Nezačínej každou položku stejným obecným úvodem. Neopakuj u každé „co to znamená pro byznys“, pokud můžeš význam přirozeně vysvětlit v jedné větě. Různé příběhy potřebují různou stavbu.
 
@@ -406,6 +442,19 @@ Termín použij, když pomáhá přesnosti, a vysvětli jej tam, kde je to potř
 Pozor na drobná slova: „už“, „stále“, „poprvé“, „zůstává“, „všichni“, „musí“. Často do textu propašují historické, kvantitativní nebo kauzální tvrzení, které žádná tabulka čísel nekontrolovala.
 
 Nevkládej do čtenářského textu provozní značky CORE, INCLUDE nebo PASS. Podkladová struktura je pro redakci. Čtenářská struktura je pro porozumění.
+
+### Doplnění V4 — Brief Writer nepíše „mrtvolky článků“
+
+Při kompresi chraň to, co bylo důvodem, proč článek vůbec stál za pozornost.
+
+Kontrolní otázka:
+
+> **Kdyby autor originálu četl naše zpracování, poznal by v něm svou otázku a argument, nebo jen data, která použil?**
+
+Pokud zůstala jen událost, číslo a generické „proč je to důležité“, možná jsme zachovali fakta a ztratili článek.
+
+Redakční hlas má být inteligentní, ale ne akademický; zvědavý, ne vševědoucí; přesný, ne sterilní; sebevědomý ve výběru a skromný v soudech.
+
 
 Draft ulož jako jednu konkrétní verzi. Nestačí napsat do poznámky, že „draft vznikl“. Musí existovat text, ke kterému se další kontrola vztahuje.
 
@@ -417,9 +466,22 @@ Strong Detail value znamená, že téma má další podstatnou hloubku. Sufficie
 
 Nevyráběj cliffhanger jen proto, aby přechod do Detailu vypadal lákavě. Napiš, co může hlubší čtení vysvětlit: finanční strukturu, rozdílné scénáře, technické limity, rozdělení rizik.
 
-Brief a Detail jsou komplementární produkty. Brief musí dát skutečné porozumění. Detail přidává argumentační strukturu, evidence, nuance, příklady a protiargumenty. **Nikdy nezhoršuj Brief proto, aby vznikl důvod kliknout dál.**
-
 Tento pass neposkytuje důkaz, že Detail již existuje. Nevytvářej link na neexistující obsah a neoznamuj hotovou sadu Detailů pouze podle hodnocení jejich potenciálu.
+
+### Doplnění V4 — kurace je plnohodnotný produktový výstup
+
+Doporučení k dalšímu čtení není zbytková kategorie pro témata, která se nevešla mezi leady.
+
+U silného doporučení řekni:
+
+- proč stojí za čtenářův čas;
+- jakou otázku nebo perspektivu nabízí;
+- co čtenář získá hlubším čtením.
+
+> **Nechceme, aby čtenář četl méně. Chceme, aby četl méně zbytečného a více toho, co stojí za jeho čas.**
+
+Brief musí dát skutečné porozumění sám o sobě. Detail nebo originální text má nabídnout další hloubku, ne teprve základní odpověď.
+
 
 ## 16. Verification Editor: ověř, co je opravdu napsáno
 
@@ -449,8 +511,6 @@ Odlož na chvíli pocit, kolik práce už bylo hotovo. Posuzuj text, který dost
 
 Poslední editor může schválit bez zásahu. V Day 1 to tak proběhlo. Změna není dokladem pečlivosti sama o sobě.
 
-Polož si také kontrolní otázku „mrtvolky článku“: **poznal by autor původního textu v našem zpracování svou otázku a argument, nebo jsme zachovali jen data?** Pokud zmizelo právě to, kvůli čemu stál text za pozornost, vrať jej k Story / Writer / Deep Read podle příčiny.
-
 Pokud něco nefunguje, pojmenuj konkrétní problém a vrať jej tam, kde jej lze opravit. Chybějící podstatné téma patří k výběru; plochá hierarchie k dramaturgii; nepřesná pointa ke Story nebo Deep Read; nesprávné tvrzení k Verification. Není nutná rozsáhlá automatická návratová matice.
 
 Po opravě znovu posuď dotčené vlastnosti. Finální PASS musí patřit skutečně poslední verzi textu, ne předchozímu draftu.
@@ -471,17 +531,19 @@ Po opravě znovu posuď dotčené vlastnosti. Finální PASS musí patřit skute
 
 Při neúspěchu nepiš jen FAIL. Uveď, co jej způsobuje a jaká změna je potřebná. Při úspěchu stačí stručné důvody, které ukážou skutečné posouzení.
 
-K historicky doloženým branám přidej současné produktové testy Business Briefu:
+### Doplnění V4 — další produktové testy
 
-**Perspective:** Přežil tam, kde na něm záleželo, autorův nebo mediální způsob vidění?
+Vedle původních bran se ptej ještě:
 
-**Difference:** Ukázala cross-paper syntéza skutečné rozdíly a souvislosti, místo aby je vyhladila nebo uměle vyráběla?
+**Perspective:** Zachovali jsme u důležitých textů způsob vidění, kvůli kterému stály za pozornost?
 
-**Reader autonomy:** Dáváme čtenáři kvalitní argumenty a perspektivy bez vnuceného závěru?
+**Difference:** Ukazuje Cross-Paper skutečné rozdíly mezi zdroji, nebo je zbytečně zprůměroval či naopak uměle zdramatizoval?
 
-**Time respect:** Šetří text pozornost tím, že vybírá, nebo jen mechanicky zkracuje?
+**Reader autonomy:** Nabízíme argumenty a perspektivy, nebo čtenáři podsouváme jediný povinný závěr?
 
-**Life:** Působí vydání jako živá redakční práce, nebo jako uniformní AI digest?
+**Time respect:** Ušetřili jsme čtenáři zbytečné čtení, aniž jsme mu vzali hodnotné čtení?
+
+**Life:** Působí výsledné vydání jako živě vybraná redakční práce, nebo jako AI digest?
 
 
 ## 20. Jak může výsledné vydání působit
@@ -498,7 +560,17 @@ Přesné názvy sekcí musíme ověřit z autentických finálních Briefů. Ná
 
 „Co dnes ještě stojí za přečtení“ vysvětluje hodnotu doporučeného textu. Kurace není zbytková hromádka. Rooftop solar a private equity v Day 1 měly vlastní místo, aniž byly násilně povýšeny na leady.
 
-Tato vrstva je pro Business Brief first-class editorial function. U doporučení nestačí říct, že je článek „zajímavý“. Řekni, jakou otázku, argument, perspektivu, reporting nebo mentální rámec čtenář získá, když mu věnuje další čas.
+### Doplnění V4 — finální vztah orientace a intelektuální hodnoty
+
+Výsledný Brief má plnit dvě odlišné funkce zároveň:
+
+- **orientace:** co se dnes podstatného stalo;
+- **intelektuální hodnota:** které texty, otázky a perspektivy stojí za přenos do čtenářova přemýšlení.
+
+Nesnaž se obě funkce vměstnat do jednoho žebříčku.
+
+Čtenář má rychle získat mapu dne a zároveň narazit na několik míst, kde si řekne: **tomuhle teď rozumím lépe a stojí mi za to jít ještě hlouběji.**
+
 
 ## 21. Editorial Notes: napiš kolegovi, co by jinak nevěděl
 
@@ -574,7 +646,7 @@ Rutinní kontrola může být stručná. Změna společného rámce si zaslouž�
 
 Názvy jsou doložené z hlášení. Bez načtení schématu nelze říct, zda jsou uloženy jako note_type, title nebo jiná hodnota. Suffix _v1 není sám o sobě číslo kanonické verze celého Briefu.
 
-## 22. Rozhodování v obtížných situacích
+## 23. Rozhodování v obtížných situacích
 
 ### Důležité téma stojí na slabém podkladu
 
@@ -620,7 +692,7 @@ Webová verze může být novější nebo obsahově odlišná. Pokud ji uživate
 
 Nedoplňuj jej odhadem. Pojmenuj přesnou mezeru a dohledávej ji v autorizovaných podkladech. Z dnešního data nelze odvodit rok experimentálního čísla. ID není text, který si editor smí vymyslet podle titulku.
 
-## 23. Časová kontinuita bez předurčení nového dne
+## 24. Časová kontinuita bez předurčení nového dne
 
 V experimentu jsme si uvědomili, že horizontální spojení tří novin funguje lépe než formalizovaná osa přes čas. Uživatel upozornil na Treasury a vznikla poznámka memory_would_help. Nový povinný temporal pass ale zaveden nebyl.
 
@@ -630,7 +702,7 @@ Po freeze map zvaž, zda jde o pokračování, zesílení, obrat, nový mechanis
 
 Zkušenost s Treasury ukazuje možnou návaznost: cena kapitálu a blízkost hranice; intradenní překročení; další otázka struktury kupujících a přenosu do hypoték. Smyslem není znovu každý den vysvětlovat všechno, ale přesně říct, co dnešní zdroje přidaly.
 
-## 24. Jak zacházet s koncem Chatu
+## 25. Jak zacházet s koncem Chatu
 
 Nespoléhej na to, že bude čas napsat dokonalé poslední předání. Ukládej dokončené artefakty průběžně a při denní retrospektivě obnov stručnou předávací poznámku. Nejlepší přechod je mezi dny nebo po uzavřeném kroku.
 
@@ -640,7 +712,7 @@ Nepředávej pouze stále kratší souhrn souhrnu. Udržuj odkazy na skutečné 
 
 Po načtení má nový Chat stručně vyjádřit, co přebírá a co udělá dál. Nejde o nový gate ani povinné čekání na potvrzení, pokud má dost podkladů a zadání. Je to kontrola, že nezaměnil například dvě frozen mapy za dokončený Cross-Paper.
 
-## 25. Co nepřidávat jen pro pocit úplnosti
+## 26. Co nepřidávat jen pro pocit úplnosti
 
 Tento dlouhý průvodce má být bohatý vysvětlením, nikoli počtem povinností. Nepřeváděj každý jeho odstavec na pole, check-box nebo samostatný workflow run.
 
@@ -648,21 +720,28 @@ Nepotřebujeme skóre každého článku, kvótu témat, povinný konflikt v ka�
 
 Potřebujeme spolehlivou identitu zdrojů, nezávislé mapy, poctivou syntézu, návrat ke zdrojům, čitelný text, skutečné kontroly a důvody zásadních rozhodnutí. Když přibývající administrativa začne bránit čtení a úsudku, vrať se k tomu, čemu má sloužit.
 
-Stejně tak nepřidávej obsahové stereotypy jen proto, že vypadají redakčně: generické „proč je to důležité“, povinný konflikt, automatické manažerské implikace, tři zdroje jako podmínku významu nebo umělý závěr tam, kde článek nechává produktivní nejistotu.
+### Doplnění V4 — nástroje až po editorovi
+
+> **First create a well-informed editor. Then give that editor tools.**
+
+Datové struktury, evidence a automatizace mají chránit úsudek, provenance a kontinuitu. Nesmějí se stát náhradou redakčního porozumění.
+
+Formálně zachycuj zejména to, co musí přežít kontext: identitu zdroje, frozen výsledek, provenance, významnou změnu interpretace, důležitou nejistotu a kanonický text. Nepřeváděj každý mentální pohyb na administrativní objekt.
+
 
 ---
 
 # Praktická příloha: struktury a provozní orientace
 
-Následující část soustředí šablony na jedno místo. Jsou to logické kontrakty pro přenos práce a pro dohledatelnost zdrojů. Nejsou databázovým schématem ani povinností používat konkrétní úložiště. Žádná ukázková hodnota není existujícím ID.
+Následující část soustředí šablony na jedno místo. Jsou to logické kontrakty pro přenos práce. Žádná ukázková hodnota není existujícím ID.
 
 ## A. Šest základních struktur
 
 ### Issue Map item
 
 ```yaml
-item_id: "stabilní identita v rámci dne / artefaktu"
-issue_id: "identita vydání"
+item_id: "skutečné přidělené ID"
+issue_id: "skutečné ID vydání"
 source:
   file_ref: "dohledatelný zdroj"
   pdf_pages: []
@@ -670,9 +749,24 @@ source:
   continuation_locator: null
 headline_original: ""
 working_label_cs: ""
-author: ""
 genre: "news | analysis | interview | opinion | editorial | lex | other"
 article_point: "co tvrdí tento článek, nikoli celý sektor"
+editorial_value: "proč může být důležitý pro čtenáře"
+priority: "CORE | CANDIDATE | LOW"
+priority_reason: "krátce, zejména u hraničního případu"
+deep_read_candidate: false
+deep_read_questions: []
+memory_candidate: false
+structural_notes: []
+```
+
+Identita, lokátor, obsahová pointa, žánr a priorita jsou základ. Pole pro nejistoty či pokračování používej tehdy, když mají obsah. Základní fact-check není nahrazen příznakem deep_read_candidate.
+
+### Doplnění V4 k Issue Map item
+
+Pokud článek nese významnou perspektivní hodnotu, doplň v používané pracovní struktuře ekvivalent těchto informací:
+
+```yaml
 author_view:
   question: ""
   frame: ""
@@ -680,15 +774,11 @@ author_view:
 what_is_new_or_useful: ""
 event_importance: "HIGH | MEDIUM | LOW"
 reading_value: "HIGH | MEDIUM | LOW"
-priority: "CORE | CANDIDATE | LOW"
-priority_reason: "krátce, zejména u hraničního případu"
-deep_read_candidate: false
-deep_read_questions: []
 uncertainties: []
-structural_notes: []
 ```
 
-Identita, lokátor, obsahová pointa, žánr a priorita jsou základ. Pole pro nejistoty či pokračování používej tehdy, když mají obsah. Základní fact-check není nahrazen příznakem deep_read_candidate.
+Nejde o historické V3 schéma ani o povinný scoring. Smyslem je zabránit ztrátě perspektivy při dalším zpracování.
+
 
 ### Issue-level conclusion
 
@@ -715,6 +805,7 @@ counts:
   candidate: null
   low: null
   deep_read_candidates: null
+  memory_candidates: null
 snapshot_ref: ""
 status: "pracovní stav; frozen až po dokončení"
 process_caveats: []
@@ -737,9 +828,7 @@ source_links:
   - item_id: ""
     role: "primary | supporting | contrasting | background"
     contribution: "co tento konkrétní článek přidává"
-    distinctive_perspective: "co tento zdroj vidí nebo rámuje jinak, pokud je to podstatné"
 differences_and_tensions: []
-reading_value_notes: []
 open_questions: []
 deep_read_status: "pending | done; přizpůsobit skutečnému schématu"
 deep_read_note_ref: null
@@ -773,7 +862,6 @@ apparent_conflicts:
 interpretation_before: ""
 interpretation_after: ""
 change_reason: ""
-perspective_recovered_or_corrected: ""
 wording_guardrails:
   safe_formulation: ""
   misleading_formulations: []
@@ -794,7 +882,7 @@ scope:
   topic_ids: []
   brief_id: null
   brief_version: null
-  run_ref: null
+  workflow_run_id: null
 review_question: ""
 findings: []
 decisions:
@@ -837,11 +925,6 @@ final_gates:
   trust: ""
   product_fit: ""
   ninety_second_test: ""
-  perspective: ""
-  difference: ""
-  reader_autonomy: ""
-  time_respect: ""
-  life: ""
 known_limitations: []
 verified_at: null
 ```
@@ -853,11 +936,11 @@ Vazba editorial_units je doporučení pro přenos provenance, nikoli důkaz, že
 | Checkpoint | Obsahový výsledek | Auditní záznam | Než řekneš „hotovo“ |
 | --- | --- | --- | --- |
 | Příjem vydání | Identita dne, vydání a zdroje | Skutečný start a pořadí | Ověřit, že nejde o duplicitní či jiné vydání |
-| Freeze mapy | Objekty, lokátory, priority a závěr | Snapshot, procesní omezení | Zkontrolovat rozsah stran, counts a skutečné uložení artefaktu |
+| Freeze mapy | Objekty, lokátory, priority a závěr | Snapshot, procesní omezení | Zkontrolovat rozsah stran, counts a persistence |
 | Cross-Paper | Topics, rozhodnutí a source links | Důvody syntézy a fronta Deep Read | Ověřit vazby na existující články |
 | Deep Read | Zpřesněné topics | Summary a významné změny | Nepřekrýt nevyřešenou pointu statusem done |
 | Assignment až Story | Zadání, dramaturgie a úhly | Tři příslušné poznámky | Zachovat rozdíl mezi plánem a napsaným textem |
-| Writer | Celý draft | Vazba na draft | Ověřit skutečné uložení textu / snapshotu |
+| Writer | Celý draft | Vazba na draft | Ověřit skutečné uložení textu |
 | Detail až Language | Posouzení a opravený text | Review notes a potřebné snapshoty | Udržet kontrolu navázanou na správnou verzi |
 | Chief | Schválený Master Brief | Brány a verdict | Ověřit kanonickou verzi, stav a podklady |
 | Konec dne | Aktuální předání | Retrospektiva | Oddělit hotovou redakci od neprovedené publikace |
@@ -870,7 +953,7 @@ Day 2 / 15. 9. začal WSJ: 38 objektů, z toho 8 CORE, 22 CANDIDATE, 8 LOW. FT: 
 
 Deep Read prošlo všech dvanáct INCLUDE. Změnily se formulace a interpretace, nikoli výběrový status. Editorial vytvořil čtyři vrcholy a sedm hlavních jednotek; Detail review 6 strong a 1 sufficient. Verification našla šest konkrétních oprav, v dostupném záznamu je podrobně popsaný Treasury watchlist. Finální text měl přibližně 8,2 tisíce znaků a byl uložen jako verze 1, verified.
 
-Day 3 / 16. 9. má v posledním dostupném checkpointu FT a WSJ frozen, každé po 38 objektech. FT: 10 CORE, 22 CANDIDATE, 6 LOW. WSJ: 13 CORE, 21 CANDIDATE, 4 LOW. HB ještě chybí. To je historická orientace, nikoli aktuální ověření uložených artefaktů. Před pokračováním načti skutečný stav.
+Day 3 / 16. 9. má v posledním dostupném checkpointu FT a WSJ frozen, každé po 38 objektech. FT: 10 CORE, 22 CANDIDATE, 6 LOW. WSJ: 13 CORE, 21 CANDIDATE, 4 LOW. HB ještě chybí. To je historická orientace, nikoli aktuální ověření databáze. Před pokračováním načti skutečný stav.
 
 Rok vydání zde není potvrzen. Žádný z těchto počtů není norma nebo požadovaný výkon příštího dne.
 
@@ -883,29 +966,14 @@ Pro provozní pokračování potřebuješ reálné mapy, topics, poznámky a zdr
 
 ## E. Krátké zadání pro zahájení nového Chatu
 
-> Přebíráš redakční práci Business Briefu metodou Fast Editorial. Přečti celý FAST_EDITORIAL_START_HERE.md, aktuální EDITORIAL_HANDOVER.md a dostupné autentické schválené Briefy. Otevři také skutečné podklady rozpracovaného dne, pokud nějaký je. Stručně řekni, jak chápeš hodnotu produktu, co je dokončeno, co je frozen, jaké důležité opravy nebo otevřené otázky přebíráš a jaký je další krok. Rozliš převzaté hlášení od toho, co jsi sám načetl a ověřil. Chybějící podklad pojmenuj konkrétně. Zachovej metodu a samostatnost nových vydání. Změny procesu pouze navrhuj, nezaváděj je během zpracování dne. V práci pokračuj souvisle, s redakčním úsudkem a s průběžně uloženými důležitými výsledky.
+> Přebíráš redakční práci Business Briefu metodou Fast Editorial v3. Přečti celý FAST_EDITORIAL_START_HERE.md, aktuální EDITORIAL_HANDOVER.md a dostupné autentické schválené Briefy. Obnov skutečné podklady rozpracovaného dne. Stručně řekni, jak chápeš produkt, co je dokončeno, co je frozen a jaký je další krok. Rozliš převzaté hlášení od vlastního ověření. Chybějící potřebný podklad pojmenuj konkrétně. Zachovej metodu a samostatnost nových vydání. V práci pokračuj souvisle, s redakčním úsudkem a s průběžně uloženými důležitými výsledky.
 
-## F. Devět vět, které si drž v hlavě
+### Doplnění V4 ke startu nového Chatu
 
-> **Neprodáváme zprávy. Přinášíme přístup ke kvalitní zahraniční žurnalistice a způsobům přemýšlení, které český čtenář jinak často nepotká.**
+Při převzetí dnešního Fast Editorialu navíc chápej Business Brief jako přenos kvalitní zahraniční žurnalistiky a jejích způsobů vidění českému profesionálnímu čtenáři. Změny procesu během dne pouze navrhuj; nezaváděj je bez vědomého rozhodnutí. Předchozí dny používej jako podpůrný kontext až po freeze dnešních nezávislých Issue Maps.
 
-> **Není důležité, na co se díváš, ale co vidíš.**
 
-> **Importance of event is not the same as reading value of article.**
-
-> **Šíře v zákulisí, výběr na povrchu.**
-
-> **Main news can be brief. Distinctive journalism deserves depth.**
-
-> **Nekomprimuj text tak, že zachováš fakta, ale ztratíš autora.**
-
-> **Nechceme, aby čtenář odcházel s povinným názorem. Chceme, aby odcházel posunutý.**
-
-> **Nechceme, aby čtenář četl méně. Chceme, aby četl méně zbytečného a více toho, co stojí za jeho čas.**
-
-> **First create a well-informed editor. Then give that editor tools.**
-
-## F2. Poslední rada novému editorovi
+## F. Poslední rada novému editorovi
 
 Když si nejsi jistý, vrať se ke čtenáři a ke zdroji. Čtenář ti připomene, proč informaci vybíráš. Zdroj ti připomene, co smíš tvrdit. Mezi tím máš prostor pro vlastní dobrý úsudek.
 
@@ -1023,7 +1091,7 @@ Tento přehled spojuje rozptýlené pokyny z hlavního výkladu. Není to dalš�
 
 **Drž v kontextu:** Rozdíl mezi vytvořením, uložením, verified a publikací. Předej otevřené příběhy, ne předem hotový výběr zítřka.
 
-**Ulož:** historické daily briefs záznam podle původního schématu, Chief review, příslušné snapshoty a závěrečné poznámky. historické brief items vytvářej jen podle skutečně zavedeného publishing postupu, nikoli jako domnělou podmínku redakčního schválení.
+**Ulož:** daily_briefs záznam podle původního schématu, Chief review, příslušné snapshoty a závěrečné poznámky. brief_items vytvářej jen podle skutečně zavedeného publishing postupu, nikoli jako domnělou podmínku redakčního schválení.
 
 **Nesmí se stát:** Hlášení úspěchu před ověřením zápisu, záměna verified za published nebo doplnění chybějících ID odhadem.
 
@@ -1031,7 +1099,7 @@ Tento přehled spojuje rozptýlené pokyny z hlavního výkladu. Není to dalš�
 
 ## H. Slovník polí: co znamenají a proč je uchovávat
 
-Povinnost níže platí pro doporučený logický předávací formát, nikoli pro konkrétní technickou implementaci. **A** znamená nutné pro dokončený objekt, **P** nutné při uvedené situaci, **V** volitelné. Pracovní objekt může mít dočasnou mezeru, ale musí být patrné, že není dokončený.
+Povinnost níže platí pro doporučený logický předávací formát, nikoli pro neověřené SQL schéma. **A** znamená nutné pro dokončený objekt, **P** nutné při uvedené situaci, **V** volitelné. Pracovní objekt může mít dočasnou mezeru, ale musí být patrné, že není dokončený.
 
 Všechny krátké identifikátory a lokátory v příkladech jsou ilustrace. Při provozu použij skutečné hodnoty. Položky uvnitř source_links a evidence_refs musí být skutečně rozřešitelné, nikoli pouze text podobný odkazu.
 
@@ -1047,23 +1115,17 @@ Všechny krátké identifikátory a lokátory v příkladech jsou ilustrace. Př
 | source.continuation_locator | P: pokud je pokračování jinde | Pokračování z titulní strany na A8 | Deduplikace a úplné čtení |
 | headline_original | A: původní titulek, případně výslovně nečitelný | Přesný přepis titulku | Identifikace a kontrola |
 | working_label_cs | V: české pracovní označení | Toyota/VW — soukromí zákazníci | Orientace bez ztráty originálu |
-| author | P: pokud je spolehlivě zjistitelný | Jméno autora | Atribuce a zachování perspektivy |
-| genre | A: druh textu | interview | Práce s faktem, názorem a atribucí |
-| article_point | A: co článek skutečně tvrdí | Měsíční srovnání prodejního kanálu | Cross-Paper syntéza |
-| author_view.question | P: pokud tvoří hodnotu textu | Kdo financuje další fázi AI boomu? | Ochrana autorovy otázky při kompresi |
-| author_view.frame | P: způsob rámování | Kapitálové riziko místo čistě technologického závodu | Story a kurace |
-| author_view.argument_or_angle | P: hlavní argument / úhel | Dodavatel se stává i financujícím aktérem | Zachování způsobu vidění |
-| what_is_new_or_useful | A: co čtenář získá | Jiný obraz poptávky než celkové registrace | Selekce a kurace |
-| event_importance | A: význam události | HIGH | Coverage a orientace |
-| reading_value | A: hodnota konkrétního textu | HIGH | Perspektivní výběr a kurace |
+| genre | A: druh textu | interview | Atribuce a práce s názory |
+| article_point | A: vlastní obsah článku | Měsíční srovnání prodejního kanálu | Cross-Paper syntéza |
+| editorial_value | A: proč stojí za pozornost | Jiný obraz poptávky než celkové registrace | Selekce |
 | priority | A: samostatná priorita vydání | CORE | Pozdější výběr, ne nárok na publikaci |
-| priority_reason | P: zejména u hraničních rozhodnutí | Důležitý kanál, omezené období | Obnova úsudku |
+| priority_reason | P: zejména u hraničních či překvapivých rozhodnutí | Důležitý kanál, omezené období | Obnova úsudku |
 | deep_read_candidate | A: předběžný příznak | true | Příprava fronty, nikoli stav hotového čtení |
 | deep_read_questions | P: při známých otázkách | Měsíc, nebo kumulativní období? | Cílený návrat ke zdroji |
-| uncertainties | P: skutečné nejistoty | Nejasný rozsah garance | Trust a wording guardrails |
+| memory_candidate | A v této šabloně: pracovní úsudek o paměťové hodnotě | true | Pozdější kontext; není potvrzení ingestce |
 | structural_notes | P: při potřebě vyjasnit hranice objektu | Teaser není druhý článek | Obnova a kontrola mapy |
 
-Pole autorovy otázky, framingu a reading value jsou současná vrstva Business Briefu v4. Nevyplňuj je mechanicky. Pokud text takovou vrstvu nemá nebo ji nelze bezpečně určit, nevyráběj ji.
+Původní rekonstrukce používala headline, source_locator, open_questions a deep_read_reason. V rozšířené šabloně jejich význam nesou headline_original/working_label_cs, source a deep_read_questions. Výslovný důvod kandidatury připoj k otázkám nebo do skutečného existujícího pole; při mapování nesmí zmizet. Nejde o požadavek přejmenovat databázové sloupce.
 
 ### H2. Issue-level conclusion
 
@@ -1084,7 +1146,7 @@ Pole autorovy otázky, framingu a reading value jsou současná vrstva Business 
 | unique_contributions | A: významné vlastní příspěvky | Původní interview | Ochrana single-source hodnoty |
 | important_distinctions | P: pokud hrozí předčasné sloučení | AI safety není finanční riziko Nvidie | Zachování samostatných objektů |
 | counts.total/core/candidate/low | A: skutečné počty | 41 / 11 / 26 / 4 | Kontrola konzistence |
-| counts.deep_read_candidates | A v této šabloně | 11 | Přehled kandidatur, nikoli dokončení |
+| counts.deep_read_candidates/memory_candidates | A v této šabloně | 11 / 37 | Přehled kandidatur, nikoli dokončení |
 | snapshot_ref | A při freeze: identita uloženého snapshotu | Skutečná reference | Obnova původního úsudku |
 | status | A: skutečný stav příslušného objektu | frozen | Podmínka Cross-Paper |
 | process_caveats | P: při odchylce | Preflight před registrací runu | Pravdivost timing/auditu |
@@ -1105,9 +1167,7 @@ Pokud původní schéma používá text_layer_usable, ocr_required nebo frozen_a
 | source_links[].item_id | A: skutečný zdrojový objekt | Skutečné article ID | Návrat k evidenci |
 | source_links[].role | A: role v tomto topicu | primary | Rozlišení příspěvků |
 | source_links[].contribution | A: konkrétní přidaná hodnota | Dodává srovnávací období | Smysluplná provenance |
-| source_links[].distinctive_perspective | P: pokud zdroj vidí věc odlišně | Zdůrazňuje fyzický limit, ne financování | Ochrana rozdílů mezi médii |
 | differences_and_tensions | P: při rozdílech | Odlišné segmenty trhu | Ochrana proti falešné shodě |
-| reading_value_notes | P: pokud topic obsahuje text hodný hlubší pozornosti | Silný interview / originální argument | Kurace a Detail |
 | open_questions | P: při nejistotách | Závazek, nebo možná garance? | Deep Read |
 | deep_read_status | A: skutečný stav kontroly | pending | Připravenost pro Editorial |
 | deep_read_note_ref | P: když kontrola proběhla | Skutečná note reference | Dohledání výsledku |
@@ -1133,7 +1193,6 @@ Původní deep_read.focus je fronta konkrétních otázek a zdrojových kontrol;
 | apparent_conflicts[].resolution_or_remaining_uncertainty | P: spolu s problémem | Různé segmenty | Syntéza bez falešného rozporu |
 | interpretation_before/after | P: při změně; jinak výslovně beze změny | Obecný rámec → zúžený rámec | Audit významu |
 | change_reason | P: při změně | Zdroj nepodporuje původní rozsah | Obnova úsudku |
-| perspective_recovered_or_corrected | P: pokud se při Deep Read obnoví zploštělá autorská perspektiva | Původní syntéza ztratila podmíněnost argumentu | Story, Writer a kurace |
 | wording_guardrails.safe_formulation | A pro nosnou pointu | V červenci u soukromých zákazníků | Writer a Verification |
 | wording_guardrails.misleading_formulations | P: při rizikové zkratce | Toyota je evropská jednička | Ochrana před regresí |
 | selection_before/after | A: dopad kontroly do výběru | include → include | Odlišení interpretace a relevance |
@@ -1151,7 +1210,7 @@ Příznak interpretation_changed může být uložen explicitně, pokud jej sch�
 | scope.day_id | A | Skutečný den | Oddělení vydání |
 | scope.issue_ids/topic_ids | P podle rozsahu | Dotčené topics | Přesné přiřazení |
 | scope.brief_id/brief_version | P: při kontrole textu | Konkrétní Brief a verze | Zabránění přenosu PASS na jiný draft |
-| scope.run_ref | P: pokud run existuje | Skutečný klíč | Vazba obsahu na provedení |
+| scope.workflow_run_id | P: pokud run existuje | Skutečný klíč | Vazba obsahu na provedení |
 | review_question | A u review | Předal Brief pointu a zachoval Detail? | Význam kontroly |
 | findings | A u review; může obsahovat potvrzení bez problému | Watchlist implikuje nesprávný stav | Konkrétní výsledek |
 | decisions[].decision/reason | A u rozhodnutí | Opravit sloveso; close byl pod hranicí | Pochopitelný úsudek |
@@ -1172,15 +1231,14 @@ Původní next_action může být samostatným polem; pokud není, musí vyplýv
 | edition_date | A | Ověřené datum vydání | Čtenářské i provozní zařazení |
 | version | A | 1 nebo 2 podle skutečnosti | Správa změn |
 | status | A | draft / verified podle skutečné konvence | Připravenost a omezení použití |
-| canonical_text_ref | A nebo vlastní text podle zvolené konvence verzování | Konkrétní úplný text | Čtení, review a případný publishing |
+| canonical_text_ref | A nebo vlastní text podle schématu | Konkrétní úplný text | Čtení, review a případný publishing |
 | source_issue_ids | A | Tři skutečná vydání | Coverage zdrojů |
 | source_topic_ids | A | Použité topics | Provenance |
 | editorial_units[].unit_key | P při evidenci jednotek | Identita v konkrétní verzi | Přiřazení sekce či položky |
 | editorial_units[].function | P spolu s jednotkou | coverage | Redakční funkce |
 | editorial_units[].topic_ids/evidence_refs | P spolu s jednotkou | Reálné vazby | Kontrola konkrétního textu |
 | review_note_refs | A pro verified | Odkazy na osm průchodů a závěr | Doložení redakčního schválení |
-| final_gates.coverage/hierarchy/curiosity/trust/product_fit/ninety_second_test | A pro verified | Skutečný výsledek každé historicky doložené brány | Celková kvalita |
-| final_gates.perspective/difference/reader_autonomy/time_respect/life | A pro nový Business Brief | Skutečný stručný výsledek každého produktového testu | Ochrana v4 ducha produktu |
+| final_gates.coverage/hierarchy/curiosity/trust/product_fit/ninety_second_test | A pro verified | Skutečný výsledek každé brány | Celková kvalita |
 | known_limitations | A; může být prázdné po kontrole | Omezení rozsahu, ne skryté blokující chyby | Poctivé předání |
 | verified_at | P: až po schválení a uložení | Skutečný čas | Historie verze |
 
@@ -1196,20 +1254,20 @@ Původní souhrn editorial_review s osmi výsledky lze zachovat. V rozšířené
 
 **Zkontrolováno, nic nenalezeno:** Prázdný seznam unresolved po skutečné kontrole. Nesmí vzniknout automatickým ponecháním výchozí hodnoty.
 
-V logických šablonách můžeš tyto rozdíly vysvětlit textem. Nevytvářej nové povinné kategorie jen proto, že se nevejde konkrétní případ. Pole, které nelze pravdivě vyplnit, je důvodem vyřešit mezeru nebo jej ponechat prázdné, nikoli ji zakrýt.
+V logických šablonách můžeš tyto rozdíly vysvětlit textem. Do existující databáze nevkládej nové enum hodnoty bez znalosti schématu. Povinné pole, které nelze pravdivě vyplnit, je důvodem vyřešit mezeru, nikoli ji zakrýt.
 
 ## I. Doporučené artefakty a jejich životní cyklus
 
-Názvy souborů v tabulce jsou přenositelná konvence, nikoli historické názvy. Nevytvářej dvě nezávisle upravované pravdy. Jeden artefakt musí být jasně označený jako aktuální kanonický stav a ostatní jako snapshoty, exporty nebo historické verze.
+Názvy souborů v tabulce jsou přenositelná konvence, nikoli historické názvy. Pokud kanonické výsledky existují v Supabase, nevytvářej druhou nezávisle upravovanou pravdu. Soubory mohou být export nebo pracovní kopie s jasným původem.
 
 | Artefakt / logický protějšek | Účel a obsah | Kdo a kdy vytváří | Kdy je hotový | Životní cyklus |
 | --- | --- | --- | --- | --- |
 | day-context.yaml / den a zdroje | Datum, identita, pořadí a reference vydání, omezení | Jeden Chat při intake | Průběžně aktuální | Mutable; důležité odchylky auditovat |
 | issue-map-{title}.yaml / mapa | Objekty, zdroje, priority a závěr | Tentýž Chat během čtení každého titulu | Po kontrole celého vydání | Pracovní → frozen; oprava jako dohledatelná revize |
-| daily-topics.yaml / denní topic artefakt | Denní syntéza, source roles, rozhodnutí, otázky | Tentýž Chat při Cross-Paper | Výběr připravený, později zpřesněný Deep Read | Mutable pracovní interpretace; významné změny zaznamenat |
-| editorial-notes.yaml / editorial notes | Důvody, review, Deep Read, změny, retrospektiva | Tentýž Chat při dokončení kroků | Každý záznam po skutečné práci | Přibývající záznamy; opravy bez tichého mazání historie |
+| daily-topics.yaml / daily_topics + vazby | Denní syntéza, source roles, rozhodnutí, otázky | Tentýž Chat při Cross-Paper | Výběr připravený, později zpřesněný Deep Read | Mutable pracovní interpretace; významné změny zaznamenat |
+| editorial-notes.yaml / bbv3.editorial_notes | Důvody, review, Deep Read, změny, retrospektiva | Tentýž Chat při dokončení kroků | Každý záznam po skutečné práci | Přibývající záznamy; opravy bez tichého mazání historie |
 | Textové snapshoty | Přesné meziverze Briefu | Writer a další relevantní průchody | V okamžiku zachycení | Snapshot nepřepisovat novým obsahem pod stejnou identitou |
-| master-brief.md / kanonický Master Brief | Celý text, metadata, provenance a status | Tentýž Chat v Editorial | Po finálních branách a ověření zápisu | Draft → verified; další věcná změna jako identifikovatelná verze/revize |
+| master-brief.md / daily_briefs | Celý text, metadata, provenance a status | Tentýž Chat v Editorial | Po finálních branách a ověření zápisu | Draft → verified; další věcná změna jako verze/revize podle schématu |
 | EDITORIAL_HANDOVER.md | Stav, příští krok, otevřené příběhy, reference | Tentýž Chat při checkpointu a uzavření dne | K uvedenému času aktualizace | Mutable předání; historické verze zachovat |
 | FAST_EDITORIAL_START_HERE.md | Stabilní porozumění a metoda | Při vědomé rekonstrukci či přijaté změně | K vydané verzi dokumentu | Verzované; neměnit automaticky každým dnem |
 
@@ -1245,7 +1303,7 @@ do_not_repeat_as_fact: "Výnos zůstal nad 5 %"
 next_day_priority: "neurčeno; nové mapy číst nezávisle"
 ```
 
-Tato karta není nový temporal pass ani povinný technický objekt. Je to kompaktní způsob, jak neztratit význam při předání.
+Tato karta není nový temporal pass ani povinný databázový objekt. Je to kompaktní způsob, jak neztratit význam při předání.
 
 ## K. Pravomoci osmi editorů na jednom místě
 
@@ -1296,30 +1354,12 @@ Belgie: pět ze sedmi reaktorů bylo podle hlášení odstaveno, restartovatelno
 
 Všechna tato čísla jsou převzatá z dostupného konverzačního záznamu experimentu. Při novém publikovaném tvrzení vyžadují originální zdrojové ověření. V tomto dokumentu slouží výhradně jako kalibrace rozhodování.
 
-## M. Kontrola pokrytí hlavních oblastí
+## O. Závěrečné sebehodnocení rekonstrukce
 
-| Oblast předání | Hlavní výklad | Praktická opora | Stav |
-| --- | --- | --- | --- |
-| 1. Co pochopit před začátkem | Úvod, kapitoly 1 a 5 | Produktový smysl, perspective value, výběrová kritéria a kalibrační případy | Metodicky pokryto |
-| 2. End-to-end den | Kapitoly 3–19 a 22–24 | G1–G8: vstupy, kontext, výstupy, zákazy, přechody | Pokryto explicitně |
-| 3. Kontinuita jednoho Chatu | Kapitoly 2 a 24 | J: pět vrstev paměti a ztráty při předání | Pokryto explicitně |
-| 4. Issue Map | Kapitoly 3–7 | A, H1–H2, G2–G4 | Funkce, freeze i pole pokryté |
-| 5. Cross-Paper | Kapitola 8 | A, H3, G5 | Spojování, rozlišení a provenance pokryté |
-| 6. Selective Deep Read | Kapitola 9 | A, H4, G6, L | Spouštěče, oba režimy, změny a příklady pokryté |
-| 7. Osm průchodů | Kapitoly 10–18 | K a G7 | Pravomoci, výsledky, zákazy a návraty pokryté |
-| 8. Finální brány | Kapitoly 18–19 | Metadata A/H6 a G8 | Význam i meze doložení pokryté |
-| 9. Master Brief | Kapitola 20 | L | Funkce, rytmus, rozsah a nejistota názvů pokryté |
-| 10. Editorial Notes | Kapitola 21 | A, H5, B, I | Kdy, proč, jak, příklady a audit pokryté |
-| 11. Kontinuita dnů | Kapitola 23 | J a handover pravidla | Podpůrná Memory bez nového passu pokrytá |
-| 12. Co neformalizovat | Kapitola 25 | Průběžné výhrady ke kvótám a schématům | Pokryto |
-| 13. Artefakty | Průběžně + příloha I | I a B | Účel, autor, dokončení a životní cyklus pokryté |
-| 14. Datové struktury | Praktická příloha A | H1–H7 | Šest šablon, slovník a prázdné hodnoty pokryté |
-| 15. Samostatný onboarding | Celý soubor | E, G a M | Samostatné metodické zadání; provozní reference vyžadují originály |
-| 16. Sebehodnocení | Úvod a přílohy C–D | O | Doložené, rekonstruované a neznámé oddělené |
+### Doplnění V4 k interpretaci této přílohy
 
-„Pokryto“ zde hodnotí přítomnost a dostatečné vysvětlení oblasti v dokumentu, nikoli nové nezávislé ověření historických zdrojů. Nejde o další redakční gate pro každý den.
+Následující sebehodnocení je původní hodnocení rekonstrukce V3 a je zachováno jako provenance zkušenosti. Pozdější V4 doplnění v tomto dokumentu nejsou vydávána za historicky doloženou součást experimentu. Jsou současnou produktovou a redakční vrstvou přidanou nad zachovaný V3 základ.
 
-## N. Závěrečné sebehodnocení rekonstrukce
 
 ### A. Doložené z dostupného konverzačního záznamu
 
@@ -1338,17 +1378,14 @@ Všechna tato čísla jsou převzatá z dostupného konverzačního záznamu exp
 - Day 2: sedm hlavních jednotek, čtyři vrcholy, Detail value 6 strong/1 sufficient, šest hlášených Verification oprav a read-aloud 7/7.
 - Finální brány Coverage, Hierarchy, Curiosity, Trust, Product fit a samostatný 90-second test.
 - Schválení bez zásahu Editor-in-Chief; Day 1 v2 a Day 2 v1 hlášené jako verified.
-- historické Editorial Notes a zmínky o historické daily topics, historické daily briefs a historické brief items; absence materializovaných historické brief items u Day 1 v2 v daném checkpointu.
+- bbv3.editorial_notes a zmínky o daily_topics, daily_briefs a brief_items; absence materializovaných brief_items u Day 1 v2 v daném checkpointu.
 - Přiznané procesní odchylky preflightu a opravená persistence PASS 4 po transakci bez COMMIT.
 - Reflexe slabší časové osy, poznámka memory_would_help a rozhodnutí nezavádět tehdy nový povinný temporal pass.
 - Poslední dostupný Day 3 checkpoint: FT a WSJ frozen, HB nezpracované, Cross-Paper dosud nezačal.
 
-Tato jistota je o obsahu konverzačního záznamu. Při sestavení dokumentu nebyl současný stav uložených artefaktů ani původní novinové tvrzení znovu nezávisle ověřen.
+Tato jistota je o obsahu konverzačního záznamu. Při sestavení dokumentu nebyl současný stav databáze ani původní novinové tvrzení znovu nezávisle ověřen.
 
-### B. Současná produktová doktrína a silná rekonstrukce
-
-Do této verze jsou vědomě vloženy také principy Business Brief v4: přenos způsobu vidění, oddělení event importance a reading value, coverage safety net, reader autonomy, reading curation jako first-class funkce, komplementarita Brief/Detail a test „mrtvolky článku“. Tyto principy jsou **současná definice produktu**, nikoli tvrzení, že byly všechny explicitně pojmenované ve v3.
-
+### B. Silná rekonstrukce a doporučené provedení
 
 - Vyjádření čtenářské potřeby a způsobu rozpoznávání redakční hodnoty.
 - Praktická hranice mezi CORE, CANDIDATE a LOW; není doložen původní formální scoring.
@@ -1365,10 +1402,11 @@ Do této verze jsou vědomě vloženy také principy Business Brief v4: přenos 
 - Postup technické obnovy, kontroly zápisů a mapování logických polí na skutečné schéma.
 - Balíček stálého průvodce, kalibračních ukázek a aktuálního handoveru; dosud zde nebyl prokázán úspěšný end-to-end test předání do nového Chatu.
 
-Tyto části jsou předávanou metodou, ne doslovným archivním přepisem. Neměly by se v dalších dokumentech začít citovat jako historicky zavedené technické nebo procesní pravidlo bez tohoto rozlišení.
+Tyto části jsou předávanou metodou, ne doslovným archivním přepisem. Neměly by se v dalších dokumentech začít citovat jako historicky zavedené databázové nebo procesní pravidlo bez tohoto rozlišení.
 
 ### C. Nejisté, nedostupné nebo nedoložené
 
+- Úplné původní SQL schéma, project ID, názvy všech tabulek a sloupců, konkrétní klíče, constraints a vztahové cardinality.
 - Úplné originální znění Playbooku a instrukcí každého passu.
 - Celé autentické finální Briefy, mapy a zdrojové PDF v rámci tohoto předávacího dokumentu.
 - Přesná cílová persona a pevná norma délky či času čtení celého vydání.
@@ -1379,5 +1417,6 @@ Tyto části jsou předávanou metodou, ne doslovným archivním přepisem. Nem�
 - Zavedený temporal pass, systém trendů nebo oddělení osmi rolí do samostatných agentů.
 - Úplný seznam šesti konkrétních Verification oprav Day 2; dostupný záznam detailně zachycuje jen některé, zejména Treasury.
 - Rok redakčních vydání tam, kde je v dostupných zprávách pouze den a měsíc.
+- Aktuální stav provozního prostředí po posledním dostupném historickém checkpointu.
 
 Tyto mezery nejsou důvodem znehodnotit zachycenou zkušenost. Jsou hranicí, kterou má nový Chat vidět. Metodu může převzít z tohoto souboru; konkrétní historická tvrzení a provozní zápisy musí opřít o skutečné dostupné podklady.
