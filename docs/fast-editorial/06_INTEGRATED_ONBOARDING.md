@@ -1208,3 +1208,60 @@ The evidence exists to support editorial judgment.
 Neither is the product.
 
 The product is a reader who sees the day more clearly, more precisely and from richer perspectives than before.
+
+
+---
+
+# 30. Startup bundle for a new Chat
+
+When this process starts in a fresh Chat, do not load only this onboarding.
+
+Load three layers:
+
+1. **Method and purpose**
+   - this file: `06_INTEGRATED_ONBOARDING.md`
+
+2. **Calibration**
+   - `08_CALIBRATION_EXAMPLES.md`
+   - plus one or two complete approved Master Briefs when available
+
+3. **Current editorial memory**
+   - `09_CURRENT_EDITORIAL_MEMORY.md`
+
+The purpose is to restore not only process knowledge, but editorial calibration and current continuity.
+
+The new Chat should retain access to underlying source artifacts. Do not rely on summaries of summaries.
+
+---
+
+# 31. New-Chat comprehension check
+
+After loading the startup bundle, briefly restate in your own words:
+
+1. What value Business Brief is meant to create.
+2. Where the editorial work currently stands.
+3. What is already frozen / closed and must not be silently rewritten.
+4. Which important corrections, qualifications and open questions you inherit.
+5. What exact next step you will perform.
+
+This is a comprehension check, not an approval gate.
+
+If the understanding is correct and the assignment is clear, continue directly.
+
+---
+
+# 32. Continuity rule
+
+Default to one Chat for a full editorial day and, where practical, several consecutive days.
+
+Do not create handoffs merely because the process changes mental mode.
+
+Use handoff only when continuity genuinely has to move to a new Chat.
+
+Prefer handoff:
+- between completed days;
+- or at a completed boundary such as freeze, Cross-Paper or Deep Read.
+
+After each completed day, update the current editorial memory as part of the day retrospective.
+
+Do not create a separate memory pass.
