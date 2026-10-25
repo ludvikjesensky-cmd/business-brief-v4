@@ -99,20 +99,36 @@ source_locator:
 
 headline: ""
 headline_is_working_label: false
+author: ""
 
 genre: news
 # analysis | interview | opinion | editorial | lex | other
 
 article_point: ""
-editorial_value: ""
 
-priority: CORE
+author_view:
+  question: ""
+  frame: ""
+  argument_or_angle: ""
+
+what_is_new_or_useful: ""
+
+event_importance: MEDIUM
+# HIGH | LOW
+
+reading_value: MEDIUM
+# HIGH | LOW
+
+editorial_priority: CORE
 # CANDIDATE | LOW
+
+priority_reason: ""
 
 deep_read_candidate: false
 deep_read_reason: ""
 
 open_questions: []
+uncertainties: []
 structural_notes: []
 ```
 
@@ -178,6 +194,7 @@ working_title: ""
 central_question: ""
 synthesis: ""
 why_now: ""
+reading_value_notes: []
 
 decision: include
 # reserve | exclude
@@ -189,6 +206,7 @@ source_links:
     role: primary
     # supporting | contrasting | background
     contribution: ""
+    distinctive_perspective: ""
 
 differences_and_tensions: []
 open_questions: []
@@ -247,6 +265,8 @@ interpretation_changed: false
 interpretation_before: ""
 interpretation_after: ""
 change_reason: ""
+
+perspective_recovered_or_corrected: ""
 
 wording_guardrails:
   safe_formulation: ""
@@ -422,3 +442,26 @@ Master Brief unit
 The purpose is to make source return easy.
 
 The purpose is not to replace the source with increasingly elaborate metadata.
+
+
+---
+
+## 12. Editorial-spirit additions
+
+The following fields are intentionally added by the Business Brief editorial doctrine, not claimed as exact historical v3 schema:
+
+- `author_view.question`
+- `author_view.frame`
+- `author_view.argument_or_angle`
+- `what_is_new_or_useful`
+- `event_importance`
+- `reading_value`
+- `priority_reason`
+- `uncertainties`
+- `distinctive_perspective`
+- `reading_value_notes`
+- `perspective_recovered_or_corrected`
+
+They exist because the new Fast Editorial must preserve not only what an article says, but **how the author or publication sees the subject and why that way of seeing is worth the reader's attention**.
+
+Do not convert these fields into numeric scoring or force them to contain prose when the source does not support a confident judgment.
