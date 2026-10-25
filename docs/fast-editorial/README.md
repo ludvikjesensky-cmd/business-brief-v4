@@ -125,6 +125,28 @@ This file defines **why and how to think**, while `01_WORKFLOW.md` defines **wha
 
 Do not merge the two layers silently. Their synthesis into final onboarding is a separate design step.
 
+
+### 7. `06_INTEGRATED_ONBOARDING.md`
+
+The first full synthesis candidate.
+
+It combines:
+- the reconstructed successful v3 operating mechanism;
+- the Business Brief product purpose;
+- editorial way of reading and thinking;
+- perspective value;
+- event importance vs reading value;
+- reader autonomy;
+- coverage safety net;
+- reading curation;
+- Brief / Detail complementarity;
+- editorial voice;
+- anti-patterns and final quality tests.
+
+This is now the **primary candidate for regression testing with a clean Chat**.
+
+It is not yet canonical. Do not discard `03_ONBOARDING_V3_MECHANISM.md`; that file remains the control baseline for identifying what the editorial-spirit layer changed.
+
 ---
 
 ## Current source of truth
@@ -133,9 +155,10 @@ For the greenfield reconstruction:
 
 - mechanism: `01_WORKFLOW.md`
 - data structures: `02_DATA_STRUCTURES.md`
-- clean-Chat mechanism test: `03_ONBOARDING_V3_MECHANISM.md`
+- clean-Chat v3 mechanism control: `03_ONBOARDING_V3_MECHANISM.md`
 - reconstruction confidence / guardrails: `04_EVIDENCE_AND_GUARDRAILS.md`
 - product spirit / editorial way of working: `05_BUSINESS_BRIEF_SPIRIT_AND_WORKING_PRINCIPLES.md`
+- integrated synthesis candidate: `06_INTEGRATED_ONBOARDING.md`
 
 `00_V3_RECONSTRUCTION_BASELINE.md` remains the source-based reference behind them.
 
@@ -150,8 +173,8 @@ The next stage is deliberately separate:
 1. preserve the reconstructed mechanism;
 2. preserve the full Business Brief spirit, editorial purpose and working principles;
 3. identify where that layer changes editorial judgment without corrupting the proven workflow;
-4. create a new final onboarding briefing;
-5. regression-test against historical reference days;
+4. regression-test `06_INTEGRATED_ONBOARDING.md` against historical reference days and the v3 mechanism control;
+5. revise only where evidence shows quality loss or unnecessary formalism;
 6. only then declare the new Fast Editorial canonical.
 
 Do not mix the constitution into the reconstruction retroactively.
