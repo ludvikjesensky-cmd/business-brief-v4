@@ -53,6 +53,11 @@ Praktické přílohy: **A** šest struktur; **B** ukládání na checkpointech; 
 
 Aktuální stav rozpracované práce patří do EDITORIAL_HANDOVER.md. Tento dokument vysvětluje metodu a mění se při vědomé změně metody, nikoli po každém novém vydání.
 
+### Doplnění V4 — Closure Pass — current-state authority
+
+Původní věta výše popisuje model před zavedením nové persistence vrstvy. V aktuálním V4 je **source of truth pro rozpracovaný stav Supabase `fast_editorial.handover_state`**. Soubor `docs/fast-editorial/EDITORIAL_HANDOVER.md` je kontrakt a lidsky čitelná šablona, nikoli denní provozní databáze.
+
+
 ---
 
 ## 1. Jaký Brief se snažíme vytvořit
@@ -1903,6 +1908,9 @@ verified_at: null
 
 Vazba editorial_units je doporučení pro přenos provenance, nikoli důkaz, že historicky existovala v tomto tvaru. Přesný formát textu a metadata se musí přizpůsobit původnímu schématu.
 
+**Doplnění V4 — Closure Pass — současný formát již není neznámý:** pro nový Fast Editorial je normativní `fast_editorial.briefs` + `master-editorial-truth-v1` + `brief_topics` + `brief_issues` + `brief_gates`. Původní věta zůstává pouze jako historická opatrnost V3 rekonstrukce.
+
+
 ## B. Co mít uložené na každém přirozeném checkpointu
 
 | Checkpoint | Obsahový výsledek | Auditní záznam | Než řekneš „hotovo“ |
@@ -2074,6 +2082,9 @@ Tento přehled spojuje rozptýlené pokyny z hlavního výkladu. Není to dalš�
 **Drž v kontextu:** Rozdíl mezi vytvořením, uložením, verified a publikací. Předej otevřené příběhy, ne předem hotový výběr zítřka.
 
 **Ulož:** daily_briefs záznam podle původního schématu, Chief review, příslušné snapshoty a závěrečné poznámky. brief_items vytvářej jen podle skutečně zavedeného publishing postupu, nikoli jako domnělou podmínku redakčního schválení.
+
+**Doplnění V4 — Closure Pass — current V4 save target:** historický odkaz na `daily_briefs` výše zachovává V3 zkušenost. Nový Fast Editorial ukládá Master Editorial Truth do `fast_editorial.briefs`, provenance do `brief_topics` / `brief_issues`, gates do `brief_gates` a audit do append-only `editorial_notes`.
+
 
 **Nesmí se stát:** Hlášení úspěchu před ověřením zápisu, záměna verified za published nebo doplnění chybějících ID odhadem.
 
