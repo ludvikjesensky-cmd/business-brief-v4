@@ -31,11 +31,10 @@ Tyto soubory jsou historický návrh pro srovnání, nikoli současné operating
 
 Nový Fast Editorial vzniká odděleně v:
 
-- `docs/fast-editorial/README.md`
-- `docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md`
-- `docs/fast-editorial/06_INTEGRATED_ONBOARDING.md`
-- `docs/fast-editorial/08_CALIBRATION_EXAMPLES.md`
-- `docs/fast-editorial/09_CURRENT_EDITORIAL_MEMORY.md`
+- `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md` — hlavní úplné předání know-how novému editorovi
+- `docs/fast-editorial/README.md` — orientace v greenfield adresáři
+- `docs/fast-editorial/reference/FAST_EDITORIAL_START_HERE_V3_CHAT_SOURCE.md` — nedotčený zdrojový návrh původního v3 Chatu
+- `docs/fast-editorial/00_...09_...` — podpůrná rekonstrukční a vývojová reference, nikoli běžný startup
 
 Výchozí mechanický řetězec rekonstruovaný z původního úspěšného v3 Chat experimentu je:
 
@@ -47,25 +46,23 @@ Independent Issue Maps
 → verified Master Brief
 ```
 
-Nový proces zatím **není canonical**. Rekonstrukce fungujícího v3 mechanismu byla oddělena od produktového a redakčního ducha Business Briefu a obě vrstvy jsou nyní syntetizovány v `docs/fast-editorial/06_INTEGRATED_ONBOARDING.md`. Tento dokument je hlavní kandidát pro regresní testy na historických dnech; `03_ONBOARDING_V3_MECHANISM.md` zůstává kontrolní baseline.
+Nový proces zatím **není canonical**. Hlavním kandidátem je nyní `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md`: úplné předání, které používá zkušenost původního v3 Chatu jako kostru, odstraňuje historickou technickou infrastrukturu a přímo integruje produktový a redakční duch Business Brief v4. Původní rekonstrukční soubory zůstávají referencí pro audit a regresní srovnání.
 
 Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
 
-**Fresh Fast Editorial Chat startup:** načti `06_INTEGRATED_ONBOARDING.md` + `08_CALIBRATION_EXAMPLES.md` + `09_CURRENT_EDITORIAL_MEMORY.md` a relevantní zdroje/artefakty. Nový Chat pak stručně vlastními slovy potvrdí hodnotu produktu, aktuální stav, frozen/closed hranice, zděděné opravy a další konkrétní krok; nejde o novou schvalovací bránu.
+**Fresh Fast Editorial Chat startup:** načti celý `FAST_EDITORIAL_START_HERE.md`, aktuální `EDITORIAL_HANDOVER.md` až bude založen, autentické schválené kalibrační Briefy až budou dohledané a relevantní zdroje/artefakty. Nový Chat pak stručně vlastními slovy potvrdí hodnotu produktu, aktuální stav, frozen/closed hranice, zděděné opravy a další konkrétní krok; nejde o novou schvalovací bránu.
 
 
 ## Active branches
-- **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. Rebuild the proven live-Chat workflow from the original v3 experiment under `docs/fast-editorial/`, then add the Business Brief editorial constitution and validate against historical reference days. It must not depend on Deep/Memory infrastructure in this phase.
+- **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md` is the current complete handoff candidate combining the proven v3 live-Chat method with the Business Brief v4 editorial purpose. Validate it against authentic historical Briefs and clean-Chat regression tests before declaring it canonical. It must not depend on Deep/Memory infrastructure in this phase.
 - **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
 - Integration between the branches is deliberately unresolved; see D030.
 
 ## Detailed docs
-- docs/fast-editorial/README.md — aktivní vstup do greenfield rekonstrukce Fast Editorial
-- docs/fast-editorial/00_V3_RECONSTRUCTION_BASELINE.md — source-based rekonstrukce prokazatelně fungujícího v3 mechanismu a minimálních struktur
-- docs/fast-editorial/06_INTEGRATED_ONBOARDING.md — hlavní greenfield syntéza V3 mechanismu a Business Brief ducha; kandidát pro regresní test, zatím ne canonical
-- docs/fast-editorial/07_CONTINUITY_HANDOFF_AND_EDITORIAL_MEMORY.md — pravidla kontinuity a předávání mezi Chaty bez fragmentace denního workflow
-- docs/fast-editorial/08_CALIBRATION_EXAMPLES.md — konkrétní příklady úsudku a oprav pro kalibraci nového Chatu
-- docs/fast-editorial/09_CURRENT_EDITORIAL_MEMORY.md — živý stav práce, otevřené story threads, zděděné opravy a další krok
+- docs/fast-editorial/FAST_EDITORIAL_START_HERE.md — hlavní úplné metodické a redakční předání novému Fast Editorial Chatu; zatím kandidát, ne canonical
+- docs/fast-editorial/README.md — orientace, startup model a otevřené validační kroky
+- docs/fast-editorial/reference/FAST_EDITORIAL_START_HERE_V3_CHAT_SOURCE.md — nedotčený zdrojový návrh od původního v3 experimentálního Chatu
+- docs/fast-editorial/00_...09_... — podpůrná rekonstrukční / vývojová reference, nikoli normální startup surface
 - docs/suspended/fast-editorial-pre-greenfield/ — SUSPENDED předchozí návrh; pouze historické srovnání, ne operating instructions
 - docs/PRODUCT.md — produkt, publikum a hodnoty
 - docs/EDITORIAL.md — redakční filozofie a workflow
@@ -78,8 +75,6 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
-
-Původní v4 dokumentace je po migraci zachována v docs.archive/ jako historický zdroj, nikoli kanonická autorita.
 
 ## Storage
 KNOWLEDGE: toto Repository, zejména PROJECT.md, project-memory/ a docs/.
