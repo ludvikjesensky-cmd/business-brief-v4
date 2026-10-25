@@ -21,7 +21,7 @@ Před architektonickou změnou navíc čti ARCHITECTURE.md, DECISIONS.md, FAILUR
 
 Pro práci v roli Ingestoru načti po PROJECT/SCOPE/CURRENT_STATE také docs/INGESTOR.md.
 
-Fast Editorial je nyní v **greenfield reconstruction** režimu.
+Fast Editorial je nyní ve stavu **CANDIDATE READY FOR ACCEPTANCE** po dokončeném Closure Passu.
 
 Předchozí aktivní návrh Fast Editorial byl 2026-10-25 pozastaven a přesunut do:
 
@@ -46,7 +46,7 @@ Independent Issue Maps
 → verified Master Brief
 ```
 
-Nový proces zatím **není canonical**. Hlavním kandidátem je nyní `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md`: úplné předání, které používá zkušenost původního v3 Chatu jako kostru, odstraňuje historickou technickou infrastrukturu a přímo integruje produktový a redakční duch Business Brief v4. Původní rekonstrukční soubory zůstávají referencí pro audit a regresní srovnání.
+Nový proces zatím **není canonical**, ale technická a dokumentační Closure specifikace je uzavřená. Hlavním kandidátem je `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md`: úplné předání, které používá zkušenost původního v3 Chatu jako kostru, odstraňuje historickou technickou infrastrukturu a přímo integruje produktový a redakční duch Business Brief v4. Původní rekonstrukční soubory zůstávají referencí pro audit a regresní srovnání.
 
 Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukce pro nový Fast Editorial a nevytvářej podle nich další architekturu.
 
@@ -54,9 +54,10 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 
 
 ## Active branches
-- **Fast Editorial:** GREENFIELD RECONSTRUCTION. The previous design is SUSPENDED. `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md` is the current complete handoff candidate combining the proven v3 live-Chat method with the Business Brief v4 editorial purpose. Validate it against authentic historical Briefs and clean-Chat regression tests before declaring it canonical. It must not depend on Deep/Memory infrastructure in this phase.
+- **Fast Editorial:** CANDIDATE READY FOR ACCEPTANCE. The previous design is SUSPENDED. `docs/fast-editorial/FAST_EDITORIAL_START_HERE.md` is the current complete handoff candidate combining the proven v3 live-Chat method with the Business Brief v4 editorial purpose. Validate it against authentic historical Briefs and clean-Chat regression tests before declaring it canonical. It must not depend on Deep/Memory infrastructure in this phase.
   - Persistence v1 is implemented in Supabase project `business-brief-v4`, private schema `fast_editorial`; concrete operational Editorial Notes, Issue Maps, Topics, Brief versions, gates and handover state belong there. GitHub holds the method and migrations. See migrations `20261025210000_add_fast_editorial_v1.sql` and `20261025210500_add_fast_editorial_v1_fk_indexes.sql`.
   - Master Editorial Truth is now explicit: each Brief version has canonical `content_json` + human-readable `content_markdown`; channel adaptations live in `fast_editorial.channel_outputs` and may be generated only from a VERIFIED Brief. See migration `20261025212000_add_master_editorial_truth_and_channel_outputs_v1.sql`.
+  - Closure Pass 2026-10-25: durable Reference Edition input contract, append-only Editorial Notes, freeze/verification/channel invariants, exact Brief sealing after final gates, authentic Day 1 v2 / Day 2 v1 calibration, handover contract and Publishing boundary are implemented. One genuinely clean-Chat regression remains before canonical status.
 - **Deep / Memory:** canonical evidence and long-term knowledge path through Ingestor → Assembler → Article Records → Indexer → Enrichment/Memory. Composer D027 belongs here if implemented.
 - Integration between the branches is deliberately unresolved; see D030.
 
