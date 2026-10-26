@@ -62,7 +62,7 @@ HTML = '''<!doctype html><html lang="cs"><head><meta charset="utf-8">
 @media(max-width:480px){main{padding:0 18px 30px}.brand{font-size:27px}.header-meta{font-size:9px;letter-spacing:.7px}.intro{grid-template-columns:1fr;gap:18px}h1{font-size:43px;letter-spacing:-1.4px}h2{font-size:31px}h3{font-size:22px}.intro button{justify-self:start}.controls,select{width:100%}.next{padding:12px 14px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style></head><body><main><header><div class="brand">Business Brief<span>.</span></div><div class="header-meta">Deep / Memory<br>Provozní přehled</div></header>
-<div class="intro"><div><div class="eyebrow">Přehled zpracování</div><h1>Od vydání<br>k souvislostem.</h1><p class="muted">Sleduj cestu vydání od přípravy PDF po vyhledávání. Přehled ukazuje uložené podklady a další krok.</p></div><button id="refresh">Obnovit přehled ↻</button></div>
+<div class="intro"><div><div class="eyebrow">Přehled zpracování</div><h1>Deep Read Processing</h1><p class="muted">Sleduj cestu vydání od přípravy PDF po vyhledávání. Přehled ukazuje uložené podklady a další krok.</p></div><button id="refresh">Obnovit přehled ↻</button></div>
 <div class="controls"><label>Vybrat vydání <select id="filter"><option value="all">Všechna vydání</option></select></label><p id="stamp" class="stamp"></p></div><p id="error" role="alert"></p><div id="app"></div>
 <footer class="footer muted"><strong>Business Brief<span style="color:var(--red)">.</span></strong><p>Pouze čtení · nejvýše 100 naposledy přijatých aktivních zdrojů. Technician se přes Chat zatím bezpečně spustit nedá. Fast Editorial má samostatný proces.</p></footer>
 <script>
