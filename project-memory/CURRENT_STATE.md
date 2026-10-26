@@ -1,7 +1,32 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-22
+**Last consolidated:** 2026-10-26
 
+
+
+## 2026-10-26 — Deep Runner production plan-only acceptance
+
+PR #18 was reviewed after PR tests run #133 succeeded at head `8f36b9af87c507629541ed62748950f4ee14cf99`, marked ready and merged as `848ee5052630555f04213e6bf747f236257571d1`. A fresh local run passed all 329 Python tests. No formal independent GitHub approval is claimed.
+
+Applied the exact SQL from `20261026100000_add_pipeline_requests.sql` to Supabase `tduhlvfsqplckemygjdx` through apply_migration. Supabase records the applied version as `20261026093201`, name `add_pipeline_requests`; the repository filename is unchanged. Verified all 11 columns, PK `(principal_id, request_id)`, source FK, SHA/operation/state/receipt constraints, RLS and grants. anon/authenticated have neither schema usage nor table privileges; service_role has SELECT/INSERT/UPDATE, no DELETE. Data API rejects `Accept-Profile: bridge_private` with 406/PGRST106. Security advisor reports the expected no-policy INFO for this private service-only table; the existing pg_net-in-public warning remains outside this change.
+
+Hetzner `/opt/business-brief-v4` fast-forwarded to the merged commit. Built `business-brief-bridge:848ee5052630` from `bridge/Dockerfile` and recreated `business-brief-bridge` with the existing env file, restart unless-stopped and `127.0.0.1:8080:8080`. Caddy remained active and unchanged. The pre-existing untracked `Dockerfile.hetzner` was retained. Env remained mode 600; backup `.env.pre-deep-runner-20261026T093249Z`, old stopped container `business-brief-bridge-pre-deep-runner` and image `business-brief-bridge:pre-deep-runner` retained for rollback. The old container must remain stopped while the new one owns port 8080.
+
+Enabled `BRIDGE_PIPELINE_ENABLED=1`; `BRIDGE_PIPELINE_PERSIST` remains UNSET. Added only pipeline:read/run/search to existing principal `tannenberg-assembler`, preserving token/ID and WSJ-only publication allowlist. No pipeline:persist scope was added. Database uses port 5432 session semantics. Credentials remained server-side.
+
+Local authenticated `/ready` (with X-Forwarded-Proto:https) and public authenticated `/ready` returned 200 READY. Missing auth returned 401; persist request returned 403 PERSIST_DISABLED before execution; wrong manifest SHA returned 409 ARTIFACT_HASH_MISMATCH. These negative checks wrote no pipeline requests.
+
+Exact test selection: source `603e8242-ffe8-4e1d-a5de-9adb3da4d188`, manifest `wsj-2026-10-14-selection-r1`, SHA `f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77`.
+
+| Operation | Durable request ID | Observed result |
+| --- | --- | --- |
+| assembler, persist=false | 4dbc7abc-939b-4eb2-955d-875f210c44c8 | COMPLETE/PASS, 27 page items, 21 records, 16 VERIFIED, 5 VERIFIED_WITH_NOTES, zero NEEDS_REVIEW/BLOCKED, 0 persisted |
+| indexer, persist=false | 3bde8965-253f-4800-b713-70ca423acbd0 | COMPLETE/PASS, 21 rows/eligible, 39 planned chunks, 0 skipped/persisted |
+| search, query Čína obchodní válka cla, limit 5 | 311d766c-bf0b-4997-b6a7-e8a6063fc625 | COMPLETE/PASS, 5 vector and 0 lexical results; direct article ID/SHA/source/manifest join found 0 outside selection |
+
+Status returned HTTP 200 with completed Assembler/Indexer receipts; final status captured all three COMPLETE receipts. Search performed a billable query embedding. Plan-only still writes execution receipts to the private ledger; canonical Article Records/index persistence was not requested. This is a technical smoke test, not final multilingual Q017 or clean ordinary Chat acceptance. Fast Editorial was not changed.
+
+The existing owner-only Site adapter v6 remains published as before. Deep Runner adapter preparation and the explicit unexecuted persist procedure are in [DEEP_RUNNER_HANDOFF.md](../docs/DEEP_RUNNER_HANDOFF.md). No adapter publication or newly connected ordinary Chat test occurred.
 
 ## Production infrastructure migration — 2026-10-22
 
@@ -37,7 +62,7 @@ Public website `https://businessbrief.cz/` returned 200. Public authenticated Br
 
 
 ## Runner consolidation — 2026-10-26
-PR #17 merged a separate runner candidate at `908448026a8629b76e435b5e092d14e775f0062a` while the Bridge extension was being implemented. D032 now consolidates on the existing Bridge authentication/publication boundary. The separate listener, runner-specific principals, old DNS/8090 deployment and unscoped search contract are superseded by docs/DEEP_RUNNER.md. The exact INDEXED replay optimization from PR #17 is preserved. No production runner deployment is claimed. See the implementation/acceptance section below.
+PR #17 merged a separate runner candidate at `908448026a8629b76e435b5e092d14e775f0062a` while the Bridge extension was being implemented. D032 now consolidates on the existing Bridge authentication/publication boundary. The separate listener, runner-specific principals, old DNS/8090 deployment and unscoped search contract are superseded by docs/DEEP_RUNNER.md. The exact INDEXED replay optimization from PR #17 is preserved. Production plan-only deployment subsequently passed on 2026-10-26; see the current acceptance section below.
 
 ## Indexer Q017 implementation and first live acceptance — 2026-10-26
 PR #16 was merged into `main` at `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Indexer v1 is implemented: deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings.
