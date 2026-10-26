@@ -232,3 +232,8 @@ Persistence is implemented but not deployed. Only VERIFIED / VERIFIED_WITH_NOTES
 **Authority:** [docs/INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md) is the canonical current infrastructure/runbook document.
 
 **D031 consolidation boundary (2026-10-22):** Host OS is Ubuntu 26.04.1 LTS; Docker Bridge binds only to `127.0.0.1:8080`. The static website comes from separate repository `ludvikjesensky-cmd/business-brief-web-v2`. Supabase-secret rotation for Hetzner is recorded; any other affected credential needs an explicit rotation/revocation status rather than an assumption of complete incident closure. No credential values are documentation evidence. D031 changes infrastructure ownership, not editorial contracts.
+
+## D032 — ACTIVE — Extend Bridge for Deep/Memory tools
+**Date:** 2026-10-26.
+**Decision:** Reuse Bridge principals, publication authorization, TLS/secrets boundary and existing deterministic runtimes. Explicit source_id + manifest_id + manifest_sha only; no shell/SSH, latest selection or semantic gate bypass. Add a private execution ledger and session source lock, async 202/status, read-only runtime defaults and separate persistence scope/server opt-in. Technician remains unavailable until source-scoped authorization/claim exists; global inbox drain cannot be delegated to Chat. Search is exact-selection filtered calibration retrieval.
+**Acceptance:** repository tests only; Hetzner and private plugin adapter rollout/clean Chat acceptance remain operational follow-up. See docs/DEEP_RUNNER.md. Fast Editorial unchanged.

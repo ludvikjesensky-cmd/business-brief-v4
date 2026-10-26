@@ -1,4 +1,4 @@
-"""Small HTTP service. No worker imports, model calls, or editorial processing."""
+"""Authenticated evidence Bridge and opt-in Deep/Memory runtime tools."""
 import hmac
 import json
 import os
@@ -17,18 +17,30 @@ RETRYABLE={'RATE_LIMITED','UPSTREAM_UNAVAILABLE','WRITE_IN_PROGRESS','PERSISTENC
 
 class Application:
     def __init__(self,bridge,principals): self.bridge,self.principals=bridge,principals
-    def auth(self,header,write):
+    def auth(self,header,write,scopes=None):
         principal=None
         if header and header.startswith('Bearer '):
             token=header[7:]
             for p in self.principals:
                 if hmac.compare_digest(token.encode('utf-8'),p['token'].encode('utf-8')): principal=p
         if not principal: raise Failure('UNAUTHENTICATED',401)
-        scopes={'source:read','page:write'} if write else {'source:read'}
+        scopes=scopes if scopes is not None else ({'source:read','page:write'} if write else {'source:read'})
         require(scopes.issubset(set(principal['scopes'])),'FORBIDDEN',403)
         return principal
     def dispatch(self,method,path,headers,read):
-        p=self.auth(headers.get('Authorization'),method=='POST')
+        is_runner=urlsplit(path).path=='/deep-runner/v1/tool'
+        p=self.auth(headers.get('Authorization'),method=='POST', {'source:read'} if is_runner else None)
+        if is_runner:
+            require(os.environ.get('BRIDGE_PIPELINE_ENABLED')=='1','RUNNER_DISABLED',503)
+            require(method=='POST' and not urlsplit(path).query,'INVALID_REQUEST',400)
+            require(headers.get('Content-Type','').lower()=='application/json' and headers.get('Content-Encoding','identity')=='identity','UNSUPPORTED_MEDIA_TYPE',415)
+            require(not headers.get('Transfer-Encoding'),'INVALID_REQUEST',400)
+            try: length=int(headers.get('Content-Length',''))
+            except ValueError: raise Failure('INVALID_REQUEST',400) from None
+            require(0<length<=8192,'PAYLOAD_TOO_LARGE',413)
+            raw=read(length); require(len(raw)==length,'INVALID_JSON',400)
+            from .runner import Runner
+            return Runner(self.bridge).execute(strict_json(raw),p,headers.get('Idempotency-Key'))
         url=urlsplit(path); args=parse_qsl(url.query,keep_blank_values=True)
         allowed=p['publications']
         if url.path in ('/health','/ready'):

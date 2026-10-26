@@ -89,3 +89,7 @@ Accepted WSJ baseline on 2026-10-26:
 - direct Supabase readback: 21 INDEXED runs, 21 article embeddings, 39 chunks covering all 21 articles.
 
 Initial Czech→English semantic spot checks passed for bank rates/profits, U.S. defense startups in Taiwan and Chinese stagnation/Gen Z. Lexical results may be empty for Czech queries against English source prose; vector retrieval is the primary cross-language signal. Do not freeze hybrid weights from these spot checks. Q017 remains open until Czech→German and the predeclared latency/cost/quality acceptance set are complete.
+
+## Deep/Memory runner implementation — 2026-10-26
+
+See [DEEP_RUNNER.md](DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.

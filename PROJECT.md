@@ -97,3 +97,7 @@ Technician připravuje technickou evidenci. Ingestor (ordinary Chat) je živá C
 
 ## Article assets bootstrap
 Read `project-memory/DECISIONS.md` D022 and `docs/INGESTOR.md` §21 for the accepted article-assets model, dual page/text anchors and private `page-ingest` crop layout. v4 is a new immutable generation; v2/v3 stay readable and untouched. The writer was deployed and page-2 acceptance is receipt-backed; full-corpus acceptance remains gated by evidence reconciliation and the page-6 visual defect (CURRENT_STATE, F011). **Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.**
+
+## Deep/Memory runner implementation — 2026-10-26
+
+See [docs/DEEP_RUNNER.md](docs/DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.
