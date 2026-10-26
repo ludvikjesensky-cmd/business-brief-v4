@@ -144,3 +144,7 @@ def test_chat_adapter_defaults_and_no_secret_errors():
     assert result['request_id']==captured[0][2]['Idempotency-Key']
     assert result['status']=='UNKNOWN' and 'SUPER_SECRET' not in str(result)
     assert len(tool_definitions())==5
+
+def test_standalone_entrypoint_fails_closed():
+    from business_brief.runner_runtime import main
+    with pytest.raises(SystemExit,match='Standalone runner superseded'): main()

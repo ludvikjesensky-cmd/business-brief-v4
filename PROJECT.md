@@ -75,6 +75,7 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary
+- docs/RUNNER.md — merged server-side Deep/Memory runner and Chat-facing tool contract; Hetzner deployment/acceptance still pending
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory

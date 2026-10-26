@@ -111,3 +111,10 @@ Run `PYTHONPATH=.:src pytest -q`, PostgreSQL schema checks in CI, and
 `git diff --check`. Unit tests use injected boundaries and make no paid calls or
 production writes. Live deployment, real concurrency/session-loss and ordinary
 Chat acceptance must follow the rollout above.
+
+## Concurrent main consolidation
+
+PR #17 added a separate runner during this implementation. This change supersedes
+its listener/principals/DNS contract with the existing Bridge boundary, preserves
+its Indexer zero-provider-call exact INDEXED replay fix and regression test, and
+keeps the old command fail-closed. There is one deployable runtime/auth boundary.

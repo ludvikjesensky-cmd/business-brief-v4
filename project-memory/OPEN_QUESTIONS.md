@@ -74,5 +74,7 @@ Read-only: 27 page_items, 21 article_records, 16 VERIFIED, 5 VERIFIED_WITH_NOTES
 
 This resolves this record set's real-source/persistence/replay gate. The historical PR #14 test evidence is in CURRENT_STATE; no new test-suite, migration inspection, per-record manual content audit or production run was performed by this documentation consolidation. Broader Q010, unsupported page-label behavior and another publication's acceptance remain separate work. Q017/Q018/Q019 still gate Indexer/Composer/knowledge; no downstream run is implied.
 
-## Runner deployment acceptance — 2026-10-26
-D032/ docs/DEEP_RUNNER.md implement the Bridge runner and private adapter wrappers. Remaining operational work: apply the additive ledger migration, deploy the exact reviewed Bridge image, bind the existing private plugin transport, run source-scoped real acceptance and clean ordinary Chat verification. Technician additionally requires a separately implemented source-scoped inbox claim; the global drain remains unavailable. No Fast Editorial dependency or Q017 calibration closure is introduced.
+## Q021 — OPEN — Runner production acceptance and Technician remote intake
+PR #17 introduced a separate runner candidate while the Bridge extension was in progress. D032 consolidates execution on the existing Bridge principals/publication boundary; do not deploy the superseded separate service, RUNNER_PRINCIPALS or new DNS endpoint. Apply the ledger migration, deploy the reviewed Bridge image, bind the private plugin transport and verify source-scoped plan/persist/replay/status/search and clean ordinary Chat operation without credential leakage. See docs/DEEP_RUNNER.md.
+
+Technician additionally requires a source-scoped immutable intake/claim contract with type/size limits, SHA/provenance, identity trust and atomic handoff. Global inbox drain and arbitrary paths/uploads remain unavailable. Q017 calibration and Fast Editorial remain independent.

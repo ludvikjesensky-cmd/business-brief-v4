@@ -40,4 +40,4 @@ jobs:
           node tests/runner_schema.mjs
       - name: Compile changed Python
         run: |
-          python -m py_compile src/business_brief/assembler.py src/business_brief/assembler_runtime.py src/business_brief/indexer.py src/business_brief/indexer_runtime.py src/business_brief/index_search.py bridge/runner.py
+          python -m py_compile src/business_brief/assembler.py src/business_brief/assembler_runtime.py src/business_brief/indexer.py src/business_brief/indexer_runtime.py src/business_brief/index_search.py src/business_brief/runner_runtime.py bridge/runner.py bridge/chat_tools.py

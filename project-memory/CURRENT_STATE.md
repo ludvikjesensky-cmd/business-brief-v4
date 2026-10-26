@@ -36,6 +36,9 @@ Public website `https://businessbrief.cz/` returned 200. Public authenticated Br
 
 
 
+## Runner consolidation — 2026-10-26
+PR #17 merged a separate runner candidate at `908448026a8629b76e435b5e092d14e775f0062a` while the Bridge extension was being implemented. D032 now consolidates on the existing Bridge authentication/publication boundary. The separate listener, runner-specific principals, old DNS/8090 deployment and unscoped search contract are superseded by docs/DEEP_RUNNER.md. The exact INDEXED replay optimization from PR #17 is preserved. No production runner deployment is claimed. See the implementation/acceptance section below.
+
 ## Indexer Q017 implementation and first live acceptance — 2026-10-26
 PR #16 was merged into `main` at `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Indexer v1 is implemented: deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings.
 
