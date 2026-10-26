@@ -10,6 +10,7 @@ dependencies = ["PyMuPDF>=1.24,<2", "supabase>=2.20,<3", "ocrmypdf>=16,<17"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
+dashboard = ["psycopg[binary]==3.2.12"]
 
 [project.scripts]
 bb-technician = "business_brief.technician_cli:main"
@@ -26,3 +27,6 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+business_brief = ["dashboard.sql"]
