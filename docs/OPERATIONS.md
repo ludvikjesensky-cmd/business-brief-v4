@@ -62,6 +62,30 @@ Historical D024 ingest acceptance is complete for WSJ 2026-10-14: bridge pin 388
 ## Current production checks and security — 2026-10-22
 Hetzner `tannenberg-prod-01` (`46.225.32.16`, Ubuntu 26.04.1 LTS) runs Caddy as HTTPS gateway and the Docker Bridge bound to `127.0.0.1:8080`. The public Bridge is `https://bridge.businessbrief.cz`; authenticated `/ready` returned 200 READY. `https://businessbrief.cz/` returned 200 and serves static `business-brief-web-v2/public/` files from `/var/www/businessbrief.cz`. Supabase remains operational DB/Storage. These are migration acceptance observations, not a continuous health guarantee.
 
-Use [INFRASTRUCTURE.md](INFRASTRUCTURE.md) for manual deployment, Caddy validation/reload, recovery and endpoint checks. Verify both public hosts after changes. Run Assembler read-only first against explicit source UUID + manifest ID + SHA; use `--persist` deliberately and repeat the identical command to verify replay. Q020 is complete for the exact WSJ selection recorded in CURRENT_STATE; Indexer/Composer acceptance remains separate.
+Use [INFRASTRUCTURE.md](INFRASTRUCTURE.md) for manual deployment, Caddy validation/reload, recovery and endpoint checks. Verify both public hosts after changes. Run Assembler read-only first against explicit source UUID + manifest ID + SHA; use `--persist` deliberately and repeat the identical command to verify replay. Q020 is complete for the exact WSJ selection recorded in CURRENT_STATE. Indexer v1 has now passed first live WSJ plan/persist/replay acceptance and initial Czech→English retrieval spot checks; Q017 remains open for Czech→German and final calibration. Composer acceptance remains separate.
 
 The operator-reported Railway Variables security warning triggered treatment of stored credentials as potentially exposed. The Supabase secret was rotated for Hetzner; production values belong only in `/opt/business-brief-v4/.env` (mode 600), outside Git. Review the affected credential inventory and rotate/revoke any remaining exposed credentials; do not infer complete revocation from a successful endpoint check. Use dedicated revocable Bridge credentials, SSH public-key authentication and read-only GitHub deploy keys. Record credential purpose and rotation/revocation status without values, tokens, signed URLs or passwords. The warning is not evidence of confirmed application-data compromise.
+
+
+## Indexer runtime acceptance
+
+Current Indexer runtime is deployed through the Hetzner checkout/image and uses server-side `COHERE_API_KEY` from `/opt/business-brief-v4/.env`; the key value must never be committed or printed.
+
+Safe acceptance sequence:
+
+1. run `bb-indexer` without `--persist` against an explicit source UUID + manifest ID + manifest SHA;
+2. verify eligible/skipped counts and deterministic planned chunk count;
+3. run the same command with `--persist`;
+4. verify CREATED receipts and direct Supabase readback;
+5. repeat the identical `--persist` command and require REPLAYED with unchanged row counts;
+6. run multilingual retrieval calibration with `bb-search`.
+
+Accepted WSJ baseline on 2026-10-26:
+- 21 article rows;
+- 21 eligible, 0 skipped;
+- 39 planned/persisted chunks;
+- first persist: 21 CREATED;
+- identical replay: 21 REPLAYED;
+- direct Supabase readback: 21 INDEXED runs, 21 article embeddings, 39 chunks covering all 21 articles.
+
+Initial Czech→English semantic spot checks passed for bank rates/profits, U.S. defense startups in Taiwan and Chinese stagnation/Gen Z. Lexical results may be empty for Czech queries against English source prose; vector retrieval is the primary cross-language signal. Do not freeze hybrid weights from these spot checks. Q017 remains open until Czech→German and the predeclared latency/cost/quality acceptance set are complete.
