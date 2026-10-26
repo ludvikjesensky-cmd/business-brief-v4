@@ -39,6 +39,17 @@ jobs:
           node tests/knowledge_schema.mjs
           node tests/runner_schema.mjs
           node tests/dashboard_ui.mjs
+      - name: Dashboard desktop and mobile browser check
+        run: |
+          mkdir -p /tmp/dashboard-browser
+          npm install --prefix /tmp/dashboard-browser --ignore-scripts playwright-core@1.62.1
+          PLAYWRIGHT_MODULE=/tmp/dashboard-browser/node_modules/playwright-core/index.mjs node tests/dashboard_browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dashboard-browser-qa
+          path: dashboard-qa/
+          if-no-files-found: ignore
       - name: Compile changed Python
         run: |
           python -m py_compile src/business_brief/assembler.py src/business_brief/assembler_runtime.py src/business_brief/indexer.py src/business_brief/indexer_runtime.py src/business_brief/index_search.py src/business_brief/runner_runtime.py bridge/runner.py bridge/chat_tools.py
