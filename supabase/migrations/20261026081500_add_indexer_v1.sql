@@ -103,7 +103,7 @@ returns table (
 )
 language sql
 stable
-security definer
+security invoker
 set search_path = public, extensions
 as $$
   select
@@ -139,7 +139,7 @@ returns table (
 )
 language sql
 stable
-security definer
+security invoker
 set search_path = public, extensions
 as $$
   select
