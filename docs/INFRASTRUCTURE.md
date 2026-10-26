@@ -193,7 +193,7 @@ DNS propagation is external and may lag the WEDOS change. Verify with `dig` befo
 
 Supabase remains authoritative for operational PostgreSQL and Storage.
 
-Server-side environment includes, at minimum, the variables required by the Bridge and Assembler, including:
+Server-side environment includes, at minimum, the variables required by the Bridge, Assembler and Indexer, including:
 
 ```text
 SUPABASE_URL
@@ -202,6 +202,7 @@ BRIDGE_DATABASE_URL
 INGESTOR_BRIDGE_TOKEN
 BRIDGE_PRINCIPALS
 INGESTOR_BRIDGE_URL
+COHERE_API_KEY
 ```
 
 No secret values belong in Git, Markdown, screenshots intended for publication, or public issue comments.
@@ -275,7 +276,46 @@ The same `--persist` command was then replayed. The same records returned dispos
 
 This closes the real-source Q020 acceptance for the accepted WSJ manifest on the Hetzner runtime.
 
-## 11. Public website
+## 11. Indexer runtime and first acceptance
+
+Indexer v1 was merged in PR #16 and deployed to the Hetzner checkout/image on 2026-10-26. The same Docker image/package exposes `bb-indexer` and `bb-search`.
+
+The Cohere credential is server-side only in `/opt/business-brief-v4/.env`; never expose its value in documentation or logs.
+
+Production Supabase schema:
+- pgvector 0.8.2;
+- `article_index_runs`;
+- `article_embeddings`;
+- `article_chunks`;
+- RLS enabled on all three tables;
+- retrieval RPCs are SECURITY INVOKER;
+- anon/authenticated cannot execute them; service_role can.
+
+Exact WSJ Q020 corpus was used for first live Indexer acceptance.
+
+Read-only plan:
+
+```text
+article_rows:    21
+eligible:        21
+skipped:          0
+planned_chunks:  39
+persisted:        0
+```
+
+First explicit `--persist` returned 21 CREATED receipts. Identical replay returned 21 REPLAYED receipts. Direct Supabase readback after replay remained:
+
+```text
+index_runs:          21
+INDEXED runs:        21
+article_embeddings:  21
+article_chunks:      39
+covered articles:   21
+```
+
+Initial Czech→English vector retrieval spot checks passed across three distinct topics. This is preliminary multilingual evidence only. Q017 remains open for Czech→German Handelsblatt acceptance, predeclared quality metrics, latency/cost measurement and final hybrid calibration.
+
+## 12. Public website
 
 The first public landing page lives in a separate private repository:
 
@@ -306,7 +346,7 @@ https://businessbrief.cz/               -> 200
 https://bridge.businessbrief.cz/ready   -> 200 with authorized token
 ```
 
-## 12. GitHub deployment model
+## 13. GitHub deployment model
 
 Backend and web are separate repositories.
 
@@ -326,7 +366,7 @@ The web repository uses a dedicated read-only deploy key on `tannenberg-prod-01`
 
 Current deployment is manual and explicit. A future automated GitHub-to-Hetzner deployment may be added, but no such automation should be assumed today.
 
-## 13. Runtime source of truth
+## 14. Runtime source of truth
 
 For current production questions use this order:
 
@@ -343,7 +383,7 @@ For current production questions use this order:
 
 Do not use an old Railway deployment as evidence of current production health.
 
-## 14. Recovery and redeploy runbook
+## 15. Recovery and redeploy runbook
 
 ### Bridge
 
@@ -381,7 +421,7 @@ sudo systemctl status caddy --no-pager
 
 Do not reload after a failed validation.
 
-## 15. Railway historical boundary
+## 16. Railway historical boundary
 
 The following statements are now historical only:
 
@@ -398,7 +438,7 @@ INGESTOR_BRIDGE_URL=https://bridge.businessbrief.cz
 
 Old Railway pins/deployment IDs remain valuable provenance and must not be deleted from history, but they do not describe current production.
 
-## 16. Security rules
+## 17. Security rules
 
 - Never commit `.env`.
 - Never commit private SSH keys.
