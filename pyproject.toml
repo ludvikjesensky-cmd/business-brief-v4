@@ -16,7 +16,7 @@ bb-technician = "business_brief.technician_cli:main"
 bb-technician-worker = "business_brief.technician_worker:main"
 bb-dashboard = "business_brief.dashboard:main"
 bb-ingestor-worker = "business_brief.ingestor_worker:main"
-bb-assembler = "business_brief.assembler_runtime:main"
+bb-assembler = "business_brief.assembler_runtime:main"\nbb-indexer = "business_brief.indexer_runtime:main"\nbb-search = "business_brief.index_search:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
