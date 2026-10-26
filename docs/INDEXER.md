@@ -1,7 +1,7 @@
 # Indexer — Business Brief v4
 
 ## Authority and boundary
-This is the canonical Indexer design contract (D026), analogous in role to [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / Article Record contract; Project Memory owns decisions, current status and open questions. This document defines intended behavior, not a deployed runtime or an accepted retrieval benchmark.
+This is the canonical Indexer design contract (D026), analogous in role to [INGESTOR.md](INGESTOR.md). [SYSTEM.md](SYSTEM.md) owns the Assembler / Article Record contract; Project Memory owns decisions, current status and open questions. This document defines the canonical Indexer contract and the merged v1 repository implementation. Production schema is applied; live Hetzner runtime and multilingual retrieval acceptance are still pending.
 
 The Article Record is canonical, immutable JSON in private Supabase Storage. Indexer creates only derived, rebuildable search data. It must never mutate Article Records, their full_text, source Page JSONs or PNG assets. PostgreSQL search text is a disposable projection, never a second canonical article body.
 
@@ -40,7 +40,7 @@ Cohere produces vectors; Supabase/Postgres pgvector stores and compares vector(1
 A material model, dimension, input representation or chunking change requires a new profile version and rebuild. Never mix incompatible profiles in one similarity search or relabel old vectors. This records the chosen project profile; provider capability, limits, cost and multilingual quality still require implementation-time validation.
 
 ## Derived logical tables
-These are logical contracts, not SQL migrations. Each row binds to the exact canonical version and profile.
+These logical contracts are now implemented by migration `20261026081500_add_indexer_v1.sql`. Each row binds to the exact canonical version and profile.
 
 ```text
 article_embeddings
@@ -82,7 +82,7 @@ article_index_runs
   error?
 ```
 
-Article embedding identity includes article_id + article_record_sha256 + embedding_profile. Chunk order is unique within article/version/chunking profile; vector identity also includes embedding_profile so a later embedding rebuild need not collide with stable chunk identity. Physical keys/constraints remain to be designed. Store derived PostgreSQL full-text search data alongside these projections; exact tsvector placement and language configuration remain open.
+Article embedding identity includes article_id + article_record_sha256 + embedding_profile. Chunk order is unique within article/version/chunking profile; vector identity also includes embedding_profile so a later embedding rebuild need not collide with stable chunk identity. Physical constraints are implemented in `article_index_runs`, `article_embeddings` and `article_chunks`. `article_chunks.fts` is a generated PostgreSQL `simple` text-search projection; this intentionally avoids assuming one source language. Vector and lexical calibration RPCs return separate rankings until real retrieval evidence justifies fusion.
 
 ## Execution and index post-check
 1. Resolve explicit inputs; verify persistence, identities, SHA and eligibility. Report excluded records.
@@ -113,8 +113,10 @@ If assembly is NEEDS_REVIEW, ordinary Chat reviews against source evidence, corr
 
 A future pipeline runner may orchestrate these explicit handoffs, retries, reports and review pauses. It must preserve ordinary Chat supervision and all acceptance gates; this decision does not authorize autonomous semantic ingest.
 
-## Implementation boundary
-No Indexer runtime, database migration, bucket creation, Cohere call or runner deployment is included in this design consolidation. Before implementation resolve Q017, validate the chosen provider profile and measure a small multilingual acceptance set under D007/D011. Operational proof belongs in CURRENT_STATE, not inferred from this specification.
+## Implementation and acceptance boundary
+Indexer v1 is implemented in `src/business_brief/indexer.py`, `indexer_runtime.py` and `index_search.py`; CLI entry points are `bb-indexer` and `bb-search`. Migration `20261026081500_add_indexer_v1.sql` is applied in production Supabase. Provider documentation has been checked for `embed-v5.0-pro`, 1024D output, `search_document`/`search_query`, multilingual support and `truncate=NONE`.
+
+Repository/schema implementation is not Q017 acceptance. The remaining gate is operational: update the Hetzner checkout/image, run `bb-indexer` first without `--persist`, then persist one explicit accepted corpus, verify post-check and identical replay, and evaluate a predeclared Czech→German/English retrieval set for recall, false positives, latency and cost. No hybrid score fusion is frozen before that evidence.
 
 ## Enrichment metadata and hybrid Memory (D028)
 [ENRICHMENT.md](ENRICHMENT.md) owns derived article/topic annotations and reviewed Story Thread / Signal / Trend relations. Join selected enrichment to exact article_id + article_record_sha256 and producer/profile/version; never enrich canonical prose or replace the original source representation with generated tags. Source-only enrichment may run after Article Record persistence; it does not require embeddings and does not alter Indexer eligibility. Missing metadata remains explicit rather than silently dropping indexed articles.
