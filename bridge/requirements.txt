@@ -9,3 +9,6 @@ httpcore==1.0.9
 idna==3.20
 typing_extensions==4.16.0
 Pillow==12.0.0
+
+# Runner uses existing Python Assembler/Indexer adapters, no OCR worker.
+supabase==2.33.0

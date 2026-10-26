@@ -447,3 +447,7 @@ Old Railway pins/deployment IDs remain valuable provenance and must not be delet
 - Rotate any secret that was present in a platform reported as potentially exposed.
 - Do not reveal bearer tokens, Supabase secret keys or database passwords in logs or documentation.
 - Treat GitHub repository access, SSH host access and Supabase credentials as separate trust boundaries.
+
+## Deep/Memory runner implementation — 2026-10-26
+
+See [DEEP_RUNNER.md](DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.

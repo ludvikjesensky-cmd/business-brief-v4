@@ -1,0 +1,292 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Business Brief Deep Runner",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://bridge.businessbrief.cz"
+    }
+  ],
+  "security": [
+    {
+      "BridgeBearer": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BridgeBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/deep-runner/v1/tool": {
+      "post": {
+        "operationId": "deep_pipeline_tool",
+        "description": "Server-side adapter only. Explicit selection required. Poll status after 202; stop at review gates.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Required for run/search; preserve on retry."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_version": {
+                        "type": "string",
+                        "enum": [
+                          "deep-runner-v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "manifest_id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "manifest_sha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "assembler"
+                        ]
+                      },
+                      "persist": {
+                        "type": "boolean",
+                        "default": false
+                      }
+                    },
+                    "required": [
+                      "contract_version",
+                      "source_id",
+                      "manifest_id",
+                      "manifest_sha",
+                      "operation",
+                      "persist"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_version": {
+                        "type": "string",
+                        "enum": [
+                          "deep-runner-v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "manifest_id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "manifest_sha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "indexer"
+                        ]
+                      },
+                      "persist": {
+                        "type": "boolean",
+                        "default": false
+                      }
+                    },
+                    "required": [
+                      "contract_version",
+                      "source_id",
+                      "manifest_id",
+                      "manifest_sha",
+                      "operation",
+                      "persist"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_version": {
+                        "type": "string",
+                        "enum": [
+                          "deep-runner-v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "manifest_id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "manifest_sha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "status"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "contract_version",
+                      "source_id",
+                      "manifest_id",
+                      "manifest_sha",
+                      "operation"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_version": {
+                        "type": "string",
+                        "enum": [
+                          "deep-runner-v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "manifest_id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "manifest_sha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "search"
+                        ]
+                      },
+                      "query": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 20,
+                        "default": 10
+                      }
+                    },
+                    "required": [
+                      "contract_version",
+                      "source_id",
+                      "manifest_id",
+                      "manifest_sha",
+                      "operation",
+                      "query",
+                      "limit"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_version": {
+                        "type": "string",
+                        "enum": [
+                          "deep-runner-v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "manifest_id": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                      },
+                      "manifest_sha": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "enum": [
+                          "technician"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "contract_version",
+                      "source_id",
+                      "manifest_id",
+                      "manifest_sha",
+                      "operation"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status or completed replay"
+          },
+          "202": {
+            "description": "Accepted; poll status"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Unauthenticated"
+          },
+          "403": {
+            "description": "Scope or write gate"
+          },
+          "404": {
+            "description": "Concealed source"
+          },
+          "409": {
+            "description": "Gate or idempotency conflict"
+          },
+          "422": {
+            "description": "Invalid contract"
+          },
+          "503": {
+            "description": "Disabled, busy or uncertain"
+          }
+        }
+      }
+    }
+  }
+}

@@ -36,14 +36,8 @@ Public website `https://businessbrief.cz/` returned 200. Public authenticated Br
 
 
 
-## Runner v1 merged, deployment pending — 2026-10-26
-PR #17 was squash-merged into `main` as `908448026a8629b76e435b5e092d14e775f0062a`. It implements a separate authenticated server-side execution service for ordinary-Chat orchestration of the Deep/Memory runtime. Candidate endpoints cover exact-selection Assembler plan/persist, Indexer plan/persist, status and search with `runner:read` / `runner:write` bearer scopes. The service is separate from the Ingestor Access Bridge so the Bridge keeps its no-worker/model boundary. `runner/openapi.yaml` is the Chat-facing contract and `docs/RUNNER.md` is the runbook.
-
-Technician is deliberately not exposed remotely in v1: current Technician accepts a local PDF path/workspace and no accepted remote source-upload/intake contract exists. The runner advertises `technician_remote: false` instead of creating an unsafe hidden upload path.
-
-The candidate also moves exact INDEXED replay detection before Cohere embedding, so a validated REPLAYED Indexer run should make zero provider calls. This is covered by a regression test.
-
-Repository implementation is now merged after green CI. Production deployment/acceptance on Hetzner is still pending. No new public endpoint, DNS record, runner bearer token or production runner container is claimed yet.
+## Runner consolidation — 2026-10-26
+PR #17 merged a separate runner candidate at `908448026a8629b76e435b5e092d14e775f0062a` while the Bridge extension was being implemented. D032 now consolidates on the existing Bridge authentication/publication boundary. The separate listener, runner-specific principals, old DNS/8090 deployment and unscoped search contract are superseded by docs/DEEP_RUNNER.md. The exact INDEXED replay optimization from PR #17 is preserved. No production runner deployment is claimed. See the implementation/acceptance section below.
 
 ## Indexer Q017 implementation and first live acceptance — 2026-10-26
 PR #16 was merged into `main` at `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Indexer v1 is implemented: deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings.
@@ -114,7 +108,7 @@ Review found and fixed two concrete issues before the green run: the initial CI 
 ## Indexer design and runtime (D026/Q017)
 The accepted downstream design is Assembler → mandatory assembly post-check → immutable Article Record persistence → Indexer → index post-check. Eligibility requires VERIFIED / VERIFIED_WITH_NOTES plus post_check PASS. NEEDS_REVIEW returns to ordinary Chat source review/correction and Assembler rerun through explicit immutable selection.
 
-[docs/INDEXER.md](../docs/INDEXER.md) owns BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), article/chunk vectors in Supabase pgvector, derived tables, index states and hybrid multilingual retrieval. Canonical Article Records remain untouched. Runtime implementation and exact-version persistence/replay are now live. Q017 now tracks remaining multilingual retrieval calibration, latency/cost and hybrid weighting; broader Editorial Memory remains Q007. A pipeline runner is future orchestration.
+[docs/INDEXER.md](../docs/INDEXER.md) owns BB-CHUNKING-V1, first-class BB-EMBEDDING-V1 (Cohere embed-v5.0-pro, 1024D), article/chunk vectors in Supabase pgvector, derived tables, index states and hybrid multilingual retrieval. Canonical Article Records remain untouched. Runtime implementation and exact-version persistence/replay are now live. Q017 now tracks remaining multilingual retrieval calibration, latency/cost and hybrid weighting; broader Editorial Memory remains Q007. The opt-in Bridge runner is repository-implemented; production rollout/Chat acceptance remain pending (docs/DEEP_RUNNER.md).
 
 Current accepted runtime includes the Assembler Q020 run plus Indexer plan/persist/replay over the same 21 WSJ Article Records, with 39 chunks and direct Supabase readback. Initial Czech→English retrieval spot checks passed; Czech→German and full Q017 calibration remain open. Earlier test counts/deployment pins are historical verified evidence, not newly rerun checks.
 
@@ -135,3 +129,7 @@ Assembler physical article tables/runtime under D029 are accepted for the exact 
 D028 validation: **281 Python tests passed**, including **32 new enrichment/knowledge tests**; five existing PyMuPDF/SWIG deprecation warnings. Local HTTP tests required localhost socket permission. Markdown relative links/code fences and `git diff --check` passed. The initial older test environment lacked Pillow; the complete suite was rerun in an existing asset-test environment with the required dependencies. The actual SQL migration also passes 14 in-memory PostgreSQL/PGlite integrity and privilege checks; no external database was used. Live upstream adapters, transactional promotion/concurrency and a multilingual provider benchmark remain gated above.
 
 Synchronized with concurrent PR work through c511b018: preserve the existing editorial-enrichment-v1 / BB-ENRICHMENT-V1 names and exact-sidecar Composer-ready requirement. Replace the shallow string-reference validator with the evidence-bound typed API; this is an unfrozen repository contract refinement, not a second parallel enrichment design. Preserve the existing migration path as candidate-only staging rather than granting unsupported accepted knowledge. Prior intermediate implementation remains in Git history.
+
+## Deep/Memory runner — 2026-10-26 repository implementation
+
+Bridge now has an opt-in authenticated Deep runner using existing principals/publication allowlists, explicit source/manifest/SHA, asynchronous receipts/status, durable request binding and source session locks. It calls existing Assembler/Indexer plan/persist/post-check functions; writes are disabled by default. Search filters to exact authorized selection. Technician fails closed because the existing inbox drain is global. See docs/DEEP_RUNNER.md. No production migration, deployment, live paid call or clean ordinary Chat acceptance is claimed; Fast Editorial and Q017/Q018/Q019 gates are unchanged.

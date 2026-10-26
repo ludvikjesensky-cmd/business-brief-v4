@@ -152,3 +152,7 @@ Hetzner pulled current `main` and rebuilt the Docker image. The exact accepted W
 Initial Czech→English semantic retrieval spot checks passed for bank rates/profits, U.S. defense startups in Taiwan and Chinese economic stagnation/Gen Z; expected articles occupied the top vector positions. Lexical results were empty for the Czech-vs-English cases, consistent with the deliberately separate lexical/vector calibration surface.
 
 This establishes Indexer implementation, live persistence, post-check/replay and preliminary Czech→English retrieval evidence. It does not close Q017: Czech→German Handelsblatt acceptance, a predeclared multilingual benchmark, latency/cost measurement and final hybrid fusion remain open.
+
+## Deep/Memory runner — 2026-10-26 repository implementation
+
+Bridge now has an opt-in authenticated Deep runner using existing principals/publication allowlists, explicit source/manifest/SHA, asynchronous receipts/status, durable request binding and source session locks. It calls existing Assembler/Indexer plan/persist/post-check functions; writes are disabled by default. Search filters to exact authorized selection. Technician fails closed because the existing inbox drain is global. See docs/DEEP_RUNNER.md. No production migration, deployment, live paid call or clean ordinary Chat acceptance is claimed; Fast Editorial and Q017/Q018/Q019 gates are unchanged.

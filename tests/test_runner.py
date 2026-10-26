@@ -1,101 +1,150 @@
-from __future__ import annotations
-
-import json
-
+from contextlib import contextmanager
+from types import SimpleNamespace
+from uuid import uuid4
 import pytest
+from bridge.runner import Runner, validate, CONTRACT
+from bridge.server import Application
+from bridge.validation import Failure
 
-from business_brief import runner_runtime as rr
+SID = str(uuid4())
+KEY = str(uuid4())
+BODY = dict(contract_version=CONTRACT, operation='assembler', source_id=SID,
+            manifest_id='accepted-r1', manifest_sha='a'*64, persist=False)
+P = dict(id='chat', token='x'*43, scopes=['source:read','pipeline:read','pipeline:run'], publications=['wsj'])
 
+@pytest.mark.parametrize('change', [dict(source_id='../x'),dict(manifest_sha='A'*64),dict(manifest_id='../x'),dict(persist='false'),dict(secret='x'),dict(operation='shell'),dict(contract_version='x')])
+def test_validation(change):
+    with pytest.raises(Failure): validate({**BODY, **change})
 
-TOKEN = "x" * 43
-SELECTION = {
-    "source_id": "603e8242-ffe8-4e1d-a5de-9adb3da4d188",
-    "manifest_id": "wsj-2026-10-14-selection-r1",
-    "manifest_sha256": "f" * 64,
-}
+@pytest.mark.parametrize('operation', ['assembler','indexer','status','search','technician'])
+def test_contract(operation):
+    body={k:v for k,v in BODY.items() if k!='persist'}
+    body['operation']=operation
+    if operation in {'assembler','indexer'}: body['persist']=False
+    if operation=='search': body.update(query='bank rates',limit=5)
+    assert validate(body)==operation
 
+class DB:
+    @contextmanager
+    def connection(self): yield self
+    def authorize(self,c,sid,allowed):
+        if 'wsj' not in allowed: raise Failure('SOURCE_NOT_FOUND',404)
 
-class Headers(dict):
-    def get_all(self, name, default=None):
-        return [self[name]] if name in self else (default or [])
+@pytest.mark.parametrize('scopes', [[], ['source:read'], ['source:read','pipeline:read']])
+def test_scopes(scopes):
+    with pytest.raises(Failure,match='FORBIDDEN'):
+        Runner(SimpleNamespace(db=DB())).execute(BODY,{**P,'scopes':scopes},KEY)
 
+def test_persist_disabled(monkeypatch):
+    monkeypatch.delenv('BRIDGE_PIPELINE_PERSIST',raising=False)
+    with pytest.raises(Failure,match='PERSIST_DISABLED'):
+        Runner(SimpleNamespace(db=DB())).execute({**BODY,'persist':True},P,KEY)
 
-def headers(token=TOKEN):
-    raw = json.dumps(SELECTION).encode()
-    return Headers(
-        {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Content-Length": str(len(raw)),
-        }
-    ), raw
+def test_publication_concealment():
+    with pytest.raises(Failure,match='SOURCE_NOT_FOUND'):
+        Runner(SimpleNamespace(db=DB())).execute(BODY,{**P,'publications':['ft']},KEY)
 
+def test_technician_not_global_drain():
+    body={k:v for k,v in BODY.items() if k!='persist'}
+    body['operation']='technician'
+    with pytest.raises(Failure,match='TECHNICIAN_SOURCE_SCOPED_UNAVAILABLE'):
+        Runner(SimpleNamespace(db=DB())).execute(body,P,KEY)
 
-def app(scopes=("runner:read", "runner:write")):
-    return rr.Application([{"id": "chat", "token": TOKEN, "scopes": list(scopes)}])
+def test_http_disabled(monkeypatch):
+    monkeypatch.delenv('BRIDGE_PIPELINE_ENABLED',raising=False)
+    app=Application(None,[P])
+    with pytest.raises(Failure,match='RUNNER_DISABLED'):
+        app.dispatch('POST','/deep-runner/v1/tool',{'Authorization':'Bearer '+P['token']},lambda n:b'')
 
+def test_http_runner_does_not_require_page_write(monkeypatch):
+    import json
+    monkeypatch.setenv('BRIDGE_PIPELINE_ENABLED','1')
+    monkeypatch.setattr(Runner,'execute',lambda self,b,p,k:(202,{'status':'ACCEPTED'}))
+    raw=json.dumps(BODY).encode()
+    assert Application(None,[P]).dispatch('POST','/deep-runner/v1/tool',{'Authorization':'Bearer '+P['token'],'Content-Type':'application/json','Content-Length':str(len(raw))},lambda n:raw)[0]==202
 
-def test_auth_requires_scope():
-    with pytest.raises(rr.RunnerFailure) as exc:
-        app(("runner:read",)).auth(f"Bearer {TOKEN}", "runner:write")
-    assert exc.value.http == 403
+def test_search_selection_filter(monkeypatch):
+    from business_brief import index_search,indexer_runtime
+    monkeypatch.setattr(indexer_runtime.SupabaseIndexStore,'from_env',lambda:SimpleNamespace(select_articles=lambda **kw:[{'article_id':'allowed','artifact_sha256':'a'*64}]))
+    good={'article_id':'allowed','article_record_sha256':'a'*64}
+    monkeypatch.setattr(index_search,'run',lambda *a:{'vector':[{'article_id':'secret','article_record_sha256':'b'*64},good], 'lexical':[]})
+    result=Runner(None).run({**BODY,'operation':'search','query':'bank','limit':5},P)
+    assert result['vector']==[good]
+    assert 'secret' not in str(result)
 
+class Cursor:
+    def __init__(self,row=None,rows=None): self.row,self.rows=row,rows
+    def fetchone(self): return self.row
+    def fetchall(self): return self.rows or []
 
-def test_selection_validation_is_exact():
-    assert rr._validate_selection(dict(SELECTION)) == (
-        SELECTION["source_id"],
-        SELECTION["manifest_id"],
-        SELECTION["manifest_sha256"],
-    )
-    bad = dict(SELECTION)
-    bad["extra"] = True
-    with pytest.raises(rr.RunnerFailure):
-        rr._validate_selection(bad)
+class Ledger(DB):
+    def __init__(self): self.rows={}; self.locked=True
+    def commit(self): pass
+    def execute(self,sql,args=()):
+        if 'pg_try_advisory_lock' in sql: return Cursor({'ok':self.locked})
+        if sql.startswith('select state'): return Cursor(self.rows[args])
+        if sql.startswith('select *'): return Cursor(self.rows.get(args))
+        if sql.startswith('insert into'):
+            pid,key,digest,sid,mid,msha,op=args
+            self.rows[pid,key]=dict(request_sha256=digest,state='RUNNING',result=None)
+        if "set state='COMPLETE'" in sql:
+            result,pid,key=args
+            self.rows[pid,key].update(state='COMPLETE',result=result.obj)
+        if "set state='UNKNOWN'" in sql:
+            self.rows[args].update(state='UNKNOWN')
+        return Cursor()
 
+@pytest.fixture
+def ledger_runner(monkeypatch):
+    from bridge import runner
+    monkeypatch.setattr(runner.LocalAssemblyClient,'assembly_input',lambda *a:{})
+    # Execute worker immediately under a test DB; production uses a separate session/thread.
+    class Thread:
+        def __init__(self,target,args,**kw): self.target,self.args=target,args
+        def start(self): self.target(*self.args)
+    monkeypatch.setattr(runner.threading,'Thread',Thread)
+    db=Ledger(); r=Runner(SimpleNamespace(db=db))
+    monkeypatch.setattr(r,'run',lambda *a:{'status':'PASS','counts':{'eligible':1}})
+    return r,db
 
-def test_assembler_plan_is_read_only(monkeypatch):
-    seen = {}
+def test_durable_accept_complete_replay_and_conflict(ledger_runner):
+    r,db=ledger_runner
+    assert r.execute(BODY,P,KEY)[0]==202
+    assert db.rows[P['id'],KEY]['state']=='COMPLETE'
+    code,result=r.execute(BODY,P,KEY)
+    assert code==200 and result['replayed'] and result['status']=='PASS'
+    with pytest.raises(Failure,match='IDEMPOTENCY_CONFLICT'):
+        r.execute({**BODY,'manifest_sha':'b'*64},P,KEY)
 
-    def fake_run(**kwargs):
-        seen.update(kwargs)
-        return {
-            "assembler_version": "assembler-v1",
-            "source_id": kwargs["source_id"],
-            "manifest_id": kwargs["manifest_id"],
-            "manifest_sha256": kwargs["manifest_sha256"],
-            "counts": {"article_records": 21},
-            "persistence": {"requested": False},
-        }
+def test_runtime_failure_is_uncertain_and_redacted(ledger_runner,monkeypatch):
+    r,db=ledger_runner
+    def fail(*a): raise RuntimeError('secret-token')
+    monkeypatch.setattr(r,'run',fail)
+    assert r.execute(BODY,P,KEY)[0]==202
+    assert db.rows[P['id'],KEY]['state']=='UNKNOWN'
+    assert 'secret-token' not in str(db.rows)
+    monkeypatch.setattr(r,'run',lambda *a:{'status':'PASS'})
+    assert r.execute(BODY,P,KEY)[0]==202
+    assert db.rows[P['id'],KEY]['state']=='COMPLETE'
 
-    monkeypatch.setattr(rr, "run_assembler", fake_run)
-    h, raw = headers()
-    code, body = app().dispatch(
-        "POST", "/v1/assembler/plan", h, lambda n: raw[:n]
-    )
-    assert code == 200
-    assert seen["persist"] is False
-    assert body["persistence"]["requested"] is False
+def test_source_busy(ledger_runner):
+    r,db=ledger_runner; db.locked=False
+    with pytest.raises(Failure,match='WRITE_IN_PROGRESS'): r.execute(BODY,P,KEY)
+    assert not db.rows
 
+def test_chat_adapter_defaults_and_no_secret_errors():
+    from bridge.chat_tools import ChatTools, tool_definitions
+    args={k:BODY[k] for k in ('source_id','manifest_id','manifest_sha')}
+    captured=[]
+    def transport(path,body,headers):
+        captured.append((path,body,headers))
+        raise RuntimeError('Bearer SUPER_SECRET')
+    result=ChatTools(transport).call('run_assembler',args)
+    assert captured[0][1]['persist'] is False
+    assert result['request_id']==captured[0][2]['Idempotency-Key']
+    assert result['status']=='UNKNOWN' and 'SUPER_SECRET' not in str(result)
+    assert len(tool_definitions())==5
 
-def test_indexer_persist_requires_write_scope():
-    h, raw = headers()
-    with pytest.raises(rr.RunnerFailure) as exc:
-        app(("runner:read",)).dispatch(
-            "POST", "/v1/indexer/persist", h, lambda n: raw[:n]
-        )
-    assert exc.value.http == 403
-
-
-def test_search_does_not_accept_selection_fields(monkeypatch):
-    monkeypatch.setattr(rr, "run_search", lambda query, limit: {"query": query, "limit": limit})
-    body = json.dumps({"query": "Čína", "limit": 5}).encode()
-    h = Headers(
-        {
-            "Authorization": f"Bearer {TOKEN}",
-            "Content-Type": "application/json",
-            "Content-Length": str(len(body)),
-        }
-    )
-    code, result = app().dispatch("POST", "/v1/search", h, lambda n: body[:n])
-    assert code == 200
-    assert result == {"query": "Čína", "limit": 5}
+def test_standalone_entrypoint_fails_closed():
+    from business_brief.runner_runtime import main
+    with pytest.raises(SystemExit,match='Standalone runner superseded'): main()

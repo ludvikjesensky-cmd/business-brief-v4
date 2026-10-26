@@ -74,7 +74,8 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/INDEXER.md — kanonický kontrakt a implementace odvozeného search indexu (D026/Q017); runtime je nasazen na Hetzneru, WSJ plan/persist/replay prošel, multilingual retrieval calibration pokračuje
 - docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
-- docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary\n- docs/RUNNER.md — merged server-side Deep/Memory runner and Chat-facing tool contract; Hetzner deployment/acceptance still pending
+- docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary
+- docs/RUNNER.md — merged server-side Deep/Memory runner and Chat-facing tool contract; Hetzner deployment/acceptance still pending
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
@@ -97,3 +98,7 @@ Technician připravuje technickou evidenci. Ingestor (ordinary Chat) je živá C
 
 ## Article assets bootstrap
 Read `project-memory/DECISIONS.md` D022 and `docs/INGESTOR.md` §21 for the accepted article-assets model, dual page/text anchors and private `page-ingest` crop layout. v4 is a new immutable generation; v2/v3 stay readable and untouched. The writer was deployed and page-2 acceptance is receipt-backed; full-corpus acceptance remains gated by evidence reconciliation and the page-6 visual defect (CURRENT_STATE, F011). **Text se rekonstruuje. Vizuální artefakty se nepřepisují, ale uchovávají.**
+
+## Deep/Memory runner implementation — 2026-10-26
+
+See [docs/DEEP_RUNNER.md](docs/DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.
