@@ -36,14 +36,14 @@ Public website `https://businessbrief.cz/` returned 200. Public authenticated Br
 
 
 
-## Runner v1 candidate — 2026-10-26
-PR #17 (`runner-v1`) implements a separate authenticated server-side execution service for ordinary-Chat orchestration of the Deep/Memory runtime. Candidate endpoints cover exact-selection Assembler plan/persist, Indexer plan/persist, status and search with `runner:read` / `runner:write` bearer scopes. The service is separate from the Ingestor Access Bridge so the Bridge keeps its no-worker/model boundary. `runner/openapi.yaml` is the Chat-facing contract and `docs/RUNNER.md` is the runbook.
+## Runner v1 merged, deployment pending — 2026-10-26
+PR #17 was squash-merged into `main` as `908448026a8629b76e435b5e092d14e775f0062a`. It implements a separate authenticated server-side execution service for ordinary-Chat orchestration of the Deep/Memory runtime. Candidate endpoints cover exact-selection Assembler plan/persist, Indexer plan/persist, status and search with `runner:read` / `runner:write` bearer scopes. The service is separate from the Ingestor Access Bridge so the Bridge keeps its no-worker/model boundary. `runner/openapi.yaml` is the Chat-facing contract and `docs/RUNNER.md` is the runbook.
 
 Technician is deliberately not exposed remotely in v1: current Technician accepts a local PDF path/workspace and no accepted remote source-upload/intake contract exists. The runner advertises `technician_remote: false` instead of creating an unsafe hidden upload path.
 
 The candidate also moves exact INDEXED replay detection before Cohere embedding, so a validated REPLAYED Indexer run should make zero provider calls. This is covered by a regression test.
 
-This is repository candidate state only until PR #17 passes CI, is merged, and the runner is deployed/accepted on Hetzner. No new public endpoint, DNS record, runner bearer token or production runner container is claimed yet.
+Repository implementation is now merged after green CI. Production deployment/acceptance on Hetzner is still pending. No new public endpoint, DNS record, runner bearer token or production runner container is claimed yet.
 
 ## Indexer Q017 implementation and first live acceptance — 2026-10-26
 PR #16 was merged into `main` at `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Indexer v1 is implemented: deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings.
