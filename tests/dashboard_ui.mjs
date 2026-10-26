@@ -16,6 +16,18 @@ vm.runInContext(script,context);
 await vm.runInContext('refresh()',context);
 assert.match(elements.app.innerHTML,/21 \/ 21/);
 assert.match(elements.app.innerHTML,/39 textových/);
+assert.match(elements.app.innerHTML,/Podklady evidovány/);
+assert.match(elements.app.innerHTML,/Zápisy evidovány/);
+assert.match(elements.app.innerHTML,/Uložené články indexovány/);
+assert(!elements.app.innerHTML.includes('Test prošel'));
+sample.editions[0].selections[0].requests.unshift({operation:'search',state:'COMPLETE',result_status:'PASS'});
+elements.filter.onchange();
+assert.match(elements.app.innerHTML,/Test prošel/);
+sample.editions[0].selections[0].requests.unshift({operation:'search',state:'FAILED',result_status:'FAIL'});
+elements.filter.onchange();
+assert.match(elements.app.innerHTML,/Ke kontrole/);
+assert(!elements.app.innerHTML.includes('Test prošel'));
+
 assert.match(elements.app.innerHTML,/Plán bez zápisu/);
 assert.match(elements.app.innerHTML,/&lt;img/);
 assert(!elements.app.innerHTML.includes('<script>bad'));
