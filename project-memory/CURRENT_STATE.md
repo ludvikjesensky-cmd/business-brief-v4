@@ -35,7 +35,7 @@ The first explicit `--persist` run wrote the eligible immutable Article Records 
 Public website `https://businessbrief.cz/` returned 200. Public authenticated Bridge readiness returned HTTP/2 200 with `status: READY`. The Assembler container also reached the same public Bridge endpoint and received 200. Q020 is therefore accepted for this exact manifest/runtime.
 
 
-## Current direction
+\n## Indexer Q017 implementation candidate — 2026-10-26\nA first Indexer v1 repository candidate is being built on branch `q017-indexer-v1`. It adds deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings. No production migration, Cohere call, Hetzner deployment or real index run is claimed by this entry. Q017 remains open until CI/schema review plus real multilingual acceptance.\n\n## Current direction
 D030 now separates the project into two independent branches.
 
 **Fast Editorial:** current priority is to reconstruct and port the proven v3 edition-first live Chat workflow into v4 as an independent morning editorial path. The existing `fast-editorial-v4.1` page-level API worker is historical/superseded automation evidence, not the target implementation. Fast Editorial must not depend on Assembler, Indexer, Enrichment, Composer or Memory in this phase.
