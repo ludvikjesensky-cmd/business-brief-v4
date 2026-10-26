@@ -1,7 +1,7 @@
 # Deep/Memory Runner v1
 
-**Status:** IMPLEMENTED CANDIDATE, not yet production-deployed  
-**Branch:** `runner-v1`
+**Status:** MERGED / NOT YET PRODUCTION-DEPLOYED  
+**Merge commit:** `908448026a8629b76e435b5e092d14e775f0062a`
 
 ## Purpose
 
