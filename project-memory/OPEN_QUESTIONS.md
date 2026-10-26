@@ -73,3 +73,9 @@ Accepted 2026-10-22 on Hetzner for source `603e8242-ffe8-4e1d-a5de-9adb3da4d188`
 Read-only: 27 page_items, 21 article_records, 16 VERIFIED, 5 VERIFIED_WITH_NOTES, 0 NEEDS_REVIEW, 0 BLOCKED; persistence not requested, 21 eligible and 0 persisted. First explicit `--persist` returned CREATED receipts; the identical rerun returned REPLAYED. Authenticated public Bridge readiness returned 200 READY; the public website returned 200. CURRENT_STATE and [INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md) record the production boundary and acceptance.
 
 This resolves this record set's real-source/persistence/replay gate. The historical PR #14 test evidence is in CURRENT_STATE; no new test-suite, migration inspection, per-record manual content audit or production run was performed by this documentation consolidation. Broader Q010, unsupported page-label behavior and another publication's acceptance remain separate work. Q017/Q018/Q019 still gate Indexer/Composer/knowledge; no downstream run is implied.
+
+
+## Q021 — OPEN — Runner production acceptance and Technician remote intake
+Runner v1 candidate in PR #17 defines ordinary-Chat-facing Assembler plan/persist, Indexer plan/persist, exact-selection status and search. Before closing Q021: merge green CI, deploy a dedicated loopback-only Hetzner runner behind Caddy, create a dedicated runner bearer principal, verify authenticated readiness, execute WSJ plan/status/search and safe replay through the HTTP tools, and confirm no secret leakage or duplicate writes.
+
+Technician remains outside remote runner capability until an explicit immutable source-intake/upload contract is designed and accepted. Do not expose arbitrary filesystem paths or ad-hoc uploads to Chat. A future intake must define size/type limits, original-byte SHA/provenance, publication/date trust evidence, storage destination and atomic Technician handoff.
