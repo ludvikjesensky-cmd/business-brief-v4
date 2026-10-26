@@ -87,6 +87,12 @@ WSJ 2026-10-14 exact selection returned 21 articles, 21 INDEXED versions, 39 chu
 three completed plan/search receipts, and nine distinct v4 page write receipts.
 The latter is intentionally not presented as missing-page or completeness proof.
 
-HTTP/state tests and inline JavaScript execution checks passed locally. A real
-browser screenshot check was attempted but the Chromium download was unavailable
-in the execution environment; desktop/mobile visual review remains a rollout check.
+HTTP/state tests and inline JavaScript execution checks passed locally. GitHub Actions
+run 40336844137 passed the complete Python suite, SQL checks, and actual Chromium
+browser checks at 1440px desktop and 390px mobile widths. Desktop/mobile screenshots
+were downloaded and visually inspected. Browser fixtures are synthetic and make no
+production calls. Authenticated live deployment acceptance remains outstanding.
+
+The current Codex environment cannot reach Hetzner port 22 (Network is unreachable)
+and has no operator SSH key or agent. Server deployment must be executed from an
+authorized operator terminal; no deployment is claimed by this PR.
