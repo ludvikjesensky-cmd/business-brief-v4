@@ -93,3 +93,11 @@ Initial Czech→English semantic spot checks passed for bank rates/profits, U.S.
 ## Deep/Memory runner implementation — 2026-10-26
 
 See [DEEP_RUNNER.md](DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.
+
+
+## Deep/Memory dashboard
+
+The existing Control Tower has an updated read-only edition/selection overview.
+See [DASHBOARD.md](DASHBOARD.md) for evidence semantics, private authentication,
+validation and the separate Hetzner deployment procedure. Implementation does not
+claim that the updated dashboard has been deployed.
