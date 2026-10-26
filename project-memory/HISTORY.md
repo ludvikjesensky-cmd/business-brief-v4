@@ -138,3 +138,17 @@ Current production moved to `tannenberg-prod-01`, `46.225.32.16`, Ubuntu 26.04.1
 Q020 accepted WSJ source `603e8242-ffe8-4e1d-a5de-9adb3da4d188`, manifest `wsj-2026-10-14-selection-r1`, SHA `f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77`. Read-only produced 27 page_items and 21 article_records: 16 VERIFIED, 5 VERIFIED_WITH_NOTES, 0 NEEDS_REVIEW, 0 BLOCKED (21 eligible, 0 persisted). First `--persist` returned CREATED receipts; identical rerun returned REPLAYED. This supersedes earlier statements that assembly had not run for this selection. No Indexer/Composer/enrichment acceptance is implied.
 
 Infrastructure documentation was introduced in `5e0337239e186cc7da61e7348915b9681998b0e0`; PROJECT/README references followed. This consolidation preserves immutable artifact identities and unrelated editorial sections. Evidence is the operator's migration/acceptance report and prior conversation, not newly executed production checks. Operational detail: [INFRASTRUCTURE.md](../docs/INFRASTRUCTURE.md).
+
+
+## 2026-10-26 — Indexer v1 live acceptance on WSJ corpus
+PR #16 merged as `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Production Supabase migration `add_indexer_v1` was applied and verified with pgvector 0.8.2, RLS-protected `article_index_runs`, `article_embeddings`, `article_chunks` and service-role-only SECURITY INVOKER retrieval RPCs.
+
+Hetzner pulled current `main` and rebuilt the Docker image. The exact accepted WSJ source/manifest from Q020 was indexed:
+- plan mode: 21 article rows, 21 eligible, 0 skipped, 39 planned chunks;
+- first persist: 21 CREATED receipts;
+- exact replay: 21 REPLAYED;
+- direct DB readback: 21 runs, 21 INDEXED, 21 article embeddings, 39 chunks covering all 21 articles.
+
+Initial Czech→English semantic retrieval spot checks passed for bank rates/profits, U.S. defense startups in Taiwan and Chinese economic stagnation/Gen Z; expected articles occupied the top vector positions. Lexical results were empty for the Czech-vs-English cases, consistent with the deliberately separate lexical/vector calibration surface.
+
+This establishes Indexer implementation, live persistence, post-check/replay and preliminary Czech→English retrieval evidence. It does not close Q017: Czech→German Handelsblatt acceptance, a predeclared multilingual benchmark, latency/cost measurement and final hybrid fusion remain open.
