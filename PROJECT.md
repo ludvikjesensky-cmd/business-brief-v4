@@ -71,7 +71,7 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/EDITORIAL.md — redakční filozofie a workflow
 - docs/SYSTEM.md — technická architektura; obsahuje kanonický Assembler kontrakt a D029 repository implementation
 - docs/INGESTOR.md — kanonické instrukce Ingestoru; §21 article assets / v4 kontrakt a rollout gate (D022)
-- docs/INDEXER.md — kanonický design odvozeného search indexu, profily a post-check (D026); implementace zatím neproběhla
+- docs/INDEXER.md — kanonický kontrakt a implementace odvozeného search indexu (D026/Q017); runtime je nasazen na Hetzneru, WSJ plan/persist/replay prošel, multilingual retrieval calibration pokračuje
 - docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary
