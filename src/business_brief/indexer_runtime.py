@@ -272,6 +272,13 @@ class SupabaseIndexStore:
                 raise RuntimeErrorIndexer("index post-check: fragment offset mismatch")
             _parse_vector(row.get("embedding"))
 
+    def replay_if_indexed(self, plan: dict[str, Any]) -> bool:
+        existing = self._run(plan["index_run_id"])
+        if existing and existing.get("status") == "INDEXED":
+            self._post_check(plan)
+            return True
+        return False
+
     def persist(
         self,
         plan: dict[str, Any],
@@ -365,6 +372,16 @@ def run(
     if persist:
         embedder = embedder or CohereEmbedClient.from_env()
         for plan in plans:
+            if store.replay_if_indexed(plan):
+                receipts.append(
+                    {
+                        "article_id": plan["article_id"],
+                        "index_run_id": plan["index_run_id"],
+                        "chunk_count": plan["chunk_count"],
+                        "disposition": "REPLAYED",
+                    }
+                )
+                continue
             article_vector = embedder.embed(
                 [plan["article_embedding_input"]], DOCUMENT_INPUT_TYPE
             )[0]
