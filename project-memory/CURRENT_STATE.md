@@ -36,8 +36,10 @@ Public website `https://businessbrief.cz/` returned 200. Public authenticated Br
 
 
 
-## Indexer Q017 implementation candidate — 2026-10-26
-A first Indexer v1 repository candidate is being built on branch `q017-indexer-v1`. It adds deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings. No production migration, Cohere call, Hetzner deployment or real index run is claimed by this entry. Q017 remains open until CI/schema review plus real multilingual acceptance.
+## Indexer Q017 implementation — 2026-10-26
+PR #16 was merged into `main` at `47227d97cfdb3ec7f4b9d54d9839a9482b67a4b3` after green CI. Indexer v1 now exists in the repository: deterministic BB-CHUNKING-V1 with frozen BB-LEXICAL-TOKENIZER-V1, Cohere `embed-v5.0-pro` / 1024D direct v2 API integration with `truncate=NONE`, pgvector/full-text derived tables, exact-version run states and post-check, explicit `bb-indexer` plan/persist CLI and `bb-search` calibration output with separate vector/lexical rankings.
+
+Supabase production migration `add_indexer_v1` has been applied. Production verification: pgvector 0.8.2; `article_index_runs`, `article_embeddings` and `article_chunks` exist with RLS enabled and zero rows before first run; vector and lexical retrieval RPCs are SECURITY INVOKER, unavailable to anon/authenticated and executable by service_role. No Cohere call, Hetzner Indexer deployment or real index run has yet occurred. Q017 therefore remains OPEN pending runtime deployment, explicit plan-mode run, persistent replay acceptance and predeclared Czech→German/English retrieval calibration.
 
 ## Current direction
 D030 now separates the project into two independent branches.
