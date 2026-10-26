@@ -76,6 +76,6 @@ This resolves this record set's real-source/persistence/replay gate. The histori
 
 
 ## Q021 — OPEN — Runner production acceptance and Technician remote intake
-Runner v1 candidate in PR #17 defines ordinary-Chat-facing Assembler plan/persist, Indexer plan/persist, exact-selection status and search. Before closing Q021: merge green CI, deploy a dedicated loopback-only Hetzner runner behind Caddy, create a dedicated runner bearer principal, verify authenticated readiness, execute WSJ plan/status/search and safe replay through the HTTP tools, and confirm no secret leakage or duplicate writes.
+Runner v1 is merged from PR #17 after green CI and defines ordinary-Chat-facing Assembler plan/persist, Indexer plan/persist, exact-selection status and search. Before closing Q021: deploy a dedicated loopback-only Hetzner runner behind Caddy, create a dedicated runner bearer principal, verify authenticated readiness, execute WSJ plan/status/search and safe replay through the HTTP tools, and confirm no secret leakage or duplicate writes.
 
 Technician remains outside remote runner capability until an explicit immutable source-intake/upload contract is designed and accepted. Do not expose arbitrary filesystem paths or ad-hoc uploads to Chat. A future intake must define size/type limits, original-byte SHA/provenance, publication/date trust evidence, storage destination and atomic Technician handoff.
