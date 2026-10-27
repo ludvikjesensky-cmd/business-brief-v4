@@ -4,11 +4,10 @@
 
 This document supersedes the 2026-10-26 adapter preparation instructions. The Bridge runner is deployed on Hetzner at runtime commit `848ee5052630555f04213e6bf747f236257571d1`, image `business-brief-bridge:848ee5052630`. The private Site adapter v7 is deployed and its tools were exercised successfully through the connected Chat plugin in a Work conversation. A separate fresh ordinary Chat acceptance is still pending. Fast Editorial is unchanged.
 
-**Temporary operational state at this checkpoint:** the operator activated `BRIDGE_PIPELINE_PERSIST=1` and added `pipeline:persist` to `manual-ingestor` for the explicitly authorized WSJ acceptance. The acceptance calls below completed. Restoration of plan-only mode is pending operator execution and subsequent plugin verification; do not assume persistence has already been disabled.
+**Current operational state: plan-only restored.** The operator temporarily activated `BRIDGE_PIPELINE_PERSIST=1` and added `pipeline:persist` to `manual-ingestor` for the authorized WSJ acceptance below, then restored the pre-test configuration/container. The operator reported READY HTTP 200, PERSIST VYPNUTO and PLAN-ONLY OBNOVENO. A subsequent connected-plugin Indexer call with persist=true returned HTTP 403 PERSIST_DISABLED, request `8dc113aa-7289-4b21-a36f-2cf86f6d5bac`; persistence did not start.
 
 Pre-test configuration backup: `/opt/business-brief-v4/.env.pre-persist-test-20261027T070822Z`.
-Retained stopped pre-test container: `business-brief-bridge-pre-persist-20261027T070822Z`.
-Both preserve the working Chat read/run/search configuration without the persist grant. Keep the pre-test container stopped until deliberately restoring it; only one container may own loopback port 8080.
+The pre-test container formerly named `business-brief-bridge-pre-persist-20261027T070822Z` was restored as active `business-brief-bridge`. It preserves Chat read/run/search without the persist grant. The tested persist-enabled container and environment were retained under timestamped backup names; only the active container may own loopback port 8080.
 
 ## Private adapter and authentication
 
@@ -22,7 +21,7 @@ Both preserve the working Chat read/run/search configuration without the persist
 - Adapter defaults persist=false, validates explicit selection and UUID retry keys, sanitizes upstream errors, and leaves persist authorization to the Bridge scopes/server flag. It supports explicitly requested persist=true; the older unshipped plan-only module is not the deployed implementation.
 - v7 validation at publication: seven transport tests, TypeScript check and production build passed.
 
-Initial v7 calls failed UNAUTHENTICATED because Hetzner only accepted `tannenberg-assembler`. The operator transferred the original Railway BRIDGE_PRINCIPALS directly from their Mac clipboard over SSH into a mode-600 pending file, without exposing tokens to the model. Validated principals `codex-acceptance-read` (source:read) and `manual-ingestor` (source:read, page:write) were added without replacing tannenberg-assembler. All are WSJ-only. manual-ingestor subsequently received pipeline:read/run/search; pipeline:persist is temporary for this test. Site secrets were not read, changed or rotated.
+Initial v7 calls failed UNAUTHENTICATED because Hetzner only accepted `tannenberg-assembler`. The operator transferred the original Railway BRIDGE_PRINCIPALS directly from their Mac clipboard over SSH into a mode-600 pending file, without exposing tokens to the model. Validated principals `codex-acceptance-read` (source:read) and `manual-ingestor` (source:read, page:write) were added without replacing tannenberg-assembler. All are WSJ-only. manual-ingestor subsequently received pipeline:read/run/search; pipeline:persist was temporary for this test and has now been removed. Site secrets were not read, changed or rotated.
 
 Credential caveat: the existing infrastructure record says Railway secrets had previously been treated as potentially exposed after a provider notification. Reusing original Bridge credentials restores compatibility, but is not evidence of fresh credential rotation or resolution of that earlier concern. A verified secure provisioning/rotation path remains operational follow-up. No supported secret-entry UI was established; do not repeat the earlier unverified UI instructions or ask for tokens in chat.
 
@@ -64,7 +63,7 @@ run_technician was called through the plugin and correctly returned 409 TECHNICI
 
 ## Remaining closure
 
-1. Restore pre-test configuration/container, verify authenticated readiness and absence of server persist flag/grant; verify PERSIST_DISABLED through the plugin.
+1. DONE: pre-test configuration/container restored; operator readiness/flag/grant checks passed, and the plugin independently returned 403 PERSIST_DISABLED.
 2. Open a genuinely new ordinary Chat with the existing Business Brief Ingestor plugin. Use the exact selection above. Call get_pipeline_status, run_assembler persist=false, poll to COMPLETE/PASS, then run_indexer persist=false and poll to COMPLETE/PASS. No SSH, terminal, credentials or Supabase admin tools should be required in that Chat. Record actual receipts before declaring clean-Chat acceptance.
 3. Document the credential-rotation follow-up separately from functional acceptance.
 4. Only then proceed to Handelsblatt end-to-end and Czech→German retrieval acceptance. Publication allowlists are currently WSJ-only; do not silently broaden them.
