@@ -10,7 +10,7 @@
 
 See [DEEP_RUNNER_HANDOFF.md](../docs/DEEP_RUNNER_HANDOFF.md) for exact request IDs, selection identity, deployed adapter/auth binding, readback fingerprints and remaining closure. This checkpoint supersedes older present-tense adapter-v6/not-deployed and runner-rollout-pending statements below; those sections are historical evidence.
 
-Persist was temporarily enabled for the authorized acceptance on 2026-10-27. **Plan-only restoration is not yet confirmed.** Fresh ordinary Chat acceptance also remains pending; successful connected tools in this Work conversation are not that separate acceptance. Existing Railway-origin Bridge credentials were reused without disclosure to the model; the earlier potential-exposure/rotation concern remains a separate operational follow-up. Fast Editorial was not changed.
+Persist was temporarily enabled for the authorized acceptance on 2026-10-27. **Plan-only restoration is confirmed:** operator reported authenticated readiness HTTP 200 and removal of the persist flag/grant; a subsequent connected-plugin Indexer persist request returned HTTP 403 PERSIST_DISABLED (request `8dc113aa-7289-4b21-a36f-2cf86f6d5bac`). Fresh ordinary Chat acceptance also remains pending; successful connected tools in this Work conversation are not that separate acceptance. Existing Railway-origin Bridge credentials were reused without disclosure to the model; the earlier potential-exposure/rotation concern remains a separate operational follow-up. Fast Editorial was not changed.
 
 ## 2026-10-26 — Deep Runner production plan-only acceptance (historical)
 
