@@ -1,33 +1,71 @@
-# Deep Runner handoff — 2026-10-26
+# Deep Runner handoff — 2026-10-27
 
-## Current boundary
+## Current verified boundary
 
-Bridge is deployed and the exact WSJ Assembler/Indexer/status/search smoke test passed. Persistence remains disabled by both server flag and missing scope. Runtime commit is 848ee5052630555f04213e6bf747f236257571d1. See DEEP_RUNNER.md for receipts and rollback resources.
+This document supersedes the 2026-10-26 adapter preparation instructions. The Bridge runner is deployed on Hetzner at runtime commit `848ee5052630555f04213e6bf747f236257571d1`, image `business-brief-bridge:848ee5052630`. The private Site adapter v7 is deployed and its tools were exercised successfully through the connected Chat plugin in a Work conversation. A separate fresh ordinary Chat acceptance is still pending. Fast Editorial is unchanged.
 
-## Private Chat adapter — prepared, not deployed
+**Temporary operational state at this checkpoint:** the operator activated `BRIDGE_PIPELINE_PERSIST=1` and added `pipeline:persist` to `manual-ingestor` for the explicitly authorized WSJ acceptance. The acceptance calls below completed. Restoration of plan-only mode is pending operator execution and subsequent plugin verification; do not assume persistence has already been disabled.
 
-Confirmed existing Site: `appgprj_6ad130997e848191822752605e6ab177`, version 6, owner-only custom access, no external visitors. URL: https://business-brief-ingestor.satinyloom128.chatgpt.site . MCP/OAuth resource: https://business-brief-ingestor.satinyloom128.chatgpt.site/mcp . Existing plugin ID: `plugin_asdk_app_sites_8ed4ce3b42248191bfed2a4cafd37c82`.
+Pre-test configuration backup: `/opt/business-brief-v4/.env.pre-persist-test-20261027T070822Z`.
+Retained stopped pre-test container: `business-brief-bridge-pre-persist-20261027T070822Z`.
+Both preserve the working Chat read/run/search configuration without the persist grant. Keep the pre-test container stopped until deliberately restoring it; only one container may own loopback port 8080.
 
-Repository Python integration already exists at bridge/chat_tools.py with OpenAPI in docs/deep-runner.openapi.json. A tested server-only JS integration module is prepared separately as deep-runner-adapter.mjs. It exports deepRunnerTools, isDeepRunnerTool and callDeepRunner, defaults to plan-only and rejects persist=true. Checks passed for five definitions, default plan, rejected persistence, uncertainty with retained retry UUID, secret redaction and search bounds. This module is not yet part of the published Site.
+## Private adapter and authentication
 
-For the existing TypeScript /mcp route:
+- Site: `appgprj_6ad130997e848191822752605e6ab177`, version 7, owner-private.
+- URL: https://business-brief-ingestor.satinyloom128.chatgpt.site
+- MCP: https://business-brief-ingestor.satinyloom128.chatgpt.site/mcp
+- Existing plugin: `plugin_asdk_app_sites_8ed4ce3b42248191bfed2a4cafd37c82`.
+- Published Site source commit: `eb9b2fa515a916552bf7a688d3fbb462970b5011`.
+- Adapter uses `https://bridge.businessbrief.cz`, preserving the existing Ingestor tools and adding run_assembler, run_indexer, get_pipeline_status, search_index, run_technician.
+- All runner operations, including status, use existing server-side `BRIDGE_WRITE_TOKEN`; ledger visibility is principal-scoped. Ingestor reads use `BRIDGE_READ_TOKEN`. No new BRIDGE_PIPELINE_TOKEN is required.
+- Adapter defaults persist=false, validates explicit selection and UUID retry keys, sanitizes upstream errors, and leaves persist authorization to the Bridge scopes/server flag. It supports explicitly requested persist=true; the older unshipped plan-only module is not the deployed implementation.
+- v7 validation at publication: seven transport tests, TypeScript check and production build passed.
 
-1. Open the authoritative existing Site source through Sites source workflow; preserve project ID, MCP capability, access policy and all existing Ingestor tools. The locally inspected historical v6 source at commit 58652309a5720bfa2e25eb29b216e106ff24ac47 contains a Railway BASE; reconcile authoritative source before changes. It is not evidence of current live upstream health.
-2. Add the server-only module and import its three exports. Include `...deepRunnerTools` in tools/list. After the existing authenticated Site caller check and before existing Ingestor dispatch, handle `isDeepRunnerTool(name)` with `response(id, await callDeepRunner(name, a, process.env.BRIDGE_PIPELINE_TOKEN))`. For TypeScript, add declarations or port the module without weakening runtime validation. Do not place this secret in client code or model tool arguments.
-3. Bind BRIDGE_PIPELINE_TOKEN server-side to the existing authorized WSJ principal credential using a secure operator/Sites secret channel. The value is not supplied in this handoff. Existing Site read/write secrets were not retrieved or changed, and equality with the Hetzner principal is not assumed. If transporting the credential requires user entry, enter it only in the Site runtime-secret UI, never in chat. Use the fixed `https://bridge.businessbrief.cz/deep-runner/v1/tool` endpoint; do not accept caller URLs. Reconcile the existing Ingestor BASE with Hetzner separately while preserving existing Ingestor behavior.
-4. Run module/transport tests and Site build, then publish a new owner-private version using the existing Site ID. Verify tools/list exposes the five new tools, status for the exact WSJ identity returns the known receipts, and no secrets or signed URLs appear. This publication has not been performed.
-5. The owner opens ChatGPT/Codex Plugins → Personal → Created by you → Business Brief Ingestor and uses Install/Connect if offered. Reuse the existing plugin; do not create a separate MCP app. If already connected and tool names are cached, open a new ordinary Chat and select the existing plugin. Confirm run_assembler, run_indexer, get_pipeline_status, search_index and run_technician appear. Run status first, then exact plan calls with persist=false; inspect COMPLETE result status and stop on review/blocked/unknown. A clean ordinary Chat acceptance remains unperformed.
+Initial v7 calls failed UNAUTHENTICATED because Hetzner only accepted `tannenberg-assembler`. The operator transferred the original Railway BRIDGE_PRINCIPALS directly from their Mac clipboard over SSH into a mode-600 pending file, without exposing tokens to the model. Validated principals `codex-acceptance-read` (source:read) and `manual-ingestor` (source:read, page:write) were added without replacing tannenberg-assembler. All are WSJ-only. manual-ingestor subsequently received pipeline:read/run/search; pipeline:persist is temporary for this test. Site secrets were not read, changed or rotated.
 
-The current connected plugin in this Codex session exposes existing Ingestor tools only. UI reconnection alone cannot supply Deep Runner until the adapter code and server secret binding are deployed. Technician remains intentionally unavailable.
+Credential caveat: the existing infrastructure record says Railway secrets had previously been treated as potentially exposed after a provider notification. Reusing original Bridge credentials restores compatibility, but is not evidence of fresh credential rotation or resolution of that earlier concern. A verified secure provisioning/rotation path remains operational follow-up. No supported secret-entry UI was established; do not repeat the earlier unverified UI instructions or ask for tokens in chat.
 
-## Explicit next persist test — NOT AUTHORIZED OR EXECUTED
+## Exact accepted selection
 
-Only after separate user confirmation for this exact WSJ source/manifest/SHA:
+- source_id: `603e8242-ffe8-4e1d-a5de-9adb3da4d188`
+- manifest_id: `wsj-2026-10-14-selection-r1`
+- manifest_sha (HTTP argument): `f78c5339c3f4e406f78645a3c6e3fe3b8f53d89a3919ab6adad4c7e8f29a1d77`
 
-1. Back up env again; add pipeline:persist only to the intended WSJ principal and set BRIDGE_PIPELINE_PERSIST=1. Recreate the same reviewed Bridge image with the existing env/loopback/Caddy boundary. Verify ready.
-2. Submit assembler persist=true with a new recorded UUID, poll to COMPLETE/PASS and independently read back every exact article identity/SHA. Stop on NEEDS_REVIEW, BLOCKED or UNKNOWN. This selection already has immutable Article Records from earlier Q020 acceptance, so REPLAYED receipts can be expected; do not overwrite or delete.
-3. Only after successful assembler verification, submit indexer persist=true with a separate new recorded UUID. Inspect all post-check receipts and exact DB identities. This selection already has 21 INDEXED versions from the earlier Indexer acceptance. Exact replay should avoid new document embeddings; verify rather than infer.
-4. Retry identical request/body/key to test ledger replay, then a new key with identical selection/body to test runtime replay. Compare article/index/chunk counts and identities; no duplicate growth. Retain original UUIDs after timeout; never issue a fresh key as an uncertainty workaround. Query embeddings from search are separately billable.
-5. Restore plan-only configuration by removing the server persist flag and persist scope, recreate Bridge, verify ready and PERSIST_DISABLED. A published plan-only JS module deliberately continues rejecting persist=true; changing that requires a reviewed adapter change too. Server-side operator testing can exercise the HTTP contract after confirmation.
+## Plugin acceptance receipts
 
-No persist flag, persist scope, canonical write, adapter publication or clean Chat acceptance was performed by this rollout. Fast Editorial remains unchanged.
+All IDs below are durable tool request/idempotency IDs, not the per-response transport request_id.
+
+| Operation | Durable request ID | Verified result |
+| --- | --- | --- |
+| Assembler plan, 2026-10-26 | 4f80f1d4-b89e-4ae2-98d2-f6ad338d22cc | COMPLETE/PASS; 27 items, 21 records, 16 VERIFIED, 5 VERIFIED_WITH_NOTES, zero review/blocked; same-key replay=true |
+| Indexer plan, 2026-10-26 | 20bb05c7-679d-4d15-bb8c-d0e59e03b2da | COMPLETE/PASS; 21 eligible, 39 chunks, zero skipped |
+| Assembler persist, 2026-10-27 | f61d4dc7-2bb7-405a-84ac-854ab55b12c5 | COMPLETE/PASS; all 21 immutable persistence receipts REPLAYED; same-key API replay=true |
+| Indexer persist, 2026-10-27 | 4302b8c7-fb2d-4499-affc-456544c9e3e1 | COMPLETE/PASS; 21 receipts REPLAYED, 39 chunks; same-key API replay=true |
+| New-key Indexer persist | 7b01df9a-e416-41fb-abf5-d2d7494ffef8 | COMPLETE/PASS; all 21 exact-version runtime receipts REPLAYED |
+| Czech NATO search | d5f92509-ff96-404f-b939-ca523ddd2a3a | COMPLETE/PASS; expected article first, score 0.589623093605046; 5 vector hits, 0 lexical |
+
+One Assembler same-key retry while Indexer was running returned WRITE_IN_PROGRESS (503). After status confirmed completion, retrying that identical Assembler key succeeded. This is observed source-lock enforcement, not a failed assembly or justification to issue new keys after uncertainty.
+
+Direct DB readback joined all 21 Assembler receipts against exact article ID, SHA, bucket, key, byte size and selection: 21 distinct receipts, 21 exact matches. Before/after counts: 21 articles, 21 index runs (all INDEXED), 21 article embeddings, 39 chunks. MD5 comparison fingerprints of complete ordered row JSON, including existing vectors and timestamps, were unchanged:
+
+| Set | Comparison fingerprint |
+| --- | --- |
+| articles | 3da7d0f863b41670408c49d357fbd2c1 |
+| article_index_runs | 8e050e9b9530d0392bdf142d30a65e4b |
+| article_embeddings | 927890b2746e30b1aacab1c36d1758bc |
+| article_chunks | 39fc72f18e265ae15e79aa27f6e129e1 |
+
+These are comparison fingerprints, not canonical artifact SHA-256 values. The tested indexer_runtime checks replay_if_indexed and performs persisted post-checks before embed calls. All receipts took that replay branch; no new document embedding computation is indicated. This is code/receipt evidence, not independent provider billing telemetry. Search separately performed a billable query embedding. Runner requests create private ledger receipts even when canonical/index data are replayed or persist=false.
+
+Search query: “Jak dronové útoky na lodě prověřují schopnosti NATO?” First result was independently joined to title “Drone Attacks on Ships Test NATO”, article `art-9491140a80efae03a7abca8bd76c7899c20178db7011553da646520e8ce8e16b`, SHA `a095887e661955b4ce97afa4d3bfb0ab10ae5ed5822cc1d4539490feff96f379`. This closes only the previously unconfirmed spot check, not Q017.
+
+run_technician was called through the plugin and correctly returned 409 TECHNICIAN_SOURCE_SCOPED_UNAVAILABLE. No global Technician queue was started.
+
+## Remaining closure
+
+1. Restore pre-test configuration/container, verify authenticated readiness and absence of server persist flag/grant; verify PERSIST_DISABLED through the plugin.
+2. Open a genuinely new ordinary Chat with the existing Business Brief Ingestor plugin. Use the exact selection above. Call get_pipeline_status, run_assembler persist=false, poll to COMPLETE/PASS, then run_indexer persist=false and poll to COMPLETE/PASS. No SSH, terminal, credentials or Supabase admin tools should be required in that Chat. Record actual receipts before declaring clean-Chat acceptance.
+3. Document the credential-rotation follow-up separately from functional acceptance.
+4. Only then proceed to Handelsblatt end-to-end and Czech→German retrieval acceptance. Publication allowlists are currently WSJ-only; do not silently broaden them.
+5. Technician source-scoped execution remains separate implementation work. Search still takes the authorized exact-selection subset of global top 100; recall and calibration remain open. Q017 requires a benchmark, latency/cost measurements and Czech→German coverage.
