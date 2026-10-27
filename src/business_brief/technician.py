@@ -49,7 +49,7 @@ def _parse_date(text: str) -> str|None:
     if m:
         d,mo,y=map(int,m.groups()); return f"{y:04d}-{mo:02d}-{d:02d}"
     t=unicodedata.normalize("NFKD",text).encode("ascii","ignore").decode().lower()
-    m=re.search(r"\b(0?[1-9]|[12]\d|3[01])\s+([a-z]+)\s+(20\d{2})\b",t)
+    m=re.search(r"\b(0?[1-9]|[12]\d|3[01])\.?\s+([a-z]+)\s+(20\d{2})\b",t)
     if m and m.group(2) in MONTHS:
         d,mo,y=m.groups(); return f"{int(y):04d}-{MONTHS[mo]:02d}-{int(d):02d}"
     m=re.search(r"\b([a-z]+)\s+(0?[1-9]|[12]\d|3[01]),?\s+(20\d{2})\b",t)
