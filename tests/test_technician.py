@@ -135,3 +135,10 @@ def test_placeholder_never_enters_pdf_pipeline(monkeypatch,key):
         raise AssertionError('Placeholder must be ignored before accessing Storage')
     monkeypatch.setattr(worker.SupabaseArchive,'from_env',unexpected)
     assert worker.process_inbox_object(key)['status']=='IGNORED'
+
+
+def test_german_date_with_ordinal_dot():
+    from business_brief.technician import _parse_date
+    assert _parse_date('Dienstag, 1. September 2026') == '2026-09-01'
+    assert _parse_date('1 September 2026') == '2026-09-01'
+    assert _parse_date('01.09.2026') == '2026-09-01'
