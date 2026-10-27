@@ -1,10 +1,18 @@
 # Current State — Business Brief v4
 
-**Last consolidated:** 2026-10-26
+**Last consolidated:** 2026-10-27
 
 
 
-## 2026-10-26 — Deep Runner production plan-only acceptance
+## 2026-10-27 — Private Chat adapter and WSJ persist/replay acceptance
+
+**Current Deep/Memory checkpoint:** Site adapter v7 is deployed, owner-private, and its tools are connected in the working Chat/Work session. Ingestor read, Assembler/Indexer plan, Assembler persist, Indexer persist, same-key API replay and new-key exact-version Indexer replay passed. All 21 persistence receipts were REPLAYED; direct DB readback retained 21 articles, 21 INDEXED runs, 21 embeddings and 39 chunks, with unchanged complete-row comparison fingerprints. The Czech NATO query returned the expected article first. Technician remains explicitly unavailable.
+
+See [DEEP_RUNNER_HANDOFF.md](../docs/DEEP_RUNNER_HANDOFF.md) for exact request IDs, selection identity, deployed adapter/auth binding, readback fingerprints and remaining closure. This checkpoint supersedes older present-tense adapter-v6/not-deployed and runner-rollout-pending statements below; those sections are historical evidence.
+
+Persist was temporarily enabled for the authorized acceptance on 2026-10-27. **Plan-only restoration is not yet confirmed.** Fresh ordinary Chat acceptance also remains pending; successful connected tools in this Work conversation are not that separate acceptance. Existing Railway-origin Bridge credentials were reused without disclosure to the model; the earlier potential-exposure/rotation concern remains a separate operational follow-up. Fast Editorial was not changed.
+
+## 2026-10-26 — Deep Runner production plan-only acceptance (historical)
 
 PR #18 was reviewed after PR tests run #133 succeeded at head `8f36b9af87c507629541ed62748950f4ee14cf99`, marked ready and merged as `848ee5052630555f04213e6bf747f236257571d1`. A fresh local run passed all 329 Python tests. No formal independent GitHub approval is claimed.
 
