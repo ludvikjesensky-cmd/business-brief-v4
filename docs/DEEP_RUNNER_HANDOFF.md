@@ -2,7 +2,7 @@
 
 ## Current verified boundary
 
-This document supersedes the 2026-10-26 adapter preparation instructions. The Bridge runner is deployed on Hetzner at runtime commit `848ee5052630555f04213e6bf747f236257571d1`, image `business-brief-bridge:848ee5052630`. The private Site adapter v7 is deployed and its tools were exercised successfully through the connected Chat plugin in a Work conversation. A separate fresh ordinary Chat acceptance is still pending. Fast Editorial is unchanged.
+This document supersedes the 2026-10-26 adapter preparation instructions. The Bridge runner is deployed on Hetzner at runtime commit `848ee5052630555f04213e6bf747f236257571d1`, image `business-brief-bridge:848ee5052630`. The private Site adapter v7 is deployed and its tools were exercised successfully through the connected Chat plugin in a Work conversation. A separate fresh ordinary Chat plan acceptance passed, as reported by the operator and independently verified against both exact server receipts below. Fast Editorial is unchanged.
 
 **Current operational state: plan-only restored.** The operator temporarily activated `BRIDGE_PIPELINE_PERSIST=1` and added `pipeline:persist` to `manual-ingestor` for the authorized WSJ acceptance below, then restored the pre-test configuration/container. The operator reported READY HTTP 200, PERSIST VYPNUTO and PLAN-ONLY OBNOVENO. A subsequent connected-plugin Indexer call with persist=true returned HTTP 403 PERSIST_DISABLED, request `8dc113aa-7289-4b21-a36f-2cf86f6d5bac`; persistence did not start.
 
@@ -64,7 +64,7 @@ run_technician was called through the plugin and correctly returned 409 TECHNICI
 ## Remaining closure
 
 1. DONE: pre-test configuration/container restored; operator readiness/flag/grant checks passed, and the plugin independently returned 403 PERSIST_DISABLED.
-2. Open a genuinely new ordinary Chat with the existing Business Brief Ingestor plugin. Use the exact selection above. Call get_pipeline_status, run_assembler persist=false, poll to COMPLETE/PASS, then run_indexer persist=false and poll to COMPLETE/PASS. No SSH, terminal, credentials or Supabase admin tools should be required in that Chat. Record actual receipts before declaring clean-Chat acceptance.
+2. DONE: operator ran a new ordinary Chat with Business Brief Ingestor, without terminal or credentials. Assembler `9261ada6-abb8-476b-a122-2e5313bd719f` completed at 2026-10-27T07:33:42Z; Indexer `02b9cd60-bd48-417c-a083-f452c2ebfc77` at 07:34:10Z. Both exact server receipts were independently read back as COMPLETE/PASS with persist=false and empty persistence receipts. Assembler: 27 page items, 21 records, 16 VERIFIED, 5 VERIFIED_WITH_NOTES, zero review/blocked, zero persisted. Indexer: 21 rows/eligible, 39 planned chunks, zero skipped/persisted; BB-CHUNKING-V1, BB-EMBEDDING-V1, BB-LEXICAL-TOKENIZER-V1, embed-v5.0-pro, 1024 dimensions. No Search or Technician was run in this fresh Chat.
 3. Document the credential-rotation follow-up separately from functional acceptance.
 4. Only then proceed to Handelsblatt end-to-end and Czech→German retrieval acceptance. Publication allowlists are currently WSJ-only; do not silently broaden them.
 5. Technician source-scoped execution remains separate implementation work. Search still takes the authorized exact-selection subset of global top 100; recall and calibration remain open. Q017 requires a benchmark, latency/cost measurements and Czech→German coverage.
