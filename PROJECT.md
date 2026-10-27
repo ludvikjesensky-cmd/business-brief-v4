@@ -75,7 +75,8 @@ Do dokončení této rekonstrukce nepoužívej suspended briefingy jako instrukc
 - docs/COMPOSER.md — Deep/Memory daily-topic-v1 grouping design inspired by v3 Cross-Paper Editor (D027); není Fast Editorial workflow; implementace zatím neproběhla
 - docs/OPERATIONS.md — provoz, observability, náklady a gates
 - docs/INFRASTRUCTURE.md — current production infrastructure, Hetzner/Caddy/Docker, DNS, secrets boundary, deploy/recovery and Railway historical boundary
-- docs/RUNNER.md — merged server-side Deep/Memory runner and Chat-facing tool contract; Hetzner deployment/acceptance still pending
+- docs/DEEP_RUNNER.md — deployed Bridge-authenticated Deep/Memory runner contract
+- docs/DEEP_RUNNER_HANDOFF.md — current private Chat adapter v7, WSJ persist/replay receipts and verified plan-only restoration / passed fresh ordinary Chat acceptance
 - docs/SOURCES_RIGHTS.md — zdroje, acquisition a právní hranice
 - docs/ENRICHMENT.md — enrichment-v1, Story Threads/Signals/Trends, provenance a promotion; offline validátory/helpers implementovány, perzistence Q019
 - docs/EDITORIAL_MEMORY.md — produktová Editorial Memory; není Project Memory
@@ -101,4 +102,4 @@ Read `project-memory/DECISIONS.md` D022 and `docs/INGESTOR.md` §21 for the acce
 
 ## Deep/Memory runner implementation — 2026-10-26
 
-See [docs/DEEP_RUNNER.md](docs/DEEP_RUNNER.md) for the Bridge-authenticated runner contract, safe defaults, Technician boundary and Hetzner rollout. Repository implementation does not establish deployment or ordinary Chat acceptance. Fast Editorial is unchanged.
+See [docs/DEEP_RUNNER.md](docs/DEEP_RUNNER.md) for the Bridge-authenticated runner contract and [docs/DEEP_RUNNER_HANDOFF.md](docs/DEEP_RUNNER_HANDOFF.md) for the 2026-10-27 verified operational checkpoint. Hetzner and private Site adapter v7 are deployed; connected-plugin WSJ plan/persist/replay acceptance passed. Plan-only mode is restored and plugin-verified (403 PERSIST_DISABLED); fresh ordinary Chat Assembler/Indexer plan acceptance passed with independently verified server receipts. Technician remains unavailable from Chat; Q017 multilingual calibration remains open. Fast Editorial is unchanged.
